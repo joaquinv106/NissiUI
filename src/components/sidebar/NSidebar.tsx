@@ -237,7 +237,6 @@ export function NSidebar<TData = unknown>({
       borderColor="border"
       shadow={variant === "elevated" ? "lg" : undefined}
       isolation="isolate"
-      transition="width 0.2s ease"
       overflow="hidden"
       onKeyDown={handleNavigationKey}
     >
@@ -266,6 +265,7 @@ export function NSidebar<TData = unknown>({
   )
 
   const desktopDisplay = responsive === "push" ? "flex" : { base: "none", md: "flex" }
+  const desktopState = collapsed ? "collapsed" : "expanded"
   const collapseLabel = collapsed ? labels.expandSidebar : labels.collapseSidebar
   const CollapseIcon = position === "start"
     ? collapsed ? ChevronRight : ChevronLeft
@@ -352,12 +352,18 @@ export function NSidebar<TData = unknown>({
       ) : null}
 
       <Box
+        data-n-sidebar-desktop=""
+        data-state={desktopState}
         display={desktopDisplay}
         position="relative"
         width={width}
         height="full"
         flexShrink="0"
         order={position === "end" ? 1 : undefined}
+        transitionProperty="width"
+        transitionDuration="moderate"
+        transitionTimingFunction="ease-out"
+        _motionReduce={{ transitionDuration: "0ms" }}
       >
         {renderSidebarContent({ collapsed, width: "full" })}
         {collapsible ? (

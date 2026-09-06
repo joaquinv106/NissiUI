@@ -71,6 +71,8 @@ Sin `item.id` ni `getItemId`, se usa el índice aplanado como respaldo y se mues
 
 En escritorio, el control de colapso es un botón circular flotante anclado al borde del sidebar (mitad dentro, mitad fuera), con icono de chevron que cambia de dirección según el estado y la `position`. En móvil no se muestra, ya que el Drawer se cierra con su propio botón.
 
+Al ocultarse o aparecer, el ancho del sidebar y el espacio que ocupa en el layout se animan durante `200ms` con una salida suave. La transición se desactiva automáticamente cuando el sistema solicita movimiento reducido mediante `prefers-reduced-motion`; el Drawer móvil conserva la animación accesible provista por Chakra UI.
+
 En modo colapsado permanecen visibles los iconos o la inicial del elemento. Cada control muestra un tooltip y conserva un nombre accesible. La búsqueda y el footer se ocultan hasta expandir el menú.
 
 ## Responsive

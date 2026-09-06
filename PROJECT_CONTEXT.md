@@ -116,6 +116,7 @@ La referencia completa y ejemplos están en `docs/tables.md`.
 - `searchable` filtra sin perder la jerarquía. `getItemId` sigue la filosofía de identidad estable de `getRowId`.
 - `header` y `footer` son slots. Los módulos de `sidebar/internal/` no se exportan.
 - El control de colapso en escritorio es un botón circular flotante anclado al borde del sidebar (no dentro del header); usa iconos de chevron según `position` y estado. `SidebarHeader` sólo conserva el botón de cierre en móvil.
+- El ancho del contenedor de escritorio se anima al colapsar o expandir para que también se desplace suavemente el contenido adyacente; usa la duración semántica `moderate` (`200ms`) y elimina la transición con `prefers-reduced-motion`.
 - Los controles de búsqueda (`NSidebar` y `NDataTable`) aplican el estilo de foco al contenedor (`_focusWithin`) en vez del `Input` interno, para que el anillo de foco cubra todo el campo y no se recorte.
 - El `Toaster` de copiado en `NDataTable` define ancho máximo (`calc(100vw - 2rem)`) y `insetInline` responsive para evitar que el mensaje se salga de la pantalla en viewports angostos.
 - La superficie del sidebar (`nav`, Drawer y botones flotantes) usa `bg.muted` en vez de `bg.panel`, porque en tema claro `bg.panel` y `bg` son el mismo blanco y el sidebar se pierde visualmente contra el contenido.

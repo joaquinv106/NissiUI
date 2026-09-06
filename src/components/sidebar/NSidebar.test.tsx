@@ -65,6 +65,21 @@ describe("NSidebar", () => {
     expect(onCollapsedChange).toHaveBeenCalledWith(false)
   })
 
+  it("anima el ancho y actualiza su estado al ocultarse y aparecer", () => {
+    const { container } = renderSidebar(
+      <NSidebar items={items} responsive="push" expandedWidth="18rem" collapsedWidth="4rem" />,
+    )
+    const desktopSidebar = container.querySelector<HTMLElement>("[data-n-sidebar-desktop]")
+
+    expect(desktopSidebar).toHaveAttribute("data-state", "expanded")
+    expect(getComputedStyle(desktopSidebar!).transitionProperty).toContain("width")
+
+    fireEvent.click(screen.getByRole("button", { name: "Contraer menú lateral" }))
+
+    expect(desktopSidebar).toHaveAttribute("data-state", "collapsed")
+    expect(screen.getByRole("button", { name: "Expandir menú lateral" })).toBeInTheDocument()
+  })
+
   it("navega grupos con flechas, Home y End", async () => {
     renderSidebar(<NSidebar items={items} responsive="push" />)
     const group = screen.getByRole("button", { name: "Configuración" })
