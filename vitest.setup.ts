@@ -7,3 +7,19 @@ if (!globalThis.ResizeObserver) {
     disconnect() {}
   }
 }
+
+if (!globalThis.matchMedia) {
+  Object.defineProperty(globalThis, "matchMedia", {
+    configurable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+      dispatchEvent: () => false,
+    }),
+  })
+}

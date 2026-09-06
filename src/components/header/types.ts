@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 
+import type { NThemePresentation } from "../theme/types"
+
 export type NHeaderVariant = "site" | "app"
 export type NHeaderResponsive = "overlay" | "push" | "hidden"
 
@@ -96,7 +98,11 @@ export interface NHeaderProps<TData = unknown> {
   defaultMobileOpen?: boolean
   onMobileOpenChange?: (open: boolean) => void
   showThemeToggle?: boolean
+  /** Presentación del selector NTheme cuando existe NThemeProvider. */
+  themePresentation?: NThemePresentation
+  /** @deprecated Con NThemeProvider puede omitirse; se conserva para el toggle binario legado. */
   theme?: "light" | "dark"
+  /** @deprecated Usa onThemeChange en NThemeProvider para sincronizar toda la aplicación. */
   onThemeChange?: (theme: "light" | "dark") => void
   sticky?: boolean
   height?: string

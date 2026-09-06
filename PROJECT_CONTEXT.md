@@ -6,11 +6,20 @@ Este documento es la fuente de contexto para cualquier persona, agente o modelo 
 
 Nissi UI es una librería de componentes React reutilizables, publicable en npm como `nissi-ui`. Los componentes se construyen sobre Chakra UI v3 y deben poder instalarse en otros proyectos React sin copiar código. El desarrollo se realiza incrementalmente por componente y por fases; actualmente incluye tablas, navegación, formularios, permisos y la capa de plataforma `NAppShell`/`NModuleRegistry`/`NWorkspaceSwitcher` para operar microsistemas contratados desde un dashboard común.
 
+## Objetivo prioritario: flujos operativos generalizables
+
+La prioridad del proyecto es desarrollar componentes genéricos capaces de componer un punto de venta, compras, inventarios, servicios, recursos humanos y otros flujos sin introducir reglas de un dominio específico en el núcleo. La fuente canónica del plan es [docs/generalized-workflows-roadmap.md](./docs/generalized-workflows-roadmap.md).
+
+- Fase 1, `NItemPicker<T>`: completada. Selección visible con búsqueda, agrupación, layouts y estado controlado/no controlado.
+- **Siguiente sesión — Fase 2, `NLineItemEditor<TItem, TLine>`:** objetivo inmediato. Debe servir para cotizaciones, pedidos, facturas, requisiciones, presupuestos y carritos.
+- Fases posteriores: valores/distribución, flujos/aprobaciones, operación/documentos, captura/resiliencia y finalmente presets POS.
+- No construir componentes POS monolíticos ni adelantar `NCart`/`NCheckout`: deben ser presets delgados sobre primitivas y patrones estabilizados.
+
 ## Principios de diseño
 
 - API declarativa y tipada: la configuración principal usa JSON con `headers` y `data`.
 - Chakra UI v3: usar sus primitivas y patrones compound; no introducir patrones de Chakra v2.
-- Tema automático: preferir tokens semánticos (`bg`, `bg.panel`, `fg.muted`, `border`) para soportar claro y oscuro.
+- Tema automático: preferir tokens semánticos (`bg`, `bg.panel`, `fg.muted`, `border`) para soportar claro, oscuro, azul marino y Nissi Dark mediante `NThemeProvider`.
 - Accesibilidad: conservar HTML semántico, nombres accesibles, navegación por teclado, foco visible y tooltips traducibles.
 - Responsive desde móvil: la tabla ofrece desplazamiento horizontal o vista `stack` como lista de registros.
 - Internacionalización: ningún texto nuevo debe quedar hardcodeado en la interfaz. Añadirlo al contrato `*Labels` y al objeto `default*Labels` del componente correspondiente; español es el idioma predeterminado.
@@ -66,6 +75,8 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/app-shell/`: implementación, tipos, labels y pruebas de `NAppShell`.
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
+- `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
+- `src/components/item-picker/`: `NItemPicker<T>`, tipos, labels, búsqueda normalizada, selección y pruebas de la Fase 1 prioritaria.
 - `docs/README.md`: índice de documentación.
 - `docs/tables.md`: contrato y ejemplos de tablas.
 - `docs/sidebar.md`: contrato y ejemplos de NSidebar.
@@ -73,6 +84,8 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/forms.md`: contrato y ejemplos de NForm.
 - `docs/permissions.md`: contrato y ejemplos de NPermissionGate/useCanAccess.
 - `docs/app-shell.md`, `docs/module-registry.md` y `docs/workspace-switcher.md`: contratos de la capa de plataforma.
+- `docs/item-picker.md`: contrato y ejemplos de `NItemPicker<T>`.
+- `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
 - `public/brand/`: isotipo, hero e iconos web de Nissi UI. `docs/brand.md` define el slogan y sus reglas de uso.
 - El lenguaje cristalino (retícula, halos, hielo y animación ambiental) se limita a `OverviewView` en `src/dev/main.tsx`; no debe trasladarse a los componentes públicos ni a sus tokens.
@@ -119,7 +132,7 @@ La referencia completa y ejemplos están en `docs/sidebar.md`.
 - La altura predeterminada es `4rem`. En un layout con `NSidebar`, NHeader vive dentro del área principal y puede usar `sticky` sin modificar el ancho ni estado del sidebar. La fila de `SidebarHeader` comparte esta misma altura (`minH="16"`) para que ambos bordes queden alineados.
 - El fondo usa `bg.muted` (igual que la superficie del sidebar) en vez de `bg.panel`, para mantener armonía visual y contraste contra el contenido en tema claro.
 - La búsqueda aplica foco al contenedor completo. Menús, Drawer, badges y tooltips usan patrones accesibles y portales cuando corresponde.
-- Tema, superficies, texto, bordes y estados usan tokens semánticos. El cambio de tema es controlado mediante `theme` y `onThemeChange`.
+- Tema, superficies, texto, bordes y estados usan tokens semánticos. Dentro de `NThemeProvider`, `showThemeToggle` consume el selector global y `themePresentation="icon" | "button"` define su apariencia; `theme` y `onThemeChange` quedan como compatibilidad binaria deprecada.
 - Todos los textos internos pertenecen a `NHeaderLabels`; español es el default.
 
 La referencia completa y ejemplos están en `docs/header.md`.
@@ -160,6 +173,27 @@ La referencia completa y ejemplos están en `docs/permissions.md`.
 
 Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.md` y `docs/workspace-switcher.md`; el orden de trabajo pendiente vive en `docs/roadmap.md`.
 
+## Contrato actual de NTheme
+
+- `NThemeProvider` es el proveedor raíz: instala `nissiSystem`, sincroniza `next-themes`, persiste la preferencia y admite estado controlado mediante `theme`/`onThemeChange`.
+- Las preferencias públicas son `light`, `dark`, `navy`, `nissi` y `system`; el tema efectivo siempre es `light`, `dark`, `navy` o `nissi`.
+- `NTheme` es el selector accesible con `presentation="icon" | "button"`. Sus textos pertenecen a `NThemeLabels` y tienen español predeterminado.
+- `navy` hereda recetas y paletas de estados del modo oscuro de Chakra, pero redefine `bg.*`, `fg.*` y `border.*` con una escala azul marino armónica.
+- `nissi` implementa Nissi Dark: superficies índigo-tinta, texto frío de alto contraste y una reasignación semántica de `blue.*` basada en el azul, índigo, violeta y cian medidos del isotipo.
+- `NHeader showThemeToggle` usa automáticamente `NTheme` cuando está dentro del proveedor; `themePresentation="button"` muestra el nombre del tema en el header. Los demás componentes sólo consumen tokens semánticos y no conocen nombres de temas.
+- Para agregar un tema se actualizan exclusivamente el registro/tipos, etiquetas y sistema en `src/components/theme/`, además de pruebas, catálogo y documentación.
+
+La referencia completa está en `docs/theme.md`.
+
+## Contrato actual de NItemPicker
+
+- `NItemPicker<TItem>` requiere `items`, `getItemId` y `getItemLabel`; no presupone productos ni una forma concreta de datos.
+- `selectionMode="single" | "multiple" | "none"` cubre selección persistente y activación directa. `selectedIds`/`defaultSelectedIds` siguen el patrón controlado/no controlado.
+- La búsqueda local normaliza mayúsculas y acentos e indexa etiqueta, descripción, grupo y `getSearchText`; `shouldFilter={false}` permite búsqueda remota controlada.
+- `groupBy`, `layout="grid" | "list"`, `columns`, `renderItem`, `renderLeading`, `renderTrailing`, `header`, `footer` y `emptyState` permiten composición sin acoplamiento de dominio.
+- Cada opción es un botón nativo con `aria-pressed`, foco visible, flechas/Home/End, estados disabled/loading/empty y anuncios `aria-live`.
+- Todos los textos pertenecen a `NItemPickerLabels`; la referencia completa está en `docs/item-picker.md`.
+
 ## Flujo recomendado para agentes
 
 1. Leer este archivo, `package.json` y el documento del componente afectado.
@@ -171,4 +205,4 @@ Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.m
 
 ## Criterios de terminado
 
-Un cambio está terminado cuando funciona en claro y oscuro, es responsive, accesible por teclado cuando aplica, no introduce textos fuera de `labels`, conserva tipado público, incluye pruebas de interacción y deja actualizado `docs/`.
+Un cambio está terminado cuando funciona en claro, oscuro, azul marino y Nissi Dark, es responsive, accesible por teclado cuando aplica, no introduce textos fuera de `labels`, conserva tipado público, incluye pruebas de interacción y deja actualizado `docs/`.

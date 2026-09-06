@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NAppShell, NDataTable, NModuleRegistry, NPermissionsProvider, NTable, NWorkspaceSwitcher, formatTableValue } from "./index"
+import { NAppShell, NDataTable, NItemPicker, NModuleRegistry, NPermissionsProvider, NTable, NTheme, NThemeProvider, NWorkspaceSwitcher, formatTableValue, nissiSystem, useNTheme } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -15,6 +15,17 @@ describe("API pública de tablas", () => {
     expect(NAppShell).toBeTypeOf("function")
     expect(NModuleRegistry).toBeTypeOf("function")
     expect(NWorkspaceSwitcher).toBeTypeOf("function")
+  })
+
+  it("exporta el selector genérico de elementos", () => {
+    expect(NItemPicker).toBeTypeOf("function")
+  })
+
+  it("exporta la capa pública de temas", () => {
+    expect(NTheme).toBeTypeOf("function")
+    expect(NThemeProvider).toBeTypeOf("function")
+    expect(useNTheme).toBeTypeOf("function")
+    expect(nissiSystem).toBeTruthy()
   })
 
   it("genera una tabla desde la configuración JSON", () => {

@@ -29,6 +29,7 @@ export default defineConfig({
         id.startsWith("@chakra-ui/") ||
         id.startsWith("@emotion/") ||
         id.startsWith("@tanstack/") ||
+        id === "next-themes" ||
         id === "lucide-react" ||
         id === "jspdf" ||
         id === "jspdf-autotable" ||

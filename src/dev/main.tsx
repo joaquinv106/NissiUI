@@ -29,17 +29,17 @@ import {
   PanelLeft,
   PanelTop,
   PackageCheck,
+  Palette,
   Settings,
   ShieldCheck,
   Sparkles,
   TableProperties,
   Users,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
 
-import { NAppShell, NDataTable, NForm, NHeader, NModuleRegistry, NPermissionGate, NPermissionsProvider, NSidebar, NTable, NWorkspaceSwitcher, type NFormConfig, type NModuleDefinition, type NSidebarItem, type NTableConfig, type NWorkspace } from "../index"
+import { NAppShell, NDataTable, NForm, NHeader, NItemPicker, NModuleRegistry, NPermissionGate, NPermissionsProvider, NSidebar, NTable, NTheme, NWorkspaceSwitcher, useNTheme, type NFormConfig, type NModuleDefinition, type NSidebarItem, type NTableConfig, type NWorkspace } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 import { DemoProvider } from "./provider"
 
@@ -150,7 +150,7 @@ const employeeFormConfig: NFormConfig<EmployeeFormValues> = {
 }
 
 
-type DemoView = "overview" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions"
+type DemoView = "overview" | "theme" | "item-picker" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions"
 type DemoNavigationData = { view?: DemoView }
 
 const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
@@ -160,6 +160,8 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
     label: "Componentes",
     icon: <Blocks size={18} />,
     children: [
+      { id: "theme", label: "NTheme", icon: <Palette size={17} />, badge: "Nuevo", data: { view: "theme" } },
+      { id: "item-picker", label: "NItemPicker", icon: <PackageCheck size={17} />, badge: "Nuevo", data: { view: "item-picker" } },
       { id: "app-shell", label: "NAppShell", icon: <LayoutDashboard size={17} />, badge: "Nuevo", data: { view: "app-shell" } },
       { id: "modules", label: "NModuleRegistry", icon: <Blocks size={17} />, badge: "Nuevo", data: { view: "modules" } },
       { id: "workspaces", label: "NWorkspaceSwitcher", icon: <Building2 size={17} />, badge: "Nuevo", data: { view: "workspaces" } },
@@ -213,6 +215,8 @@ const demoWorkspaces: NWorkspace[] = [
 
 const viewTitles: Record<DemoView, string> = {
   overview: "Nissi UI",
+  theme: "NTheme",
+  "item-picker": "NItemPicker",
   "app-shell": "NAppShell",
   modules: "NModuleRegistry",
   workspaces: "NWorkspaceSwitcher",
@@ -400,6 +404,8 @@ function OverviewView({ onNavigate }: { onNavigate: (view: DemoView) => void }) 
             ["NAppShell", "Compone header, sidebar, contenido y footer en una base responsive.", "app-shell", <LayoutDashboard key="shell" size={20} />],
             ["NModuleRegistry", "Presenta solamente los módulos contratados y autorizados.", "modules", <Blocks key="modules" size={20} />],
             ["NWorkspaceSwitcher", "Cambia de empresa, sucursal, tenant o proyecto activo.", "workspaces", <Building2 key="workspaces" size={20} />],
+            ["NTheme", "Sincroniza temas, persistencia y superficies en toda la aplicación.", "theme", <Palette key="theme" size={20} />],
+            ["NItemPicker", "Busca, agrupa y selecciona cualquier tipo de entidad.", "item-picker", <PackageCheck key="picker" size={20} />],
           ] as const).map(([name, description, view, icon]) => (
             <Card.Root key={name} variant="outline" bg="bg.panel" backdropFilter="blur(16px)" {...landingCardMotion}>
               <Card.Body gap="4">
@@ -416,10 +422,246 @@ function OverviewView({ onNavigate }: { onNavigate: (view: DemoView) => void }) 
   )
 }
 
+/** Vista de ejemplo y documentación del controlador global de temas. */
+function ThemeView() {
+  const { theme, resolvedTheme } = useNTheme()
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Sistema visual"
+        title="NTheme"
+        description="Un único puente para elegir, persistir y sincronizar temas, incluido Nissi Dark con la paleta prismática del isotipo."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="6">
+          <Flex direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }} justify="space-between" gap="4">
+            <Stack gap="1">
+              <Heading as="h2" size="lg">Tema activo: {theme}</Heading>
+              <Text color="fg.muted">Apariencia efectiva: {resolvedTheme}. La preferencia se comparte con header, sidebar, tablas y formularios.</Text>
+            </Stack>
+            <HStack gap="3"><NTheme /><NTheme presentation="button" /></HStack>
+          </Flex>
+
+          <SimpleGrid columns={{ base: 1, md: 3 }} gap="4">
+            {([
+              ["Fondo sutil", "bg.subtle"],
+              ["Superficie elevada", "bg.muted"],
+              ["Panel", "bg.panel"],
+            ] as const).map(([label, background]) => (
+              <Box key={label} bg={background} borderWidth="1px" borderColor="border" rounded="lg" p="5">
+                <Text fontWeight="semibold">{label}</Text>
+                <Text color="fg.muted" fontSize="sm" mt="1">Texto secundario y borde semánticos.</Text>
+              </Box>
+            ))}
+          </SimpleGrid>
+
+          <Stack gap="3">
+            <Stack gap="1">
+              <Heading as="h3" size="sm">Paleta de Nissi Dark</Heading>
+              <Text color="fg.muted" fontSize="sm">Azul e índigo conducen la interfaz; cian, violeta y lavanda se reservan para foco y acentos.</Text>
+            </Stack>
+            <SimpleGrid columns={{ base: 2, sm: 3, lg: 5 }} gap="3">
+              {([
+                ["Cian", "nissi.cyan", "#5ACFFD"],
+                ["Azul", "nissi.blue", "#1461DE"],
+                ["Índigo", "nissi.indigo", "#1D2EAF"],
+                ["Violeta", "nissi.violet", "#6947DB"],
+                ["Lavanda", "nissi.lavender", "#CD97FC"],
+              ] as const).map(([name, token, value]) => (
+                <Box key={name} overflow="hidden" borderWidth="1px" borderColor="border" rounded="lg" bg="bg.subtle">
+                  <Box height="14" bg={token} />
+                  <Stack gap="0" p="3">
+                    <Text fontSize="sm" fontWeight="semibold">{name}</Text>
+                    <Text color="fg.muted" fontFamily="mono" fontSize="xs">{value}</Text>
+                  </Stack>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Stack>
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NTheme centraliza el contrato visual de Nissi UI. NThemeProvider instala el sistema Chakra, restaura la preferencia y publica el tema efectivo; NTheme ofrece el selector accesible que NHeader también consume automáticamente."
+        steps={[
+          "Envuelve una sola vez la raíz de la aplicación con NThemeProvider.",
+          "Coloca NTheme donde el usuario deba elegir su apariencia, usando presentación de icono o botón.",
+          "Usa useNTheme únicamente cuando otra lógica de aplicación necesite conocer el tema efectivo.",
+          "Personaliza los textos mediante labels y conserva tokens semánticos en todos los componentes visuales.",
+        ]}
+        variants={[
+          { name: "presentation=\"icon\"", description: "Control compacto con tooltip, ideal para NHeader." },
+          { name: "presentation=\"button\"", description: "Muestra icono y nombre del tema actual; útil en preferencias." },
+          { name: "themes={[...]}", description: "Limita localmente las opciones visibles sin romper la sincronización global." },
+          { name: "theme / defaultTheme", description: "NThemeProvider admite estado controlado o persistencia automática." },
+          { name: "theme=\"nissi\"", description: "Nissi Dark aplica superficies índigo-tinta y los acentos del isotipo." },
+        ]}
+        variantExamples={[
+          { id: "icon", label: "Icono", summary: "presentation=\"icon\"", preview: <NTheme />, code: `<NTheme presentation="icon" />` },
+          { id: "button", label: "Botón", summary: "presentation=\"button\"", preview: <NTheme presentation="button" />, code: `<NTheme presentation="button" />` },
+          { id: "limited", label: "Opciones", summary: "themes={[\"light\", \"dark\", \"navy\", \"nissi\"]}", preview: <NTheme presentation="button" themes={["light", "dark", "navy", "nissi"]} />, code: `<NTheme themes={["light", "dark", "navy", "nissi"]} presentation="button" />` },
+        ]}
+        propExamples={[
+          { label: "Proveedor controlado", code: `<NThemeProvider theme={theme} onThemeChange={setTheme}>\n  <App />\n</NThemeProvider>` },
+          { label: "Integración automática con el header", code: `<NHeader showThemeToggle themePresentation="button" />` },
+        ]}
+        code={`import { NTheme, NThemeProvider } from "nissi-ui"
+
+createRoot(document.getElementById("root")!).render(
+  <NThemeProvider defaultTheme="system">
+    <App />
+    <NTheme presentation="button" />
+  </NThemeProvider>,
+)`}
+      />
+    </Stack>
+  )
+}
+
+/** Vista de ejemplo del selector genérico que inicia el roadmap de flujos operativos. */
+function ItemPickerView() {
+  const [selectedIds, setSelectedIds] = useState<string[]>(["1"])
+  const formatPrice = (price: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(price)
+  const renderProductPicker = () => (
+    <NItemPicker
+      items={productConfig.data}
+      getItemId={(product) => String(product.id)}
+      getItemLabel={(product) => product.product}
+      getItemDescription={(product) => `${product.category} · ${product.stock} disponibles`}
+      getSearchText={(product) => `${product.id} ${product.category}`}
+      groupBy={(product) => product.category}
+      selectionMode="multiple"
+      selectedIds={selectedIds}
+      onSelectionChange={(_, ids) => setSelectedIds([...ids])}
+      renderLeading={() => (
+        <Flex align="center" justify="center" boxSize="9" rounded="md" bg="colorPalette.subtle" color="colorPalette.fg">
+          <PackageCheck size={18} />
+        </Flex>
+      )}
+      renderTrailing={(product) => <Text color="colorPalette.fg" fontWeight="semibold">{formatPrice(product.price)}</Text>}
+    />
+  )
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 1"
+        title="NItemPicker"
+        description="Selección visible, buscable y componible para productos, servicios, personas, activos o cualquier entidad tipada."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="5">
+          <Flex direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }} justify="space-between" gap="3">
+            <Stack gap="1">
+              <Heading as="h2" size="lg">Catálogo de ejemplo</Heading>
+              <Text color="fg.muted">Busca por nombre, categoría o identificador y prueba la selección múltiple.</Text>
+            </Stack>
+            <Badge alignSelf={{ base: "start", md: "center" }} colorPalette="blue">{selectedIds.length} seleccionados</Badge>
+          </Flex>
+          {renderProductPicker()}
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NItemPicker desacopla la selección de entidades de cualquier dominio. El consumidor aporta identidad, etiqueta y adaptadores opcionales; el componente resuelve búsqueda, selección, responsive y accesibilidad."
+        steps={[
+          "Entrega la colección y define getItemId/getItemLabel con identidad estable.",
+          "Añade descripción, texto de búsqueda o agrupación sólo cuando aporten contexto.",
+          "Elige selección single, multiple o none y controla selectedIds cuando otra capa sea la fuente de verdad.",
+          "Usa los slots visuales y labels sin introducir reglas comerciales dentro del selector.",
+        ]}
+        variants={[
+          { name: "layout=\"grid\" | \"list\"", description: "Alterna entre exploración visual responsive y lectura compacta." },
+          { name: "selectionMode=\"single\" | \"multiple\" | \"none\"", description: "Cubre elección persistente o activación directa para agregar a otra estructura." },
+          { name: "groupBy", description: "Organiza cualquier colección sin modificar sus datos." },
+          { name: "shouldFilter={false}", description: "Permite controlar búsquedas remotas y estados de carga desde el consumidor." },
+        ]}
+        variantExamples={[
+          {
+            id: "grid",
+            label: "Grid",
+            summary: "layout=\"grid\"",
+            preview: renderProductPicker(),
+            code: `<NItemPicker
+  items={products}
+  getItemId={(product) => product.sku}
+  getItemLabel={(product) => product.name}
+  selectionMode="multiple"
+/>`,
+          },
+          {
+            id: "list",
+            label: "Lista agrupada",
+            summary: "layout=\"list\" groupBy={...}",
+            preview: (
+              <NItemPicker
+                items={productConfig.data.slice(0, 4)}
+                getItemId={(product) => String(product.id)}
+                getItemLabel={(product) => product.product}
+                getItemDescription={(product) => formatPrice(product.price)}
+                groupBy={(product) => product.category}
+                layout="list"
+                defaultSelectedIds={["2"]}
+              />
+            ),
+            code: `<NItemPicker
+  items={services}
+  getItemId={(service) => service.id}
+  getItemLabel={(service) => service.name}
+  groupBy={(service) => service.category}
+  layout="list"
+/>`,
+          },
+          {
+            id: "action",
+            label: "Acción directa",
+            summary: "selectionMode=\"none\"",
+            preview: (
+              <NItemPicker
+                items={productConfig.data.slice(0, 3)}
+                getItemId={(product) => String(product.id)}
+                getItemLabel={(product) => product.product}
+                getItemDescription={(product) => formatPrice(product.price)}
+                selectionMode="none"
+                searchable={false}
+              />
+            ),
+            code: `<NItemPicker
+  items={products}
+  getItemId={(product) => product.sku}
+  getItemLabel={(product) => product.name}
+  selectionMode="none"
+  onItemSelect={addLine}
+/>`,
+          },
+        ]}
+        propExamples={[
+          { label: "Búsqueda remota", code: `<NItemPicker searchValue={query} onSearchValueChange={setQuery} shouldFilter={false} loading={isLoading} {...props} />` },
+          { label: "Contenido personalizado", code: `<NItemPicker renderLeading={renderAvatar} renderTrailing={renderStatus} {...props} />` },
+        ]}
+        code={`const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+<NItemPicker
+  items={items}
+  getItemId={(item) => item.id}
+  getItemLabel={(item) => item.name}
+  getItemDescription={(item) => item.description}
+  getSearchText={(item) => item.code}
+  groupBy={(item) => item.category}
+  selectionMode="multiple"
+  selectedIds={selectedIds}
+  onSelectionChange={(_, ids) => setSelectedIds([...ids])}
+/>`}
+      />
+    </Stack>
+  )
+}
+
 /** Vista de ejemplo y documentación de NHeader. */
 function HeaderView() {
-  const { resolvedTheme, setTheme } = useTheme()
-  const theme = resolvedTheme === "dark" ? "dark" : "light"
   const brand = (
     <HStack gap="2" whiteSpace="nowrap">
       <Flex align="center" justify="center" bg="colorPalette.solid" color="colorPalette.contrast" rounded="lg" boxSize="9" fontWeight="bold">N</Flex>
@@ -470,8 +712,7 @@ function HeaderView() {
             notifications={[{ id: "stock", title: "Stock bajo", description: "Tres productos necesitan revisión.", unread: true }]}
             user={{ name: "Ana Torres", role: "Administradora", actions: [{ id: "logout", label: "Cerrar sesión", icon: <LogOut size={16} /> }] }}
             showThemeToggle
-            theme={theme}
-            onThemeChange={setTheme}
+            themePresentation="button"
           />
           <Box p={{ base: "3", md: "6" }} bg="bg.subtle">
             <NTable card={false} config={{ ...productConfig, data: productConfig.data.slice(0, 3) }} responsive="scroll" borderWidth="1px" />
@@ -493,6 +734,7 @@ function HeaderView() {
           { name: "variant=\"app\"", description: "Prioriza contexto (extra), búsqueda, acciones, notificaciones, tema y usuario." },
           { name: "responsive=\"overlay\" | \"push\" | \"hidden\"", description: "Controla cómo se comporta la navegación en móvil: Drawer, en flujo, u oculta." },
           { name: "surface=\"outline\" | \"elevated\" | \"plain\"", description: "Define el borde/sombra de la barra para adaptarse al layout que la envuelve." },
+          { name: "themePresentation=\"icon\" | \"button\"", description: "Elige un selector compacto o uno con el nombre del tema activo." },
         ]}
         variantExamples={[
           {
@@ -577,8 +819,7 @@ function HeaderView() {
   notifications={[{ id: "stock", title: "Stock bajo", unread: true }]}
   user={{ name: "Ana Torres", role: "Administradora" }}
   showThemeToggle
-  theme={theme}
-  onThemeChange={setTheme}
+  themePresentation="button"
 />`}
       />
     </Stack>
@@ -1410,15 +1651,17 @@ function WorkspaceSwitcherView() {
 
 /** Layout raíz del catálogo: NSidebar + NHeader globales y el contenido según la vista activa. */
 function DevelopmentApp() {
-  const { resolvedTheme, setTheme } = useTheme()
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
-    const allowed: DemoView[] = ["overview", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions"]
+    const allowed: DemoView[] = ["overview", "theme", "item-picker", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions"]
     return requestedView && allowed.includes(requestedView as DemoView) ? requestedView as DemoView : "overview"
   })
-  const isDark = resolvedTheme === "dark"
 
-  const content = activeView === "header"
+  const content = activeView === "theme"
+    ? <ThemeView />
+    : activeView === "item-picker"
+      ? <ItemPickerView />
+    : activeView === "header"
     ? <HeaderView />
     : activeView === "sidebar"
       ? <SidebarView />
@@ -1449,8 +1692,7 @@ function DevelopmentApp() {
           brand={<Box display={{ base: "block", md: "none" }}><NissiBrand compact /></Box>}
           extra={<Text fontWeight="semibold">{viewTitles[activeView]}</Text>}
           showThemeToggle
-          theme={isDark ? "dark" : "light"}
-          onThemeChange={setTheme}
+          themePresentation="button"
         />
       )}
       sidebar={(

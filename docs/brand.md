@@ -36,3 +36,7 @@ La portada del catálogo puede usar retícula técnica, halos azul/violeta, frag
 La atmósfera comienza inmediatamente debajo de `NHeader`; `OverviewView` administra su propio espaciado y usa `NAppShell contentPadding="none"`. Las vistas técnicas conservan `contentPadding="comfortable"`.
 
 Este tratamiento pertenece exclusivamente a `OverviewView`. No debe modificar recetas, tokens, superficies ni comportamiento de los componentes públicos. Toda animación decorativa debe respetar `prefers-reduced-motion`.
+
+## Nissi Dark
+
+`Nissi Dark` traslada la relación azul/violeta del isotipo al sistema semántico sin copiar el tratamiento cristalino de la landing. Usa fondos índigo-tinta, azul para acciones, cian para foco y violeta/lavanda como acentos medidos. Su contrato y ratios de contraste están documentados en [NTheme](./theme.md).

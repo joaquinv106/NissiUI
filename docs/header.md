@@ -39,7 +39,7 @@ export function SiteHeader() {
 
 ## Variante app
 
-El selector de tema es controlado para no imponer una dependencia o estrategia de color mode a la aplicación consumidora.
+Cuando la aplicación usa `NThemeProvider`, el selector consume automáticamente el tema global y ofrece claro, oscuro, azul marino, Nissi Dark y preferencia del sistema.
 
 ```tsx
 <NHeader
@@ -62,11 +62,14 @@ El selector de tema es controlado para no imponer una dependencia o estrategia d
     actions: [{ id: "logout", label: "Cerrar sesión", icon: <LogOut /> }],
   }}
   showThemeToggle
-  theme={theme}
-  onThemeChange={setTheme}
+  themePresentation="button"
   sticky
 />
 ```
+
+`themePresentation="button"` muestra el icono y el nombre del tema activo dentro del header. En el viewport base conserva el mismo botón y su nombre accesible, pero oculta visualmente el texto para proteger el espacio disponible.
+
+Las props `theme` y `onThemeChange` se conservan deprecadas para integraciones binarias existentes. En código nuevo usa `NThemeProvider`; consulta la [guía de temas](./theme.md).
 
 ## Navegación y estado
 
@@ -92,7 +95,7 @@ Los items con hijos abren un `Menu` en escritorio. En móvil se conserva la jera
 
 La altura predeterminada es `4rem`, igual a la cabecera de referencia del layout. Para aplicaciones, coloca `NSidebar` y el área principal en un `Flex`; dentro del área principal renderiza `NHeader sticky` seguido del contenido. El sidebar conserva su propio Drawer móvil y `NHeader` controla exclusivamente la navegación superior, evitando duplicar estados.
 
-`NHeader`, `NSidebar`, `NTable` y `NDataTable` comparten `bg.panel`, `bg.subtle`, `fg`, `fg.muted`, `border` y `colorPalette.*`. Esto mantiene contraste y ritmo visual en temas claro y oscuro sin acoplar los componentes.
+`NHeader`, `NSidebar`, `NTable` y `NDataTable` comparten `bg.panel`, `bg.subtle`, `fg`, `fg.muted`, `border` y `colorPalette.*`. Esto mantiene contraste y ritmo visual en claro, oscuro, azul marino y Nissi Dark sin acoplar los componentes.
 
 ## Labels
 
@@ -100,4 +103,4 @@ Todos los textos internos se personalizan mediante `labels?: Partial<NHeaderLabe
 
 ## Arquitectura interna
 
-`NHeader` coordina estado activo, Drawer y tema. `HeaderBrand`, `HeaderNav`, `HeaderSearch`, `HeaderActions`, `HeaderNotifications`, `HeaderUserMenu` y `HeaderMobileMenu` son implementaciones internas y no forman parte de la API pública.
+`NHeader` coordina estado activo y Drawer; el tema se delega a `NTheme` cuando existe `NThemeProvider`. `HeaderBrand`, `HeaderNav`, `HeaderSearch`, `HeaderActions`, `HeaderNotifications`, `HeaderUserMenu` y `HeaderMobileMenu` son implementaciones internas y no forman parte de la API pública.

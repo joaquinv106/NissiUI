@@ -5,6 +5,8 @@ import { Menu, Moon, Sun } from "lucide-react"
 import { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { NTooltip } from "../internal/NTooltip"
+import { NTheme } from "../theme/NTheme"
+import { useOptionalNTheme } from "../theme/context"
 import { HeaderActions } from "./internal/HeaderActions"
 import { HeaderBrand } from "./internal/HeaderBrand"
 import { HeaderMobileMenu } from "./internal/HeaderMobileMenu"
@@ -40,7 +42,8 @@ export function NHeader<TData = unknown>({
   defaultMobileOpen = false,
   onMobileOpenChange,
   showThemeToggle = false,
-  theme = "light",
+  themePresentation = "icon",
+  theme,
   onThemeChange,
   sticky = false,
   height = "4rem",
@@ -49,6 +52,7 @@ export function NHeader<TData = unknown>({
   labels: customLabels,
 }: NHeaderProps<TData>) {
   const labels = useMemo(() => resolveNHeaderLabels(customLabels), [customLabels])
+  const themeContext = useOptionalNTheme()
   const resolvedItems = useMemo(() => resolveHeaderItems(items, getItemId), [getItemId, items])
   const [internalActiveId, setInternalActiveId] = useState(defaultActiveItemId)
   const [internalMobileOpen, setInternalMobileOpen] = useState(defaultMobileOpen)
@@ -89,18 +93,21 @@ export function NHeader<TData = unknown>({
       ? <HeaderSearch config={search} labels={labels} />
       : search || null
 
-  const themeLabel = theme === "dark" ? labels.switchToLightTheme : labels.switchToDarkTheme
+  const activeLegacyTheme = theme ?? "light"
+  const themeLabel = activeLegacyTheme === "light" ? labels.switchToDarkTheme : labels.switchToLightTheme
   const themeControl = showThemeToggle ? (
-    <NTooltip content={themeLabel}>
-      <IconButton
-        aria-label={themeLabel}
-        variant="ghost"
-        flexShrink="0"
-        onClick={() => onThemeChange?.(theme === "dark" ? "light" : "dark")}
-      >
-        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-      </IconButton>
-    </NTooltip>
+    themeContext && theme === undefined && onThemeChange === undefined ? <NTheme presentation={themePresentation} /> : (
+      <NTooltip content={themeLabel}>
+        <IconButton
+          aria-label={themeLabel}
+          variant="ghost"
+          flexShrink="0"
+          onClick={() => onThemeChange?.(activeLegacyTheme === "light" ? "dark" : "light")}
+        >
+          {activeLegacyTheme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+        </IconButton>
+      </NTooltip>
+    )
   ) : null
 
   return (

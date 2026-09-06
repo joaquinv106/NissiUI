@@ -8,6 +8,8 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | --- | --- | --- | --- |
 | 2026-09-05 | Fundación | Completada | `NTable`, `NDataTable`, `NSidebar`, `NHeader`, `NForm` y permisos/capacidades. |
 | 2026-09-05 | Plataforma modular | Completada | `NAppShell`, `NModuleRegistry` y `NWorkspaceSwitcher`, integrados en la galería. |
+| 2026-09-05 | Fundación visual | Completada | `NThemeProvider`, selector `NTheme`, tema azul marino y Nissi Dark sincronizados mediante tokens semánticos. |
+| 2026-09-05 | Flujos generalizables · Fase 1 | Completada | `NItemPicker<T>` con búsqueda, agrupación, selección y composición genérica. |
 
 ## Fases pendientes
 
@@ -20,9 +22,9 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 6. Administración SaaS | `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner` | Compra/upgrade de módulos, trazabilidad y soporte seguro multi-tenant. |
 | 7. Patrones verticales | `NKanban`, `NScheduler`, `NMapView` | Cubrir CRM, servicio en campo, agenda y logística sin contaminar el núcleo general. |
 
-## Prioridad inmediata: NDataTable server-side
+## Prioridad inmediata: flujos operativos generalizables
 
-La siguiente evolución debe admitir estado controlado de paginación, filtros y ordenamiento, `rowCount`/`pageCount`, indicadores de carga y callbacks remotos. El contrato debe evitar mezclar simultáneamente modelos client-side y server-side de forma implícita.
+La secuencia prioritaria está en [Flujos operativos generalizables](./generalized-workflows-roadmap.md). Terminada la Fase 1 con `NItemPicker<T>`, la siguiente sesión debe desarrollar la Fase 2: `NLineItemEditor<TItem, TLine>`. La evolución server-side de `NDataTable` permanece en backlog hasta completar esta línea prioritaria.
 
 ## Regla de seguridad
 

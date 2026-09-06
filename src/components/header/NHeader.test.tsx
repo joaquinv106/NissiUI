@@ -4,6 +4,7 @@ import { HelpCircle, LogOut } from "lucide-react"
 import { describe, expect, it, vi } from "vitest"
 
 import { NHeader } from "./NHeader"
+import { NThemeProvider } from "../theme"
 
 function renderHeader(header: React.ReactNode) {
   return render(<ChakraProvider value={defaultSystem}>{header}</ChakraProvider>)
@@ -69,6 +70,20 @@ describe("NHeader", () => {
     expect(screen.getAllByText("2").length).toBeGreaterThan(0)
     fireEvent.click(screen.getByRole("button", { name: "Ayuda" }))
     expect(onAction).toHaveBeenCalled()
+  })
+
+  it("renderiza NTheme como botón y permite elegir el tema desde el header", async () => {
+    render(
+      <NThemeProvider theme="nissi">
+        <NHeader showThemeToggle themePresentation="button" />
+      </NThemeProvider>,
+    )
+
+    const trigger = screen.getByRole("button", { name: "Elegir tema. Tema actual: Nissi Dark" })
+    expect(trigger).toHaveTextContent("Nissi Dark")
+    fireEvent.click(trigger)
+    expect(await screen.findByRole("menuitemradio", { name: "Claro" })).toBeInTheDocument()
+    expect(screen.getByRole("menuitemradio", { name: "Nissi Dark" })).toHaveAttribute("aria-checked", "true")
   })
 
   it("abre notificaciones y menú de usuario en portales", async () => {
