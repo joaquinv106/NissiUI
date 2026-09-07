@@ -62,6 +62,7 @@ import { NDataTable, NPageHeader } from "nissi-ui"
 - `npm run typecheck`: valida TypeScript.
 - `npm test`: ejecuta las pruebas una vez.
 - `npm run build`: genera ESM, CommonJS y declaraciones TypeScript en `dist`.
+- `npm run check:package`: valida la API compilada desde consumidores ESM, CommonJS y TypeScript NodeNext.
 - `npm run pack:check`: muestra exactamente qué se incluirá en el paquete npm.
 
 ## Uso en otro proyecto

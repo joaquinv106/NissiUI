@@ -38,9 +38,9 @@ La prioridad del proyecto es desarrollar componentes genéricos capaces de compo
 - TypeScript estricto, Vite 8, Chakra UI 3, TanStack Table 8 y Vitest.
 - npm y `package-lock.json` son la fuente del gestor de paquetes.
 
-Comandos: `npm run dev`, `npm run typecheck`, `npm test`, `npm run build` y `npm run pack:check`.
+Comandos: `npm run dev`, `npm run typecheck`, `npm test`, `npm run build`, `npm run check:package` y `npm run pack:check`.
 
-Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pruebas y `build`.
+Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pruebas, `build` y `check:package`.
 
 ## Estructura relevante
 
@@ -105,6 +105,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `AI_CONTEXT.md`: contrato de integración portable para asistentes de IA y aplicaciones consumidoras.
 - `llms.txt`: índice breve y descubrible del contexto para IA.
 - `CHANGELOG.md`: historial de versiones públicas.
+- `scripts/check-package.mjs`: prueba de consumo de la salida compilada desde ESM, CommonJS y TypeScript NodeNext.
 - `docs/README.md`: índice de documentación.
 - `docs/tables.md`: contrato y ejemplos de tablas.
 - `docs/sidebar.md`: contrato y ejemplos de NSidebar.

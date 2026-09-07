@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguiendo versionado semántico.
 
+## 0.1.1 — 2026-09-07
+
+### Corregido
+
+- Las declaraciones TypeScript usan especificadores ESM explícitos compatibles con `moduleResolution: "Bundler"` y `"NodeNext"`.
+- La publicación ejecuta una prueba de consumo ESM, CommonJS y TypeScript sobre el paquete compilado.
+
 ## 0.1.0 — 2026-09-06
 
 Primera versión pública.
