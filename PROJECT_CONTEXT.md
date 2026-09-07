@@ -106,6 +106,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/dev/FinalPhaseViews.tsx`: seis vistas de catálogo con documentación y ejemplos reactivos de la entrega final.
 - `src/dev/Phase7Views.tsx`: vistas del catálogo y ejemplo POS integrado; no pertenece a la API pública.
 - `src/dev/PanelView.tsx`: catálogo interactivo de `NPanel` alternando `NCheckout` y `NReceipt`.
+- `src/dev/AccessibilityViews.tsx`: laboratorio visual de personalización accesible y guía interactiva para personas nuevas en diseño y desarrollo web.
 - `AI_CONTEXT.md`: contrato de integración portable para asistentes de IA y aplicaciones consumidoras.
 - `llms.txt`: índice breve y descubrible del contexto para IA.
 - `CHANGELOG.md`: historial de versiones públicas.
@@ -126,6 +127,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/cart.md`, `docs/checkout.md`, `docs/receipt.md` y `docs/pos-example.md`: presets y referencia integrada de la Fase 7.
 - `docs/thermal-print.md`: contrato de impresión térmica, aislamiento del DOM y adaptadores locales.
 - `docs/customization.md` y `docs/package-compatibility.md`: slots visuales, sistema Chakra sustituible, subrutas, tree shaking, SSR y build del portal.
+- `docs/accessibility.md`: fundamentos, personalización por capas y lista práctica de accesibilidad para principiantes.
 - `docs/panel.md`: contrato, responsive, foco, posición y composición dinámica de `NPanel`.
 - `docs/ctrl.md`: contrato de atajos por vista, registro, ejecución, conflictos y accesibilidad de `NCtrl`.
 - `docs/facture.md`: alcance, contratos, seguridad, navegación y referencias oficiales de `NFacture`.

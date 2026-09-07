@@ -9,7 +9,7 @@ Este directorio es la fuente de documentación de los componentes antes de gener
 Para integrar la librería mediante un asistente de IA consulta primero [AI_CONTEXT.md](../AI_CONTEXT.md) y el índice [llms.txt](../llms.txt).
 El historial de versiones públicas se mantiene en [CHANGELOG.md](../CHANGELOG.md).
 
-Consulta también [Personalización compatible](./customization.md) y [Empaquetado, tree shaking y SSR](./package-compatibility.md).
+Consulta también [Accesibilidad y personalización desde cero](./accessibility.md), [Personalización compatible](./customization.md) y [Empaquetado, tree shaking y SSR](./package-compatibility.md).
 
 ## Componentes
 
