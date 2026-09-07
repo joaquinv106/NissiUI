@@ -6,6 +6,8 @@
 
 Librería de componentes React reutilizables construidos sobre Chakra UI v3.
 
+Creada y desarrollada por **Lic. Informática Joaquin Villegas Chavez**.
+
 ## Requisitos
 
 - Node.js 20.19 o posterior
@@ -21,6 +23,38 @@ npm run dev
 ```
 
 En Windows PowerShell, si la política de ejecución bloquea `npm.ps1`, usa `npm.cmd install` y `npm.cmd run dev`.
+
+## Inicio inmediato con React + Vite
+
+```bash
+npm create vite@latest mi-aplicacion -- --template react-ts
+cd mi-aplicacion
+npm install
+npm install nissi-ui @chakra-ui/react @emotion/react next-themes
+```
+
+En `src/main.tsx`, instala el proveedor una sola vez:
+
+```tsx
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import { NThemeProvider } from "nissi-ui"
+import App from "./App"
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <NThemeProvider defaultTheme="system">
+      <App />
+    </NThemeProvider>
+  </StrictMode>,
+)
+```
+
+Después cualquier componente se importa desde la raíz del paquete:
+
+```tsx
+import { NDataTable, NPageHeader } from "nissi-ui"
+```
 
 ## Scripts
 
@@ -62,17 +96,42 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - `NModuleRegistry`: catálogo de microsistemas contratados y autorizados.
 - `NWorkspaceSwitcher`: selector de organización, tenant, sucursal o proyecto.
 - `NItemPicker<T>`: selección buscable y agrupable de productos, servicios, personas, archivos o activos.
+- `NLineItemEditor<TItem, TLine>`: edición adaptable de partidas para documentos y flujos operativos de cualquier sector.
+- `NAmountInput`: captura neutral de cantidades, importes, porcentajes o unidades con formato internacional.
+- `NAmountAllocator<TMethod>`: distribución precisa de un total entre métodos o destinos tipados.
+- `NStepFlow<TState>`: flujos de varios pasos con borrador tipado, validación y finalización asíncrona.
+- `NApprovalFlow<TRequest>`: decisiones y trazabilidad adaptables para solicitudes de cualquier sector.
+- `NBalanceSession<TEntry>`: balance de sesiones, movimientos, conteos y diferencias con cierre asíncrono.
+- `NAdjustmentEditor<T>`: correcciones tipadas con comparación del original y motivo auditable.
+- `NDocumentView<TDocument>`: documentos adaptables con metadatos, secciones, acciones e impresión.
+- `NCodeCapture`: captura validada desde teclado, pegado o un proveedor de lector externo.
+- `NSyncStatus`: estado controlado de sincronización, cola, errores y reintentos.
+- `NOfflineBoundary`: continuidad o fallback ante conectividad intermitente.
+- `NCart<TItem, TLine>`: preset de carrito sobre el editor genérico de partidas.
+- `NCheckout<TMethod>`: distribución y confirmación asíncrona de una operación.
+- `NReceipt<TReceipt, TLine>`: comprobante adaptable e imprimible sobre `NDocumentView`.
+- `NPanel`: superficie lateral modal, reactiva y capaz de alternar cualquier componente.
+- Patrones de página: `NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState` y `NConfirmDialog`.
+- Datos escalables: `NDataTable` server-side, `NFilterBar`, `NDateRangePicker`, `NDescriptionList` y `NDetailPanel`.
+- Actividad y dashboards: `NFileUpload`, `NActivityTimeline`, `NNotificationCenter`, `NStatCard`, `NDashboardGrid` y `NChartFrame`.
+- Administración y verticales: `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`, `NKanban`, `NScheduler` y `NMapView`.
 
 Consulta [el catálogo técnico](./docs/README.md), [la identidad visual](./docs/brand.md), [la guía completa de tablas](./docs/tables.md), el [roadmap por fases](./docs/roadmap.md) y el [proyecto prioritario de flujos generalizables](./docs/generalized-workflows-roadmap.md) para ver contratos, ejemplos y trabajo pendiente.
 
 Los asistentes y agentes de IA deben comenzar por [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md), que concentra el objetivo, la arquitectura, las convenciones y las rutas relevantes del proyecto.
 
+Para integrar el paquete desde otra aplicación o generar código con cualquier asistente de IA, entrega también [`AI_CONTEXT.md`](./AI_CONTEXT.md). El archivo [`llms.txt`](./llms.txt) funciona como índice breve y descubrible de ese contexto.
+
+## Autor
+
+**Lic. Informática Joaquin Villegas Chavez** — creador y desarrollador de Nissi UI.
+
 ## Publicación
 
-Antes de la primera publicación, completa en `package.json` la metadata del repositorio y confirma que el nombre `nissi-ui` siga disponible. Después:
+El paquete usa versionado semántico. Para preparar una nueva versión, actualiza el changelog y la versión, valida el contenido del paquete y publícalo con una cuenta autorizada:
 
 ```bash
 npm login
 npm run pack:check
-npm publish
+npm publish --access public
 ```

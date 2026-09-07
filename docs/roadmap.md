@@ -10,21 +10,22 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 2026-09-05 | Plataforma modular | Completada | `NAppShell`, `NModuleRegistry` y `NWorkspaceSwitcher`, integrados en la galería. |
 | 2026-09-05 | Fundación visual | Completada | `NThemeProvider`, selector `NTheme`, tema azul marino y Nissi Dark sincronizados mediante tokens semánticos. |
 | 2026-09-05 | Flujos generalizables · Fase 1 | Completada | `NItemPicker<T>` con búsqueda, agrupación, selección y composición genérica. |
+| 2026-09-06 | Flujos generalizables · Fase 2 | Completada | `NLineItemEditor<TItem, TLine>` con altas adaptables, campos editables, validación, orden, eliminación y estado controlado/no controlado. |
+| 2026-09-06 | Flujos generalizables · Fase 3 | Completada | `NAmountInput` y `NAmountAllocator<TMethod>` con formatos internacionales, precisión, límites, distribución, resumen y validación adaptable. |
+| 2026-09-06 | Flujos generalizables · Fase 4 | Completada | `NStepFlow<TState>` y `NApprovalFlow<TRequest>` con estado tipado, validación asíncrona, decisiones, historial y protección ante concurrencia. |
+| 2026-09-06 | Flujos generalizables · Fase 5 | Completada | `NBalanceSession<TEntry>`, `NAdjustmentEditor<T>` y `NDocumentView<TDocument>` para cierres, correcciones auditables y documentos imprimibles. |
+| 2026-09-06 | Flujos generalizables · Fase 6 | Completada | `NCodeCapture`, `NSyncStatus` y `NOfflineBoundary` para captura multicanal y experiencias resilientes con conectividad intermitente. |
+| 2026-09-06 | Flujos generalizables · Fase 7 | Completada | `NCart<TItem, TLine>`, `NCheckout<TMethod>`, `NReceipt<TReceipt, TLine>` y ejemplo POS como composiciones delgadas. |
+| 2026-09-06 | Estados y navegación · Plus | Completada | `NPanel` lateral, modal, responsive, reactivo y dinámico, integrado con la posición de `NSidebar` mediante `NAppShell`. |
+| 2026-09-06 | Fases 2–7 · Entrega final consolidada | Completada | Estados de página, datos server-side, actividad, dashboards, administración SaaS y patrones verticales; 22 componentes/patrones públicos y evolución de `NDataTable`. |
 
 ## Fases pendientes
 
-| Fase | Componentes/cambio | Para qué sirve |
-| --- | --- | --- |
-| 2. Estados y navegación de página | `NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState`, `NConfirmDialog` | Estandarizar títulos, contexto, carga, errores, vacíos y confirmaciones en todos los microsistemas. |
-| 3. Datos server-side | Evolucionar `NDataTable`; `NFilterBar`, `NDateRangePicker`, `NDetailPanel`, `NDescriptionList` | Paginación, filtros y ordenamiento remotos; exploración de grandes volúmenes sin descargar todo al navegador. |
-| 4. Flujos operativos | `NStepper`/`NWizard`, `NFileUpload`, `NActivityTimeline`, `NNotificationCenter` | Altas complejas, adjuntos, auditoría y tareas asincrónicas consistentes. |
-| 5. Dashboards | `NStatCard`, `NDashboardGrid`, adaptadores de gráficas | KPIs y paneles configurables con estados responsive y accesibles. |
-| 6. Administración SaaS | `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner` | Compra/upgrade de módulos, trazabilidad y soporte seguro multi-tenant. |
-| 7. Patrones verticales | `NKanban`, `NScheduler`, `NMapView` | Cubrir CRM, servicio en campo, agenda y logística sin contaminar el núcleo general. |
+No quedan fases de componentes pendientes en el alcance definido. La siguiente etapa es estabilización para publicación: pruebas visuales multi-tema, compatibilidad de consumidores React 18/19, versionado semántico y metadata npm.
 
-## Prioridad inmediata: flujos operativos generalizables
+## Prioridad inmediata: estabilización
 
-La secuencia prioritaria está en [Flujos operativos generalizables](./generalized-workflows-roadmap.md). Terminada la Fase 1 con `NItemPicker<T>`, la siguiente sesión debe desarrollar la Fase 2: `NLineItemEditor<TItem, TLine>`. La evolución server-side de `NDataTable` permanece en backlog hasta completar esta línea prioritaria.
+La secuencia de [Flujos operativos generalizables](./generalized-workflows-roadmap.md) y las seis fases posteriores quedaron completadas. El contrato de la entrega consolidada está en [Fase final](./final-components.md).
 
 ## Regla de seguridad
 

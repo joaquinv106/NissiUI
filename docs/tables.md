@@ -175,3 +175,25 @@ Las utilidades de Excel, PDF, copia e impresión permanecen en `exporters.ts`. `
 ## Modo claro y oscuro
 
 Todos los fondos, textos, bordes, estados seleccionados y celdas pegajosas utilizan tokens semánticos de Chakra UI, por lo que responden automáticamente a la clase de color configurada por la aplicación consumidora. El demo incluye `next-themes` y un botón para alternar entre modo claro y oscuro.
+## Datos controlados por servidor
+
+`NTable` y `NDataTable` aceptan `server` cuando el volumen requiere paginación, búsqueda, filtro y orden remotos. El modo es completamente controlado: `query` describe la consulta visible, `rowCount` informa el total real y `onQueryChange` solicita el siguiente estado. `config.data` contiene únicamente la página resuelta.
+
+```tsx
+const [query, setQuery] = useState<NTableServerQuery>({
+  pageIndex: 0,
+  pageSize: 20,
+  sorting: [],
+  search: "",
+  filterColumn: "",
+  filterValue: "",
+})
+
+<NDataTable
+  server={{ rowCount: result.total, query, loading, onQueryChange: setQuery }}
+  config={{ headers, data: result.rows }}
+/>
+```
+
+En este modo la tabla no vuelve a filtrar ni ordenar la página en el cliente. El consumidor debe cancelar o ignorar respuestas obsoletas, aplicar debounce si lo necesita y conservar `getRowId` estable entre páginas.
+`NDataTable` desactiva el reordenamiento de filas por defecto en modo servidor, porque una sola página no representa el orden global; puede habilitarse explícitamente si la API define esa operación.

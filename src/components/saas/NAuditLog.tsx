@@ -1,0 +1,9 @@
+import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/react"
+
+import type { NAuditLogLabels, NAuditLogProps } from "./types"
+
+export const defaultNAuditLogLabels: NAuditLogLabels = { region: "Registro de auditoría", empty: "No hay eventos de auditoría.", severity: { info: "Información", warning: "Advertencia", critical: "Crítico" } }
+export function NAuditLog({ entries, title, labels: custom, "aria-label": ariaLabel }: NAuditLogProps) {
+  const labels = { ...defaultNAuditLogLabels, ...custom, severity: { ...defaultNAuditLogLabels.severity, ...custom?.severity } }
+  return <Stack as="section" aria-label={ariaLabel ?? labels.region} gap="0" borderWidth="1px" borderColor="border" rounded="lg" overflow="hidden">{title ? <Box p="4" bg="bg.subtle" borderBottomWidth="1px" borderColor="border"><Text fontWeight="bold">{title}</Text></Box> : null}{entries.length ? <Stack as="ol" listStyleType="none" m="0" p="0" gap="0">{entries.map((entry) => <Flex as="li" key={entry.id} p="4" gap="4" direction={{ base: "column", md: "row" }} borderBottomWidth="1px" borderColor="border" _last={{ borderBottomWidth: "0" }}><Stack gap="1" flex="1" minW="0"><Flex align="center" gap="2"><Text fontWeight="semibold">{entry.action}</Text>{entry.severity && entry.severity !== "info" ? <Badge colorPalette={entry.severity === "critical" ? "red" : "orange"}>{labels.severity[entry.severity]}</Badge> : null}</Flex><Text textStyle="sm" color="fg.muted">{entry.actor}{entry.target ? <> · {entry.target}</> : null}</Text>{entry.metadata}</Stack><Text textStyle="sm" color="fg.muted" flexShrink="0">{entry.timestamp}</Text></Flex>)}</Stack> : <Text color="fg.muted" p="5" textAlign="center">{labels.empty}</Text>}</Stack>
+}

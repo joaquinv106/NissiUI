@@ -4,6 +4,7 @@ import { Card, Heading, Stack, Text } from "@chakra-ui/react"
 import {
   type ColumnDef,
   type ColumnOrderState,
+  type PaginationState,
   type RowSelectionState,
   type SortingState,
   type VisibilityState,
@@ -22,7 +23,7 @@ import { TableStackView } from "./internal/TableStackView"
 import { TableToolbar } from "./internal/TableToolbar"
 import { resolveNTableLabels } from "./labels"
 import { usePermissions } from "../permissions"
-import type { NTableExportOptions, NTableProps, NTableRow } from "./types"
+import type { NTableExportOptions, NTableProps, NTableRow, NTableServerOptions } from "./types"
 import {
   defaultRowId,
   hasStableDefaultRowId,
@@ -62,6 +63,7 @@ export function NTable<T extends NTableRow>({
   useTanStack = false,
   columnGroups = false,
   pagination = false,
+  server,
   selectable = false,
   selectionMode = "multiple",
   actions = [],
@@ -84,10 +86,14 @@ export function NTable<T extends NTableRow>({
     () => actions.filter((action) => !action.requiredPermission || can(action.requiredPermission, action.permissionMode)),
     [actions, can],
   )
-  const [search, setSearch] = useState("")
-  const [filterColumn, setFilterColumn] = useState("")
-  const [filterValue, setFilterValue] = useState("")
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [localSearch, setLocalSearch] = useState("")
+  const [localFilterColumn, setLocalFilterColumn] = useState("")
+  const [localFilterValue, setLocalFilterValue] = useState("")
+  const [localSorting, setLocalSorting] = useState<SortingState>([])
+  const [localPagination, setLocalPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: typeof pagination === "object" ? pagination.pageSize ?? 5 : 5,
+  })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [visibility, setVisibility] = useState<VisibilityState>(() =>
     Object.fromEntries(config.headers.filter((column) => column.hidden).map((column) => [column.key, false])),
@@ -100,6 +106,17 @@ export function NTable<T extends NTableRow>({
   )
   const warnedAboutRowId = useRef(false)
   const paginationOptions = typeof pagination === "object" ? pagination : {}
+  const search = server?.query.search ?? localSearch
+  const filterColumn = server?.query.filterColumn ?? localFilterColumn
+  const filterValue = server?.query.filterValue ?? localFilterValue
+  const sorting: SortingState = server?.query.sorting ?? localSorting
+  const paginationState: PaginationState = server
+    ? { pageIndex: server.query.pageIndex, pageSize: server.query.pageSize }
+    : localPagination
+  const emitServerQuery = useCallback((change: Partial<NTableServerOptions["query"]>) => {
+    if (!server) return
+    server.onQueryChange({ ...server.query, ...change })
+  }, [server])
   const exportConfig = normalizeExportOptions(exportOptions)
   const resolvedGetRowId = useCallback(
     (row: T, index: number) => getRowId?.(row, index) ?? defaultRowId(row, index),
@@ -163,15 +180,15 @@ export function NTable<T extends NTableRow>({
   }, [config.data, effectiveRowOrder, reorderableRows, rowEntries])
 
   const filteredData = useMemo(
-    () => orderedData.filter((row) => {
+    () => (server ? orderedData : orderedData.filter((row) => {
       const matchesSearch = rowMatchesSearch(row, config.headers, search)
       const matchesField =
         !filterColumn ||
         !filterValue.trim() ||
         valueToText(row[filterColumn]).toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
       return matchesSearch && matchesField
-    }),
-    [config.headers, filterColumn, filterValue, orderedData, search],
+    })),
+    [config.headers, filterColumn, filterValue, orderedData, search, server],
   )
 
   const columns = useMemo<ColumnDef<T>[]>(
@@ -189,18 +206,26 @@ export function NTable<T extends NTableRow>({
   const table = useReactTable({
     data: filteredData,
     columns,
-    state: { sorting, rowSelection, columnVisibility: visibility, columnOrder },
-    initialState: { pagination: { pageIndex: 0, pageSize: paginationOptions.pageSize ?? 5 } },
+    state: { sorting, pagination: paginationState, rowSelection, columnVisibility: visibility, columnOrder },
     enableRowSelection: selectable,
     enableMultiRowSelection: selectionMode === "multiple",
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      const next = typeof updater === "function" ? updater(sorting) : updater
+      if (server) emitServerQuery({ sorting: next, pageIndex: 0 })
+      else setLocalSorting(next)
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === "function" ? updater(paginationState) : updater
+      if (server) emitServerQuery(next)
+      else setLocalPagination(next)
+    },
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setVisibility,
     onColumnOrderChange: setColumnOrder,
     getRowId: resolvedGetRowId,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    ...(pagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    ...(server ? { manualFiltering: true, manualSorting: true, manualPagination: true, rowCount: server.rowCount } : { getSortedRowModel: getSortedRowModel() }),
+    ...(pagination && !server ? { getPaginationRowModel: getPaginationRowModel() } : {}),
   })
 
   const visibleColumns = table
@@ -236,13 +261,30 @@ export function NTable<T extends NTableRow>({
     const nextRows = nextOrder.map((id) => rowsById.get(id)).filter((row): row is T => Boolean(row))
 
     setRowOrder(nextOrder)
-    setSorting([])
+    if (server) emitServerQuery({ sorting: [] })
+    else setLocalSorting([])
     onRowOrderChange?.(nextRows)
-  }, [effectiveRowOrder, onRowOrderChange, rowEntries, table])
+  }, [effectiveRowOrder, emitServerQuery, onRowOrderChange, rowEntries, server, table])
 
   useEffect(() => {
-    table.setPageIndex(0)
-  }, [filterColumn, filterValue, search, table])
+    if (!server) table.setPageIndex(0)
+  }, [filterColumn, filterValue, search, server, table])
+
+  const handleSearchChange = (value: string) => {
+    if (server) emitServerQuery({ search: value, pageIndex: 0 })
+    else setLocalSearch(value)
+  }
+  const handleFilterColumnChange = (value: string) => {
+    if (server) emitServerQuery({ filterColumn: value, filterValue: "", pageIndex: 0 })
+    else {
+      setLocalFilterColumn(value)
+      setLocalFilterValue("")
+    }
+  }
+  const handleFilterValueChange = (value: string) => {
+    if (server) emitServerQuery({ filterValue: value, pageIndex: 0 })
+    else setLocalFilterValue(value)
+  }
 
   useEffect(() => {
     onSelectionChange?.(selectedRows)
@@ -262,7 +304,7 @@ export function NTable<T extends NTableRow>({
   }
 
   const content = (
-    <Stack gap="4" width="full">
+    <Stack gap="4" width="full" aria-busy={server?.loading || undefined}>
       {title || subtitle ? (
         <Stack gap="1">
           {title ? <Heading as="h2" size="lg">{title}</Heading> : null}
@@ -285,9 +327,9 @@ export function NTable<T extends NTableRow>({
           filterValue={filterValue}
           title={title ?? labels.defaultTitle}
           labels={labels}
-          onSearchChange={setSearch}
-          onFilterColumnChange={setFilterColumn}
-          onFilterValueChange={setFilterValue}
+          onSearchChange={handleSearchChange}
+          onFilterColumnChange={handleFilterColumnChange}
+          onFilterValueChange={handleFilterValueChange}
         />
       ) : null}
 

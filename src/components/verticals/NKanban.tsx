@@ -1,0 +1,15 @@
+"use client"
+
+import { Badge, Box, Card, Flex, HStack, IconButton, Stack, Text } from "@chakra-ui/react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useMemo, useState } from "react"
+
+import type { NKanbanProps } from "./types"
+
+export const defaultNKanbanLabels = { board: "Tablero Kanban", movePrevious: (card: string) => `Mover ${card} a la columna anterior`, moveNext: (card: string) => `Mover ${card} a la columna siguiente`, limit: (count: number, limit: number) => `${count} de ${limit}` }
+export function NKanban({ columns, onMove, renderCardActions, labels: custom }: NKanbanProps) {
+  const labels = useMemo(() => ({ ...defaultNKanbanLabels, ...custom }), [custom])
+  const [dragged, setDragged] = useState<{ cardId: string; columnId: string } | null>(null)
+  const move = (cardId: string, fromColumnId: string, toColumnId: string, toIndex: number) => { if (fromColumnId !== toColumnId || toIndex >= 0) onMove?.({ cardId, fromColumnId, toColumnId, toIndex }) }
+  return <Flex role="region" aria-label={labels.board} gap="4" overflowX="auto" align="start" pb="2">{columns.map((column, columnIndex) => <Stack key={column.id} minW={{ base: "17rem", md: "20rem" }} flex="1 0 20rem" maxW="26rem" bg="bg.subtle" borderWidth="1px" borderColor="border" rounded="lg" p="3" onDragOver={(event) => event.preventDefault()} onDrop={() => { if (dragged) move(dragged.cardId, dragged.columnId, column.id, column.cards.length); setDragged(null) }}><Flex justify="space-between" align="center" gap="2"><Text fontWeight="bold">{column.title}</Text><Badge colorPalette={column.colorPalette ?? "gray"}>{column.limit ? labels.limit(column.cards.length, column.limit) : column.cards.length}</Badge></Flex><Stack gap="3">{column.cards.map((card, cardIndex) => <Card.Root key={card.id} draggable={Boolean(onMove)} cursor={onMove ? "grab" : undefined} onDragStart={() => setDragged({ cardId: card.id, columnId: column.id })} onDragEnd={() => setDragged(null)} bg="bg.panel"><Card.Body p="3"><Stack gap="2"><Flex justify="space-between" gap="2"><Text fontWeight="semibold">{card.title}</Text>{renderCardActions?.(card, column)}</Flex>{card.description ? <Text textStyle="sm" color="fg.muted">{card.description}</Text> : null}{card.content}{card.meta ? <Box textStyle="xs" color="fg.muted">{card.meta}</Box> : null}{onMove ? <HStack justify="end" gap="1"><IconButton size="xs" variant="ghost" aria-label={labels.movePrevious(String(card.title))} disabled={columnIndex === 0} onClick={() => move(card.id, column.id, columns[columnIndex - 1]?.id ?? column.id, 0)}><ChevronLeft size={15} /></IconButton><IconButton size="xs" variant="ghost" aria-label={labels.moveNext(String(card.title))} disabled={columnIndex === columns.length - 1} onClick={() => move(card.id, column.id, columns[columnIndex + 1]?.id ?? column.id, 0)}><ChevronRight size={15} /></IconButton></HStack> : null}</Stack></Card.Body></Card.Root>)}</Stack></Stack>)}</Flex>
+}

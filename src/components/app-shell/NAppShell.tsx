@@ -4,6 +4,7 @@ import { Box, Flex, Link } from "@chakra-ui/react"
 import { useId } from "react"
 
 import { defaultNAppShellLabels } from "./labels"
+import { NAppShellLayoutProvider } from "./internal/NAppShellLayoutContext"
 import type { NAppShellProps } from "./types"
 
 const paddingByDensity = {
@@ -48,44 +49,46 @@ export function NAppShell({
   ) : null
 
   return (
-    <Box minH={minHeight} bg="bg" color="fg" colorPalette={colorPalette} transition="background 0.2s ease, color 0.2s ease">
-      <Link
-        href={`#${contentId}`}
-        position="fixed"
-        top="2"
-        insetInlineStart="2"
-        zIndex="max"
-        px="3"
-        py="2"
-        rounded="md"
-        bg="colorPalette.solid"
-        color="colorPalette.contrast"
-        transform="translateY(-150%)"
-        _focusVisible={{ transform: "translateY(0)", outlineWidth: "2px", outlineColor: "colorPalette.focusRing" }}
-      >
-        {labels.skipToContent}
-      </Link>
+    <NAppShellLayoutProvider sidebarPosition={sidebarPosition}>
+      <Box minH={minHeight} bg="bg" color="fg" colorPalette={colorPalette} transition="background 0.2s ease, color 0.2s ease">
+        <Link
+          href={`#${contentId}`}
+          position="fixed"
+          top="2"
+          insetInlineStart="2"
+          zIndex="max"
+          px="3"
+          py="2"
+          rounded="md"
+          bg="colorPalette.solid"
+          color="colorPalette.contrast"
+          transform="translateY(-150%)"
+          _focusVisible={{ transform: "translateY(0)", outlineWidth: "2px", outlineColor: "colorPalette.focusRing" }}
+        >
+          {labels.skipToContent}
+        </Link>
 
-      <Flex minH={minHeight} align="stretch">
-        {sidebarPosition === "start" ? sidebarRegion : null}
-        <Flex flex="1" minW="0" direction="column">
-          {header}
-          <Box
-            as="main"
-            id={contentId}
-            aria-label={labels.contentRegion}
-            flex="1"
-            width="full"
-            maxW={contentMaxWidth === "full" ? undefined : contentMaxWidth}
-            mx={contentMaxWidth === "full" ? undefined : "auto"}
-            p={paddingByDensity[contentPadding]}
-          >
-            {children}
-          </Box>
-          {footer ? <Box as="footer">{footer}</Box> : null}
+        <Flex minH={minHeight} align="stretch">
+          {sidebarPosition === "start" ? sidebarRegion : null}
+          <Flex flex="1" minW="0" direction="column">
+            {header}
+            <Box
+              as="main"
+              id={contentId}
+              aria-label={labels.contentRegion}
+              flex="1"
+              width="full"
+              maxW={contentMaxWidth === "full" ? undefined : contentMaxWidth}
+              mx={contentMaxWidth === "full" ? undefined : "auto"}
+              p={paddingByDensity[contentPadding]}
+            >
+              {children}
+            </Box>
+            {footer ? <Box as="footer">{footer}</Box> : null}
+          </Flex>
+          {sidebarPosition === "end" ? sidebarRegion : null}
         </Flex>
-        {sidebarPosition === "end" ? sidebarRegion : null}
-      </Flex>
-    </Box>
+      </Box>
+    </NAppShellLayoutProvider>
   )
 }

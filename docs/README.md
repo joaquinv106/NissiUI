@@ -6,6 +6,9 @@
 
 Este directorio es la fuente de documentación de los componentes antes de generar el sitio oficial. Cada componente nuevo debe registrar aquí su API pública, ejemplos, accesibilidad, decisiones internas, dependencias y cambios incompatibles.
 
+Para integrar la librería mediante un asistente de IA consulta primero [AI_CONTEXT.md](../AI_CONTEXT.md) y el índice [llms.txt](../llms.txt).
+El historial de versiones públicas se mantiene en [CHANGELOG.md](../CHANGELOG.md).
+
 ## Componentes
 
 | Componente | Estado | Documentación | Pruebas |
@@ -21,6 +24,28 @@ Este directorio es la fuente de documentación de los componentes antes de gener
 | `NWorkspaceSwitcher` | Plataforma | [Selector de workspace](./workspace-switcher.md) | `src/components/workspace-switcher/NWorkspaceSwitcher.test.tsx` |
 | `NTheme` / `NThemeProvider` | Fundación visual | [Temas](./theme.md) | `src/components/theme/NTheme.test.tsx` |
 | `NItemPicker<T>` | Flujos generalizables · Fase 1 | [Selector de elementos](./item-picker.md) | `src/components/item-picker/NItemPicker.test.tsx` |
+| `NLineItemEditor<TItem, TLine>` | Flujos generalizables · Fase 2 | [Editor de partidas](./line-item-editor.md) | `src/components/line-item-editor/NLineItemEditor.test.tsx` |
+| `NAmountInput` | Flujos generalizables · Fase 3 | [Entrada de valores](./amount-input.md) | `src/components/amount-input/NAmountInput.test.tsx` |
+| `NAmountAllocator<TMethod>` | Flujos generalizables · Fase 3 | [Distribución de valores](./amount-allocator.md) | `src/components/amount-allocator/NAmountAllocator.test.tsx` |
+| `NStepFlow<TState>` | Flujos generalizables · Fase 4 | [Flujos por pasos](./step-flow.md) | `src/components/step-flow/NStepFlow.test.tsx` |
+| `NApprovalFlow<TRequest>` | Flujos generalizables · Fase 4 | [Flujos de aprobación](./approval-flow.md) | `src/components/approval-flow/NApprovalFlow.test.tsx` |
+| `NBalanceSession<TEntry>` | Flujos generalizables · Fase 5 | [Sesiones de balance](./balance-session.md) | `src/components/balance-session/NBalanceSession.test.tsx` |
+| `NAdjustmentEditor<T>` | Flujos generalizables · Fase 5 | [Editor de ajustes](./adjustment-editor.md) | `src/components/adjustment-editor/NAdjustmentEditor.test.tsx` |
+| `NDocumentView<T>` | Flujos generalizables · Fase 5 | [Vista de documentos](./document-view.md) | `src/components/document-view/NDocumentView.test.tsx` |
+| `NCodeCapture` | Flujos generalizables · Fase 6 | [Captura de códigos](./code-capture.md) | `src/components/code-capture/NCodeCapture.test.tsx` |
+| `NSyncStatus` | Flujos generalizables · Fase 6 | [Estado de sincronización](./sync-status.md) | `src/components/sync-status/NSyncStatus.test.tsx` |
+| `NOfflineBoundary` | Flujos generalizables · Fase 6 | [Conectividad intermitente](./offline-boundary.md) | `src/components/offline-boundary/NOfflineBoundary.test.tsx` |
+| `NCart<TItem, TLine>` | Flujos generalizables · Fase 7 | [Carrito](./cart.md) | `src/components/cart/NCart.test.tsx` |
+| `NCheckout<TMethod>` | Flujos generalizables · Fase 7 | [Finalización](./checkout.md) | `src/components/checkout/NCheckout.test.tsx` |
+| `NReceipt<TReceipt, TLine>` | Flujos generalizables · Fase 7 | [Recibo](./receipt.md) | `src/components/receipt/NReceipt.test.tsx` |
+| Ejemplo POS integrado | Flujos generalizables · Fase 7 | [Integración POS](./pos-example.md) | `src/dev/Phase7Views.test.tsx` |
+| `NPanel` | Estados y navegación · Plus | [Panel lateral](./panel.md) | `src/components/panel/NPanel.test.tsx` |
+| Estados y navegación (`NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState`, `NConfirmDialog`) | Fase final | [Fase final](./final-components.md) | `src/components/page/page.test.tsx` |
+| Datos (`NFilterBar`, `NDateRangePicker`, `NDescriptionList`, `NDetailPanel`) | Fase final | [Fase final](./final-components.md) | `src/components/data-patterns/data-patterns.test.tsx` |
+| Actividad (`NFileUpload`, `NActivityTimeline`, `NNotificationCenter`) | Fase final | [Fase final](./final-components.md) | `src/components/activity/activity.test.tsx` |
+| Dashboard (`NStatCard`, `NDashboardGrid`, `NChartFrame`) | Fase final | [Fase final](./final-components.md) | `src/components/dashboard/dashboard.test.tsx` |
+| SaaS (`NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`) | Fase final | [Fase final](./final-components.md) | `src/components/saas/saas.test.tsx` |
+| Verticales (`NKanban`, `NScheduler`, `NMapView`) | Fase final | [Fase final](./final-components.md) | `src/components/verticals/verticals.test.tsx` |
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 

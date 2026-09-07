@@ -23,7 +23,7 @@ export function NDataTable<T extends NTableRow>({
   filterable = true,
   columnVisibility = true,
   reorderableColumns = true,
-  reorderableRows = true,
+  reorderableRows,
   exportOptions = true,
   defaultActions = true,
   confirmDelete = true,
@@ -35,6 +35,7 @@ export function NDataTable<T extends NTableRow>({
   onEdit,
   onDelete,
   getRowId,
+  server,
   ...tableProps
 }: NDataTableProps<T>) {
   const labels = useMemo(() => resolveNTableLabels(customLabels), [customLabels])
@@ -108,12 +109,13 @@ export function NDataTable<T extends NTableRow>({
         filterable={filterable}
         columnVisibility={columnVisibility}
         reorderableColumns={reorderableColumns}
-        reorderableRows={reorderableRows}
+        reorderableRows={reorderableRows ?? !server}
         exportOptions={exportOptions}
         actions={[...builtInActions, ...actions]}
         labels={customLabels}
         getRowId={getRowId}
         onRowOrderChange={updateRowOrder}
+        server={server}
         useTanStack
       />
       <EditRowDialog

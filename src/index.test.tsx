@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NAppShell, NDataTable, NItemPicker, NModuleRegistry, NPermissionsProvider, NTable, NTheme, NThemeProvider, NWorkspaceSwitcher, formatTableValue, nissiSystem, useNTheme } from "./index"
+import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NWorkspaceSwitcher, formatTableValue, nissiSystem, useNTheme } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -19,6 +19,46 @@ describe("API pública de tablas", () => {
 
   it("exporta el selector genérico de elementos", () => {
     expect(NItemPicker).toBeTypeOf("function")
+  })
+
+  it("exporta el editor genérico de partidas", () => {
+    expect(NLineItemEditor).toBeTypeOf("function")
+  })
+
+  it("exporta las primitivas de valores y distribución", () => {
+    expect(NAmountInput).toBeTypeOf("function")
+    expect(NAmountAllocator).toBeTypeOf("function")
+  })
+
+  it("exporta los patrones de pasos y aprobaciones", () => {
+    expect(NStepFlow).toBeTypeOf("function")
+    expect(NApprovalFlow).toBeTypeOf("function")
+  })
+
+  it("exporta los patrones de operación y documentos", () => {
+    expect(NBalanceSession).toBeTypeOf("function")
+    expect(NAdjustmentEditor).toBeTypeOf("function")
+    expect(NDocumentView).toBeTypeOf("function")
+  })
+
+  it("exporta las primitivas de captura y resiliencia", () => {
+    expect(NCodeCapture).toBeTypeOf("function")
+    expect(NSyncStatus).toBeTypeOf("function")
+    expect(NOfflineBoundary).toBeTypeOf("function")
+  })
+
+  it("exporta los presets POS de composición", () => {
+    expect(NCart).toBeTypeOf("function")
+    expect(NCheckout).toBeTypeOf("function")
+    expect(NReceipt).toBeTypeOf("function")
+  })
+
+  it("exporta el panel lateral reactivo", () => {
+    expect(NPanel).toBeTypeOf("function")
+  })
+
+  it("exporta la fase final consolidada", () => {
+    ;[NPageHeader, NBreadcrumbs, NAsyncState, NEmptyState, NConfirmDialog, NFilterBar, NDateRangePicker, NDetailPanel, NDescriptionList, NFileUpload, NActivityTimeline, NNotificationCenter, NStatCard, NDashboardGrid, NChartFrame, NSubscriptionGate, NPlanComparison, NAuditLog, NImpersonationBanner, NKanban, NScheduler, NMapView].forEach((component) => expect(component).toBeTypeOf("function"))
   })
 
   it("exporta la capa pública de temas", () => {

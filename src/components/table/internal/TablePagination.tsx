@@ -14,6 +14,8 @@ interface TablePaginationProps<T extends NTableRow> {
 /** Controles de paginación: tamaño de página, estado "Página X de Y" y navegación. */
 export function TablePagination<T extends NTableRow>({ table, options, labels }: TablePaginationProps<T>) {
   if (table.getPageCount() === 0) return null
+  const currentPageSize = table.getState().pagination.pageSize
+  const pageSizeOptions = Array.from(new Set([...(options.pageSizeOptions ?? [5, 10, 20, 50]), currentPageSize])).sort((a, b) => a - b)
 
   return (
     <Flex justify="space-between" align={{ base: "stretch", md: "center" }} gap="3" direction={{ base: "column", md: "row" }}>
@@ -25,7 +27,7 @@ export function TablePagination<T extends NTableRow>({ table, options, labels }:
             value={table.getState().pagination.pageSize}
             onChange={(event) => table.setPageSize(Number(event.target.value))}
           >
-            {(options.pageSizeOptions ?? [5, 10, 20, 50]).map((value) => <option key={value} value={value}>{value}</option>)}
+            {pageSizeOptions.map((value) => <option key={value} value={value}>{value}</option>)}
           </NativeSelect.Field>
           <NativeSelect.Indicator />
         </NativeSelect.Root>

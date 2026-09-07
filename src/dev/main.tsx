@@ -4,10 +4,12 @@ import {
   Button,
   Card,
   Code,
+  Field,
   Flex,
   Heading,
   HStack,
   Image,
+  Input,
   SimpleGrid,
   Stack,
   Text,
@@ -18,29 +20,42 @@ import {
   Blocks,
   Building2,
   Check,
+  ChartPie,
   CircleDollarSign,
   ClipboardList,
+  CloudOff,
+  CreditCard,
   Database,
   Home,
   Layers3,
   LayoutDashboard,
+  ListPlus,
   LogOut,
   Moon,
   PanelLeft,
+  PanelRight,
   PanelTop,
   PackageCheck,
   Palette,
+  RefreshCw,
+  ReceiptText,
+  ScanLine,
   Settings,
   ShieldCheck,
   Sparkles,
+  Store,
+  ShoppingCart,
   TableProperties,
   Users,
 } from "lucide-react"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
 
-import { NAppShell, NDataTable, NForm, NHeader, NItemPicker, NModuleRegistry, NPermissionGate, NPermissionsProvider, NSidebar, NTable, NTheme, NWorkspaceSwitcher, useNTheme, type NFormConfig, type NModuleDefinition, type NSidebarItem, type NTableConfig, type NWorkspace } from "../index"
+import { NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NBalanceSession, NCodeCapture, NDataTable, NDocumentView, NForm, NHeader, NItemPicker, NLineItemEditor, NModuleRegistry, NOfflineBoundary, NPermissionGate, NPermissionsProvider, NSidebar, NStepFlow, NSyncStatus, NTable, NTheme, NWorkspaceSwitcher, useNTheme, type NAdjustmentField, type NAmountAllocation, type NApprovalHistoryEntry, type NApprovalStatus, type NDocumentAction, type NFormConfig, type NLineItemField, type NModuleDefinition, type NSidebarItem, type NStepFlowStep, type NSyncState, type NTableConfig, type NWorkspace } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
+import { PanelView } from "./PanelView"
+import { CartView, CheckoutView, PosExampleView, ReceiptView } from "./Phase7Views"
+import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatternsView, SaasPatternsView, VerticalPatternsView } from "./FinalPhaseViews"
 import { DemoProvider } from "./provider"
 
 type Product = {
@@ -150,7 +165,7 @@ const employeeFormConfig: NFormConfig<EmployeeFormValues> = {
 }
 
 
-type DemoView = "overview" | "theme" | "item-picker" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions"
+type DemoView = "overview" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "pos-example" | "panel" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions"
 type DemoNavigationData = { view?: DemoView }
 
 const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
@@ -162,6 +177,28 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
     children: [
       { id: "theme", label: "NTheme", icon: <Palette size={17} />, badge: "Nuevo", data: { view: "theme" } },
       { id: "item-picker", label: "NItemPicker", icon: <PackageCheck size={17} />, badge: "Nuevo", data: { view: "item-picker" } },
+      { id: "line-item-editor", label: "NLineItemEditor", icon: <ListPlus size={17} />, badge: "Nuevo", data: { view: "line-item-editor" } },
+      { id: "amount-input", label: "NAmountInput", icon: <CircleDollarSign size={17} />, badge: "Nuevo", data: { view: "amount-input" } },
+      { id: "amount-allocator", label: "NAmountAllocator", icon: <ChartPie size={17} />, badge: "Nuevo", data: { view: "amount-allocator" } },
+      { id: "step-flow", label: "NStepFlow", icon: <ListPlus size={17} />, badge: "Nuevo", data: { view: "step-flow" } },
+      { id: "approval-flow", label: "NApprovalFlow", icon: <ShieldCheck size={17} />, badge: "Nuevo", data: { view: "approval-flow" } },
+      { id: "balance-session", label: "NBalanceSession", icon: <CircleDollarSign size={17} />, badge: "Nuevo", data: { view: "balance-session" } },
+      { id: "adjustment-editor", label: "NAdjustmentEditor", icon: <ListPlus size={17} />, badge: "Nuevo", data: { view: "adjustment-editor" } },
+      { id: "document-view", label: "NDocumentView", icon: <ClipboardList size={17} />, badge: "Nuevo", data: { view: "document-view" } },
+      { id: "code-capture", label: "NCodeCapture", icon: <ScanLine size={17} />, badge: "Nuevo", data: { view: "code-capture" } },
+      { id: "sync-status", label: "NSyncStatus", icon: <RefreshCw size={17} />, badge: "Nuevo", data: { view: "sync-status" } },
+      { id: "offline-boundary", label: "NOfflineBoundary", icon: <CloudOff size={17} />, badge: "Nuevo", data: { view: "offline-boundary" } },
+      { id: "cart", label: "NCart", icon: <ShoppingCart size={17} />, badge: "Nuevo", data: { view: "cart" } },
+      { id: "checkout", label: "NCheckout", icon: <CreditCard size={17} />, badge: "Nuevo", data: { view: "checkout" } },
+      { id: "receipt", label: "NReceipt", icon: <ReceiptText size={17} />, badge: "Nuevo", data: { view: "receipt" } },
+      { id: "pos-example", label: "Ejemplo POS", icon: <Store size={17} />, badge: "Fase 7", data: { view: "pos-example" } },
+      { id: "panel", label: "NPanel", icon: <PanelRight size={17} />, badge: "Nuevo", data: { view: "panel" } },
+      { id: "page-patterns", label: "Estados y navegación", icon: <Layers3 size={17} />, badge: "Final", data: { view: "page-patterns" } },
+      { id: "data-patterns", label: "Datos server-side", icon: <Database size={17} />, badge: "Final", data: { view: "data-patterns" } },
+      { id: "activity-patterns", label: "Actividad y archivos", icon: <Bell size={17} />, badge: "Final", data: { view: "activity-patterns" } },
+      { id: "dashboard-patterns", label: "Dashboards", icon: <BarChart3 size={17} />, badge: "Final", data: { view: "dashboard-patterns" } },
+      { id: "saas-patterns", label: "Administración SaaS", icon: <ShieldCheck size={17} />, badge: "Final", data: { view: "saas-patterns" } },
+      { id: "vertical-patterns", label: "Patrones verticales", icon: <LayoutDashboard size={17} />, badge: "Final", data: { view: "vertical-patterns" } },
       { id: "app-shell", label: "NAppShell", icon: <LayoutDashboard size={17} />, badge: "Nuevo", data: { view: "app-shell" } },
       { id: "modules", label: "NModuleRegistry", icon: <Blocks size={17} />, badge: "Nuevo", data: { view: "modules" } },
       { id: "workspaces", label: "NWorkspaceSwitcher", icon: <Building2 size={17} />, badge: "Nuevo", data: { view: "workspaces" } },
@@ -217,6 +254,28 @@ const viewTitles: Record<DemoView, string> = {
   overview: "Nissi UI",
   theme: "NTheme",
   "item-picker": "NItemPicker",
+  "line-item-editor": "NLineItemEditor",
+  "amount-input": "NAmountInput",
+  "amount-allocator": "NAmountAllocator",
+  "step-flow": "NStepFlow",
+  "approval-flow": "NApprovalFlow",
+  "balance-session": "NBalanceSession",
+  "adjustment-editor": "NAdjustmentEditor",
+  "document-view": "NDocumentView",
+  "code-capture": "NCodeCapture",
+  "sync-status": "NSyncStatus",
+  "offline-boundary": "NOfflineBoundary",
+  cart: "NCart",
+  checkout: "NCheckout",
+  receipt: "NReceipt",
+  "pos-example": "Ejemplo POS integrado",
+  panel: "NPanel",
+  "page-patterns": "Estados y navegación",
+  "data-patterns": "Datos server-side",
+  "activity-patterns": "Actividad y archivos",
+  "dashboard-patterns": "Dashboards",
+  "saas-patterns": "Administración SaaS",
+  "vertical-patterns": "Patrones verticales",
   "app-shell": "NAppShell",
   modules: "NModuleRegistry",
   workspaces: "NWorkspaceSwitcher",
@@ -406,6 +465,22 @@ function OverviewView({ onNavigate }: { onNavigate: (view: DemoView) => void }) 
             ["NWorkspaceSwitcher", "Cambia de empresa, sucursal, tenant o proyecto activo.", "workspaces", <Building2 key="workspaces" size={20} />],
             ["NTheme", "Sincroniza temas, persistencia y superficies en toda la aplicación.", "theme", <Palette key="theme" size={20} />],
             ["NItemPicker", "Busca, agrupa y selecciona cualquier tipo de entidad.", "item-picker", <PackageCheck key="picker" size={20} />],
+            ["NLineItemEditor", "Compone y edita partidas sin imponer reglas de un sector.", "line-item-editor", <ListPlus key="lines" size={20} />],
+            ["NAmountInput", "Captura cantidades e importes con formato y límites configurables.", "amount-input", <CircleDollarSign key="amount" size={20} />],
+            ["NAmountAllocator", "Distribuye un total entre opciones tipadas sin reglas financieras internas.", "amount-allocator", <ChartPie key="allocator" size={20} />],
+            ["NStepFlow", "Coordina borradores tipados, validación y navegación por pasos.", "step-flow", <ListPlus key="step-flow" size={20} />],
+            ["NApprovalFlow", "Presenta solicitudes, decisiones y trazabilidad adaptable.", "approval-flow", <ShieldCheck key="approval-flow" size={20} />],
+            ["NBalanceSession", "Compara valores esperados y observados en una sesión operativa.", "balance-session", <CircleDollarSign key="balance-session" size={20} />],
+            ["NAdjustmentEditor", "Propone correcciones sin ocultar el valor original ni su motivo.", "adjustment-editor", <ListPlus key="adjustment-editor" size={20} />],
+            ["NDocumentView", "Presenta documentos y acciones con una estructura imprimible.", "document-view", <ClipboardList key="document-view" size={20} />],
+            ["NCodeCapture", "Captura códigos por teclado, pegado o un lector externo.", "code-capture", <ScanLine key="code-capture" size={20} />],
+            ["NSyncStatus", "Comunica el estado real, la cola y los reintentos de sincronización.", "sync-status", <RefreshCw key="sync-status" size={20} />],
+            ["NOfflineBoundary", "Mantiene o sustituye contenido cuando cambia la conectividad.", "offline-boundary", <CloudOff key="offline-boundary" size={20} />],
+            ["NCart", "Compone partidas y totales comerciales inyectados por la aplicación.", "cart", <ShoppingCart key="cart" size={20} />],
+            ["NCheckout", "Coordina pagos divididos y confirmación asíncrona de la operación.", "checkout", <CreditCard key="checkout" size={20} />],
+            ["NReceipt", "Presenta comprobantes adaptables, responsive e imprimibles.", "receipt", <ReceiptText key="receipt" size={20} />],
+            ["Ejemplo POS", "Integra captura, carrito, checkout, recibo y operación offline.", "pos-example", <Store key="pos-example" size={20} />],
+            ["NPanel", "Presenta y alterna procesos completos en una superficie lateral modal.", "panel", <PanelRight key="panel" size={20} />],
           ] as const).map(([name, description, view, icon]) => (
             <Card.Root key={name} variant="outline" bg="bg.panel" backdropFilter="blur(16px)" {...landingCardMotion}>
               <Card.Body gap="4">
@@ -421,6 +496,41 @@ function OverviewView({ onNavigate }: { onNavigate: (view: DemoView) => void }) 
     </Box>
   )
 }
+
+type DemoDocumentLine = {
+  id: string
+  itemId: number
+  label: string
+  category: string
+  quantity: number
+  unit: "pieza" | "servicio"
+  unitValue: number
+}
+
+type DemoAllocationMethod = {
+  id: string
+  label: string
+  description: string
+}
+
+type DemoFlowState = {
+  name: string
+  owner: string
+  notes: string
+}
+
+type DemoApprovalRequest = {
+  id: string
+  title: string
+  description: string
+  area: string
+}
+
+const demoAllocationMethods: DemoAllocationMethod[] = [
+  { id: "operations", label: "Operación", description: "Recursos para la ejecución diaria." },
+  { id: "growth", label: "Crecimiento", description: "Iniciativas de adquisición y expansión." },
+  { id: "reserve", label: "Reserva", description: "Margen para contingencias." },
+]
 
 /** Vista de ejemplo y documentación del controlador global de temas. */
 function ThemeView() {
@@ -658,6 +768,760 @@ function ItemPickerView() {
       />
     </Stack>
   )
+}
+
+/** Vista del patrón genérico para construir y editar partidas operativas. */
+function LineItemEditorView() {
+  const [lines, setLines] = useState<DemoDocumentLine[]>([
+    { id: "line-1", itemId: 1, label: "Teclado mecánico", category: "Accesorios", quantity: 1, unit: "pieza", unitValue: 1899 },
+    { id: "line-2", itemId: 2, label: "Monitor 27 pulgadas", category: "Pantallas", quantity: 2, unit: "pieza", unitValue: 6299 },
+  ])
+  const formatValue = (value: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(value)
+  const fields: NLineItemField<DemoDocumentLine>[] = [
+    {
+      id: "quantity",
+      header: "Cantidad",
+      inputType: "number",
+      width: "7rem",
+      min: 1,
+      step: 1,
+      getValue: (line) => line.quantity,
+      setValue: (line, value) => ({ ...line, quantity: Number(value) }),
+      validate: (value) => Number(value) > 0 ? undefined : "Usa un valor mayor que cero.",
+    },
+    {
+      id: "unit",
+      header: "Unidad",
+      inputType: "select",
+      width: "8rem",
+      options: [{ label: "Pieza", value: "pieza" }, { label: "Servicio", value: "servicio" }],
+      getValue: (line) => line.unit,
+      setValue: (line, value) => ({ ...line, unit: String(value) as DemoDocumentLine["unit"] }),
+    },
+    {
+      id: "unitValue",
+      header: "Valor unitario",
+      width: "9rem",
+      align: "end",
+      getValue: (line) => line.unitValue,
+      formatValue: (value) => formatValue(Number(value)),
+    },
+    {
+      id: "total",
+      header: "Importe",
+      width: "9rem",
+      align: "end",
+      getValue: (line) => line.quantity * line.unitValue,
+      formatValue: (value) => <Text fontWeight="semibold">{formatValue(Number(value))}</Text>,
+    },
+  ]
+
+  const editor = (readOnly = false) => (
+    <NLineItemEditor
+      items={productConfig.data}
+      getItemId={(product) => String(product.id)}
+      getItemLabel={(product) => product.product}
+      createLine={(product): DemoDocumentLine => ({
+        id: `line-${product.id}`,
+        itemId: product.id,
+        label: product.product,
+        category: product.category,
+        quantity: 1,
+        unit: "pieza",
+        unitValue: product.price,
+      })}
+      getLineId={(line) => line.id}
+      getLineLabel={(line) => line.label}
+      getLineDescription={(line) => line.category}
+      fields={fields}
+      lines={lines}
+      onLinesChange={(nextLines) => setLines([...nextLines])}
+      resolveAdd={({ line, lines: currentLines }) => {
+        const exists = currentLines.some((current) => current.itemId === line.itemId)
+        return exists
+          ? currentLines.map((current) => current.itemId === line.itemId ? { ...current, quantity: current.quantity + 1 } : current)
+          : [...currentLines, line]
+      }}
+      pickerProps={{
+        getItemDescription: (product) => `${product.category} · ${product.stock} disponibles`,
+        getSearchText: (product) => `${product.id} ${product.category}`,
+        groupBy: (product) => product.category,
+        columns: { base: 1, md: 2 },
+        renderTrailing: (product) => <Text color="colorPalette.fg" fontWeight="semibold">{formatValue(product.price)}</Text>,
+      }}
+      renderLineLeading={() => (
+        <Flex align="center" justify="center" boxSize="9" flexShrink="0" rounded="md" bg="colorPalette.subtle" color="colorPalette.fg">
+          <ListPlus size={18} />
+        </Flex>
+      )}
+      readOnly={readOnly}
+    />
+  )
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 2"
+        title="NLineItemEditor"
+        description="Construye y edita partidas tipadas para documentos y operaciones sin asumir productos, cantidades, precios, impuestos ni monedas."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="5">
+          <Stack gap="1">
+            <Heading as="h2" size="lg">Documento de ejemplo</Heading>
+            <Text color="fg.muted">Agrega elementos, cambia valores, reordena o elimina. Repetir un elemento incrementa su cantidad mediante un adaptador externo.</Text>
+          </Stack>
+          {editor()}
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NLineItemEditor separa la mecánica común de las partidas de las reglas del negocio. El consumidor conserva sus tipos, crea cada línea, configura los campos y decide cómo tratar duplicados; el componente aporta interacción, responsive, estados y accesibilidad."
+        steps={[
+          "Entrega el catálogo y sus adaptadores getItemId/getItemLabel.",
+          "Implementa createLine, getLineId y getLineLabel con la forma real de tu documento.",
+          "Declara campos editables o de sólo lectura mediante NLineItemField<TLine>.",
+          "Controla lines/onLinesChange y coloca cálculos o políticas de duplicados fuera del componente.",
+        ]}
+        variants={[
+          { name: "lines / defaultLines", description: "Admite estado controlado o local para borradores simples." },
+          { name: "resolveAdd", description: "Agrega, fusiona, reemplaza o rechaza duplicados según el sistema." },
+          { name: "readOnly", description: "Conserva el documento legible sin controles de edición ni acciones destructivas." },
+          { name: "pickerProps", description: "Reutiliza búsqueda, agrupación, layouts y slots de NItemPicker." },
+        ]}
+        variantExamples={[
+          {
+            id: "editable",
+            label: "Editable",
+            summary: "fields + onLinesChange",
+            preview: editor(),
+            code: `<NLineItemEditor
+  items={catalog}
+  createLine={createLine}
+  fields={fields}
+  lines={lines}
+  onLinesChange={setLines}
+  {...identityAdapters}
+/>`,
+          },
+          {
+            id: "readonly",
+            label: "Sólo lectura",
+            summary: "readOnly",
+            preview: editor(true),
+            code: `<NLineItemEditor lines={lines} fields={fields} readOnly {...adapters} />`,
+          },
+          {
+            id: "empty",
+            label: "Vacío",
+            summary: "defaultLines={[]}",
+            preview: (
+              <NLineItemEditor
+                items={productConfig.data.slice(0, 3)}
+                getItemId={(product) => String(product.id)}
+                getItemLabel={(product) => product.product}
+                createLine={(product): DemoDocumentLine => ({ id: String(product.id), itemId: product.id, label: product.product, category: product.category, quantity: 1, unit: "pieza", unitValue: product.price })}
+                getLineId={(line) => line.id}
+                getLineLabel={(line) => line.label}
+                fields={fields}
+              />
+            ),
+            code: `<NLineItemEditor defaultLines={[]} emptyState={<CustomEmpty />} {...props} />`,
+          },
+        ]}
+        propExamples={[
+          { label: "Fusionar duplicados", code: `<NLineItemEditor resolveAdd={({ line, lines }) => mergeLine(lines, line)} {...props} />` },
+          { label: "Campo personalizado", code: `<NLineItemEditor fields={[{ id: "owner", header: "Responsable", getValue, render: renderOwner }]} {...props} />` },
+          { label: "Restricciones por línea", code: `<NLineItemEditor canRemoveLine={canDelete} canReorderLine={canMove} isLineDisabled={isLocked} {...props} />` },
+        ]}
+        code={`const fields: NLineItemField<MyLine>[] = [
+  {
+    id: "amount",
+    header: "Cantidad",
+    inputType: "number",
+    getValue: (line) => line.amount,
+    setValue: (line, value) => ({ ...line, amount: Number(value) }),
+  },
+]
+
+<NLineItemEditor
+  items={items}
+  getItemId={(item) => item.id}
+  getItemLabel={(item) => item.name}
+  createLine={createLine}
+  getLineId={(line) => line.id}
+  getLineLabel={(line) => line.label}
+  fields={fields}
+  lines={lines}
+  onLinesChange={(next) => setLines([...next])}
+/>`}
+      />
+    </Stack>
+  )
+}
+
+/** Vista de la primitiva neutral para capturar valores medibles. */
+function AmountInputView() {
+  const [hours, setHours] = useState<number | null>(8)
+  const [budget, setBudget] = useState<number | null>(2500)
+  const [progress, setProgress] = useState<number | null>(0.25)
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 3"
+        title="NAmountInput"
+        description="Captura cantidades, importes, porcentajes, horas o cualquier valor numérico con una API controlable, internacionalizable y accesible."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="6">
+          <SimpleGrid columns={{ base: 1, md: 3 }} gap="5">
+            <NAmountInput label="Horas asignadas" value={hours} onValueChange={(nextHours) => setHours(nextHours)} min={0} max={40} step={0.5} showControls helperText="Incrementos de media hora." />
+            <NAmountInput
+              label="Presupuesto"
+              value={budget}
+              onValueChange={(nextBudget) => setBudget(nextBudget)}
+              min={0}
+              locale="es-MX"
+              formatOptions={{ style: "currency", currency: "MXN", maximumFractionDigits: 2 }}
+              quickValues={[{ value: 1000, label: "$1,000" }, { value: 2500, label: "$2,500" }, { value: 5000, label: "$5,000" }]}
+            />
+            <NAmountInput label="Avance" value={progress} onValueChange={(nextProgress) => setProgress(nextProgress)} min={0} max={1} step={0.05} locale="es-MX" formatOptions={{ style: "percent", maximumFractionDigits: 0 }} showControls />
+          </SimpleGrid>
+          <Text aria-live="polite" color="fg.muted" fontSize="sm">
+            Valores actuales: {hours ?? "—"} h · {budget === null ? "—" : budget.toLocaleString("es-MX", { style: "currency", currency: "MXN" })} · {progress === null ? "—" : progress.toLocaleString("es-MX", { style: "percent", maximumFractionDigits: 0 })}
+          </Text>
+          <Text color="fg.muted" fontSize="sm">Los tres controles comparten la misma primitiva; sólo cambian límites, paso y `Intl.NumberFormatOptions`.</Text>
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NAmountInput es una capa fina de formulario sobre NumberInput de Chakra UI v3: conserva number | null como contrato público e integra Field, errores, ayuda, labels y valores rápidos. Para un número aislado sin este contrato compartido, conviene usar Chakra directamente."
+        steps={[
+          "Usa value/onValueChange si el formulario o store es la fuente de verdad, o defaultValue para estado local.",
+          "Configura min, max y step según la medida real del sistema.",
+          "Entrega locale y formatOptions para presentación internacional, sin concatenar símbolos manualmente.",
+          "Añade labels, ayuda, errores y valores rápidos cuando mejoren la captura.",
+        ]}
+        variants={[
+          { name: "showControls", description: "Activa incrementos accesibles para cantidades discretas o pasos conocidos." },
+          { name: "formatOptions", description: "Admite cualquier formato de Intl: decimal, moneda, porcentaje o unidad." },
+          { name: "quickValues", description: "Expone atajos opcionales que respetan los límites configurados." },
+          { name: "readOnly / disabled", description: "Distingue presentación no editable de indisponibilidad operativa." },
+        ]}
+        variantExamples={[
+          { id: "quantity", label: "Cantidad", summary: "step={0.5} showControls", preview: <NAmountInput label="Horas" defaultValue={8} min={0} max={40} step={0.5} showControls />, code: `<NAmountInput label="Horas" defaultValue={8} min={0} max={40} step={0.5} showControls />` },
+          { id: "currency", label: "Importe", summary: "formatOptions={{ style: \"currency\" }}", preview: <NAmountInput label="Importe" defaultValue={1250} locale="es-MX" formatOptions={{ style: "currency", currency: "MXN" }} />, code: `<NAmountInput label="Importe" locale="es-MX" formatOptions={{ style: "currency", currency: "MXN" }} />` },
+          { id: "quick", label: "Valores rápidos", summary: "quickValues={[...]}", preview: <NAmountInput label="Capacidad" defaultValue={25} min={0} max={100} quickValues={[{ value: 25 }, { value: 50 }, { value: 100 }]} />, code: `<NAmountInput quickValues={[{ value: 25 }, { value: 50 }, { value: 100 }]} {...props} />` },
+        ]}
+        propExamples={[
+          { label: "Estado controlado", code: `<NAmountInput value={amount} onValueChange={setAmount} />` },
+          { label: "Porcentaje", code: `<NAmountInput min={0} max={1} step={0.05} formatOptions={{ style: "percent" }} />` },
+          { label: "Validación", code: `<NAmountInput required invalid={Boolean(error)} errorText={error} />` },
+        ]}
+        code={`const [amount, setAmount] = useState<number | null>(null)
+
+<NAmountInput
+  label="Valor"
+  value={amount}
+  onValueChange={setAmount}
+  min={0}
+  step={0.01}
+  locale="es-MX"
+  formatOptions={{ style: "currency", currency: "MXN" }}
+/>`}
+      />
+    </Stack>
+  )
+}
+
+/** Vista del patrón de distribución neutral de valores. */
+function AmountAllocatorView() {
+  const [allocations, setAllocations] = useState<NAmountAllocation<DemoAllocationMethod>[]>([
+    { method: demoAllocationMethods[0], amount: 45000 },
+    { method: demoAllocationMethods[1], amount: 30000 },
+    { method: demoAllocationMethods[2], amount: 0 },
+  ])
+  const commonProps = {
+    total: 120000,
+    methods: demoAllocationMethods,
+    getMethodId: (method: DemoAllocationMethod) => method.id,
+    getMethodLabel: (method: DemoAllocationMethod) => method.label,
+    getMethodDescription: (method: DemoAllocationMethod) => method.description,
+    locale: "es-MX",
+    formatOptions: { style: "currency", currency: "MXN" } as Intl.NumberFormatOptions,
+  }
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 3"
+        title="NAmountAllocator"
+        description="Distribuye un total entre métodos de pago, presupuestos, centros de costo, comisiones o cualquier colección tipada."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="5">
+          <Stack gap="1">
+            <Heading as="h2" size="lg">Distribución de ejemplo</Heading>
+            <Text color="fg.muted">La colección representa categorías presupuestarias, pero el componente sólo conoce identidad, etiqueta y valor.</Text>
+          </Stack>
+          <NAmountAllocator
+            {...commonProps}
+            allocations={allocations}
+            onAllocationsChange={(nextAllocations) => setAllocations([...nextAllocations])}
+            amountInputProps={{ step: 500, quickValues: [{ value: 10000, label: "$10k" }, { value: 25000, label: "$25k" }] }}
+            renderMethodLeading={() => <Flex align="center" justify="center" boxSize="9" rounded="md" bg="colorPalette.subtle" color="colorPalette.fg"><ChartPie size={18} /></Flex>}
+          />
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NAmountAllocator coordina múltiples NAmountInput y mantiene exacta la relación total/asignado/restante. La identidad y descripción de los destinos son adaptadores genéricos; ninguna opción se interpreta como pago, cuenta o presupuesto dentro del núcleo."
+        steps={[
+          "Entrega total, methods y adaptadores de identidad y etiqueta.",
+          "Controla allocations/onAllocationsChange o inicia un borrador con defaultAllocations.",
+          "Configura precisión y formato, y decide si se admite sobreasignación o valores negativos.",
+          "Usa restricciones, validación y slots por método para integrar reglas externas.",
+        ]}
+        variants={[
+          { name: "manual", description: "Cada opción recibe un valor y puede completar el restante con una sola acción." },
+          { name: "distribución equitativa", description: "Reparte unidades mínimas sin perder el total por redondeo." },
+          { name: "allowOverAllocation", description: "Permite excesos explícitos y los comunica como estado diferenciado." },
+          { name: "readOnly", description: "Presenta resumen y distribución sin acciones ni edición." },
+        ]}
+        variantExamples={[
+          { id: "manual", label: "Manual", summary: "allocations + onAllocationsChange", preview: <NAmountAllocator {...commonProps} allocations={allocations} onAllocationsChange={(next) => setAllocations([...next])} />, code: `<NAmountAllocator total={total} methods={methods} allocations={allocations} onAllocationsChange={setAllocations} {...adapters} />` },
+          { id: "readonly", label: "Sólo lectura", summary: "readOnly", preview: <NAmountAllocator {...commonProps} allocations={allocations} readOnly />, code: `<NAmountAllocator allocations={allocations} readOnly {...props} />` },
+          { id: "over", label: "Sobreasignación", summary: "allowOverAllocation", preview: <NAmountAllocator {...commonProps} defaultAllocations={[{ method: demoAllocationMethods[0], amount: 140000 }]} allowOverAllocation />, code: `<NAmountAllocator allowOverAllocation defaultAllocations={initial} {...props} />` },
+        ]}
+        propExamples={[
+          { label: "Límites por destino", code: `<NAmountAllocator getMethodMin={getMinimum} getMethodMax={getCapacity} {...props} />` },
+          { label: "Opciones bloqueadas", code: `<NAmountAllocator isMethodDisabled={(method) => method.locked} {...props} />` },
+          { label: "Validación externa", code: `<NAmountAllocator validateAllocation={(allocation, summary) => validate(allocation, summary)} {...props} />` },
+        ]}
+        code={`<NAmountAllocator
+  total={budget}
+  methods={costCenters}
+  getMethodId={(center) => center.id}
+  getMethodLabel={(center) => center.name}
+  allocations={allocations}
+  onAllocationsChange={(next, summary) => {
+    setAllocations([...next])
+    setBalanced(summary.status === "balanced")
+  }}
+/>`}
+      />
+    </Stack>
+  )
+}
+
+/** Vista del patrón genérico para procesos secuenciales con un borrador compartido. */
+function StepFlowView() {
+  const initialState: DemoFlowState = { name: "Implementación regional", owner: "", notes: "" }
+  const [draft, setDraft] = useState<DemoFlowState>(initialState)
+  const [flowStepId, setFlowStepId] = useState("details")
+  const [completed, setCompleted] = useState(false)
+  const steps: NStepFlowStep<DemoFlowState>[] = [
+    {
+      id: "details",
+      title: "Datos",
+      description: "Contexto principal",
+      validate: (state) => state.name.trim() ? undefined : "Escribe un nombre para continuar.",
+      render: ({ state, setState }) => (
+        <Field.Root required>
+          <Field.Label>Nombre del proceso<Field.RequiredIndicator /></Field.Label>
+          <Input value={state.name} onChange={(event) => setState((current) => ({ ...current, name: event.target.value }))} />
+        </Field.Root>
+      ),
+    },
+    {
+      id: "assignment",
+      title: "Asignación",
+      description: "Responsabilidad",
+      validate: (state) => state.owner.trim() ? undefined : "Asigna una persona o equipo responsable.",
+      render: ({ state, setState }) => (
+        <Stack gap="4">
+          <Field.Root required>
+            <Field.Label>Responsable<Field.RequiredIndicator /></Field.Label>
+            <Input value={state.owner} placeholder="Persona, equipo o proveedor" onChange={(event) => setState((current) => ({ ...current, owner: event.target.value }))} />
+          </Field.Root>
+          <Field.Root>
+            <Field.Label>Notas</Field.Label>
+            <Input value={state.notes} onChange={(event) => setState((current) => ({ ...current, notes: event.target.value }))} />
+          </Field.Root>
+        </Stack>
+      ),
+    },
+    {
+      id: "review",
+      title: "Revisión",
+      description: "Confirmación final",
+      render: ({ state }) => (
+        <SimpleGrid columns={{ base: 1, sm: 2 }} gap="4">
+          <Stack gap="1"><Text color="fg.muted" fontSize="xs">Proceso</Text><Text fontWeight="semibold">{state.name}</Text></Stack>
+          <Stack gap="1"><Text color="fg.muted" fontSize="xs">Responsable</Text><Text fontWeight="semibold">{state.owner}</Text></Stack>
+          {state.notes ? <Stack gap="1" gridColumn={{ sm: "1 / -1" }}><Text color="fg.muted" fontSize="xs">Notas</Text><Text>{state.notes}</Text></Stack> : null}
+        </SimpleGrid>
+      ),
+    },
+  ]
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 4"
+        title="NStepFlow"
+        description="Coordina procesos de varios pasos con un borrador tipado, validación y finalización asíncrona sin asumir onboarding, checkout ni otro dominio."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="5">
+          <Flex justify="space-between" align={{ base: "start", sm: "center" }} direction={{ base: "column", sm: "row" }} gap="3">
+            <Stack gap="1">
+              <Heading as="h2" size="lg">Flujo interactivo</Heading>
+              <Text color="fg.muted">Edita los datos, avanza, vuelve y finaliza. Cada pantalla comparte el mismo estado React.</Text>
+            </Stack>
+            <Button type="button" size="sm" variant="ghost" onClick={() => { setDraft(initialState); setFlowStepId("details"); setCompleted(false) }}>Reiniciar ejemplo</Button>
+          </Flex>
+          <NStepFlow
+            steps={steps}
+            state={draft}
+            defaultState={initialState}
+            onStateChange={(nextState) => { setDraft(nextState); setCompleted(false) }}
+            stepId={flowStepId}
+            onStepChange={setFlowStepId}
+            onComplete={() => { setCompleted(true) }}
+            disabled={completed}
+          />
+          {completed ? <Badge alignSelf="start" colorPalette="green">Flujo finalizado correctamente</Badge> : null}
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NStepFlow agrega a Steps de Chakra la orquestación que pertenece a la aplicación: un borrador TState, validación síncrona/asíncrona, navegación controlada y finalización. No conoce campos, productos, usuarios ni reglas de un sector."
+        steps={[
+          "Define el tipo del borrador y una colección estable de pasos.",
+          "Cada render recibe state/setState y acciones de navegación tipadas.",
+          "Devuelve un mensaje desde validate para bloquear y anunciar el avance.",
+          "Persiste el resultado en onComplete; el consumidor decide qué ocurre después.",
+        ]}
+        variants={[
+          { name: "linear", description: "Impide saltar pasos pendientes y valida antes de avanzar." },
+          { name: "orientation", description: "Presenta el indicador horizontal o vertical sin cambiar el contrato." },
+          { name: "renderActions", description: "Sustituye la navegación inferior usando el mismo contexto seguro." },
+          { name: "controlado", description: "state y stepId pueden vivir en formulario, store o URL." },
+        ]}
+        variantExamples={[
+          { id: "horizontal", label: "Horizontal", summary: "linear por defecto", preview: <NStepFlow steps={steps.slice(0, 2)} defaultState={initialState} />, code: `<NStepFlow steps={steps} defaultState={initialDraft} />` },
+          { id: "vertical", label: "Vertical", summary: "orientation=vertical", preview: <NStepFlow steps={steps.slice(0, 2)} defaultState={{ ...initialState, owner: "Equipo Norte" }} orientation="vertical" />, code: `<NStepFlow orientation="vertical" steps={steps} defaultState={initialDraft} />` },
+          { id: "loading", label: "Cargando", summary: "loading", preview: <NStepFlow steps={steps} defaultState={initialState} loading />, code: `<NStepFlow loading steps={steps} defaultState={initialDraft} />` },
+        ]}
+        propExamples={[
+          { label: "Estado controlado", code: `<NStepFlow state={draft} onStateChange={setDraft} stepId={stepId} onStepChange={setStepId} {...props} />` },
+          { label: "Validación asíncrona", code: `{ id: "account", validate: async (state) => await validateAccount(state) }` },
+          { label: "Acciones propias", code: `<NStepFlow renderActions={({ goNext }) => <Button onClick={goNext}>Guardar y seguir</Button>} {...props} />` },
+        ]}
+        code={`const steps: NStepFlowStep<MyDraft>[] = [
+  {
+    id: "details",
+    title: "Datos",
+    validate: (draft) => draft.name ? undefined : "Campo requerido",
+    render: ({ state, setState }) => <MyFields value={state} onChange={setState} />,
+  },
+  { id: "review", title: "Revisión", render: ({ state }) => <Summary value={state} /> },
+]
+
+<NStepFlow steps={steps} defaultState={initialDraft} onComplete={saveDraft} />`}
+      />
+    </Stack>
+  )
+}
+
+/** Vista del patrón genérico para solicitudes, decisiones y trazabilidad. */
+function ApprovalFlowView() {
+  const demoRequest: DemoApprovalRequest = {
+    id: "request-2048",
+    title: "Habilitación temporal de recursos",
+    description: "Solicitud válida por 30 días para el equipo de implementación.",
+    area: "Operaciones",
+  }
+  const [approvalStatus, setApprovalStatus] = useState<NApprovalStatus>("pending")
+  const [history, setHistory] = useState<NApprovalHistoryEntry[]>([
+    { id: "created", status: "pending", actor: "Mesa de control", comment: "Solicitud recibida y lista para revisión.", timestamp: "2026-09-06T15:00:00Z" },
+  ])
+
+  const resetApproval = () => {
+    setApprovalStatus("pending")
+    setHistory((current) => current.slice(0, 1))
+  }
+
+  return (
+    <Stack gap="8">
+      <PageIntro
+        eyebrow="Flujos generalizables · Fase 4"
+        title="NApprovalFlow"
+        description="Presenta solicitudes tipadas, captura decisiones asíncronas y muestra trazabilidad sin incorporar permisos ni reglas de transición del negocio."
+      />
+
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body gap="5">
+          <Flex justify="space-between" align={{ base: "start", sm: "center" }} direction={{ base: "column", sm: "row" }} gap="3">
+            <Stack gap="1">
+              <Heading as="h2" size="lg">Decisión interactiva</Heading>
+              <Text color="fg.muted">Prueba aprobar, solicitar cambios o rechazar; las dos últimas opciones exigen comentario.</Text>
+            </Stack>
+            <Button type="button" size="sm" variant="ghost" onClick={resetApproval}>Reiniciar ejemplo</Button>
+          </Flex>
+          <NApprovalFlow
+            request={demoRequest}
+            getRequestId={(item) => item.id}
+            getRequestTitle={(item) => item.title}
+            getRequestDescription={(item) => `${item.area} · ${item.description}`}
+            status={approvalStatus}
+            onStatusChange={setApprovalStatus}
+            history={history}
+            onDecision={(_item, decision) => {
+              setHistory((current) => [...current, {
+                id: `${decision.actionId}-${current.length}`,
+                status: decision.status,
+                actor: "Usuario actual",
+                comment: decision.comment || "Decisión registrada sin comentario.",
+                timestamp: new Date(),
+              }])
+              return { success: true }
+            }}
+          />
+        </Card.Body>
+      </Card.Root>
+
+      <ComponentDocs
+        purpose="NApprovalFlow estandariza la experiencia de revisión, comentario, espera y error. El consumidor conserva TRequest, persiste la decisión y aporta las capacidades; el servidor siempre revalida autorización y transición."
+        steps={[
+          "Entrega la solicitud y adaptadores para identidad, título y descripción.",
+          "Controla status o usa defaultStatus para un borrador local.",
+          "Persiste la decisión en onDecision y devuelve success sólo después de confirmarla.",
+          "Pasa history desde la fuente auditada; el componente nunca inventa actores ni eventos.",
+        ]}
+        variants={[
+          { name: "acciones estándar", description: "Aprobar, solicitar cambios y rechazar con comentario configurable." },
+          { name: "actions", description: "Reemplaza decisiones y paletas manteniendo el mismo ciclo asíncrono." },
+          { name: "canPerformAction", description: "Aplica restricciones visuales externas sin simular seguridad de backend." },
+          { name: "readOnly", description: "Presenta solicitud, estado e historial sin controles de decisión." },
+        ]}
+        variantExamples={[
+          { id: "pending", label: "Pendiente", summary: "acciones disponibles", preview: <NApprovalFlow request={demoRequest} getRequestId={(item) => item.id} getRequestTitle={(item) => item.title} showHistory={false} />, code: `<NApprovalFlow request={request} {...adapters} />` },
+          { id: "resolved", label: "Resuelta", summary: "readOnly + history", preview: <NApprovalFlow request={demoRequest} getRequestId={(item) => item.id} getRequestTitle={(item) => item.title} defaultStatus="approved" readOnly history={history} />, code: `<NApprovalFlow defaultStatus="approved" readOnly history={history} {...props} />` },
+          { id: "empty", label: "Vacía", summary: "request=null", preview: <NApprovalFlow<DemoApprovalRequest> request={null} getRequestId={(item) => item.id} getRequestTitle={(item) => item.title} />, code: `<NApprovalFlow request={null} {...adapters} />` },
+        ]}
+        propExamples={[
+          { label: "Persistencia asíncrona", code: `<NApprovalFlow onDecision={async (request, decision) => api.decide(request.id, decision)} {...props} />` },
+          { label: "Acciones personalizadas", code: `<NApprovalFlow actions={[{ id: "accept", label: "Aceptar", status: "approved" }]} {...props} />` },
+          { label: "Restricción visual", code: `<NApprovalFlow canPerformAction={(request, action) => can(action.id, request)} {...props} />` },
+        ]}
+        code={`<NApprovalFlow
+  request={request}
+  getRequestId={(item) => item.id}
+  getRequestTitle={(item) => item.title}
+  status={request.status}
+  history={history}
+  onDecision={persistDecision}
+  onStatusChange={setStatus}
+/>`}
+      />
+    </Stack>
+  )
+}
+
+type DemoBalanceEntry = { id: string; label: string; description: string; amount: number }
+const demoBalanceEntries: DemoBalanceEntry[] = [
+  { id: "opening-sale", label: "Operación confirmada", description: "Ingreso registrado", amount: 1850 },
+  { id: "expense", label: "Salida operativa", description: "Comprobante asociado", amount: -350 },
+]
+
+/** Vista del patrón para arqueos, conciliaciones y cierres operativos. */
+function BalanceSessionView() {
+  const [counted, setCounted] = useState<number | null>(null)
+  const money = (amount: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(amount)
+  const common = { sessionId: "turno-2026-09", entries: demoBalanceEntries, openingAmount: 1000, getEntryId: (entry: DemoBalanceEntry) => entry.id, getEntryLabel: (entry: DemoBalanceEntry) => entry.label, getEntryDescription: (entry: DemoBalanceEntry) => entry.description, getEntryAmount: (entry: DemoBalanceEntry) => entry.amount, formatAmount: money }
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 5" title="NBalanceSession" description="Compara saldos esperados y observados para turnos, cajas, inventarios, conciliaciones o cualquier sesión medible." />
+    <Card.Root variant="outline" bg="bg.panel"><Card.Body gap="5"><Flex justify="space-between" align={{ base: "start", sm: "center" }} direction={{ base: "column", sm: "row" }} gap="3"><Box><Heading as="h2" size="lg">Cierre interactivo</Heading><Text color="fg.muted">Captura $2,500.00 para balancear el ejemplo.</Text></Box><Button size="sm" variant="ghost" onClick={() => setCounted(null)}>Reiniciar</Button></Flex><NBalanceSession {...common} countedAmount={counted} onCountedAmountChange={setCounted} locale="es-MX" formatOptions={{ style: "currency", currency: "MXN" }} onClose={() => ({ success: true })} /></Card.Body></Card.Root>
+    <ComponentDocs
+      purpose="NBalanceSession suma movimientos con signo y compara el resultado esperado con un valor observado. El consumidor define qué representa cada entrada y persiste el cierre; el componente no contabiliza ni autoriza."
+      steps={["Entrega un sessionId estable y entradas adaptadas.", "Define saldo inicial, tolerancia y formato.", "Controla countedAmount o usa el modo no controlado.", "Confirma el cierre en onClose desde el backend."]}
+      variants={[{ name: "tolerance", description: "Acepta diferencias operativas dentro de un umbral explícito." }, { name: "allowCloseWithVariance", description: "Permite cerrar con diferencia sólo cuando el dominio lo autoriza." }, { name: "readOnly", description: "Presenta un cierre histórico sin edición." }]}
+      variantExamples={[{ id: "open", label: "Abierta", summary: "sin conteo", preview: <NBalanceSession {...common} />, code: `<NBalanceSession sessionId={id} entries={entries} {...adapters} />` }, { id: "balanced", label: "Balanceada", summary: "countedAmount=2500", preview: <NBalanceSession {...common} countedAmount={2500} readOnly />, code: `<NBalanceSession countedAmount={2500} readOnly {...props} />` }, { id: "closed", label: "Cerrada", summary: "status=closed", preview: <NBalanceSession {...common} countedAmount={2500} status="closed" readOnly />, code: `<NBalanceSession status="closed" readOnly {...props} />` }]}
+      propExamples={[{ label: "Tolerancia", code: `<NBalanceSession tolerance={0.01} {...props} />` }, { label: "Cierre asíncrono", code: `<NBalanceSession onClose={(details) => api.close(details)} {...props} />` }]}
+      code={`<NBalanceSession
+  sessionId={session.id}
+  entries={entries}
+  openingAmount={session.opening}
+  getEntryId={(entry) => entry.id}
+  getEntryLabel={(entry) => entry.label}
+  getEntryAmount={(entry) => entry.signedAmount}
+  countedAmount={counted}
+  onCountedAmountChange={setCounted}
+  onClose={closeSession}
+/>`}
+    />
+  </Stack>
+}
+
+type DemoAdjustment = { id: string; title: string; amount: number; category: string; note: string }
+const demoAdjustment: DemoAdjustment = { id: "movement-18", title: "Movimiento operativo 18", amount: 1250, category: "general", note: "Registro inicial" }
+const demoAdjustmentFields: NAdjustmentField<DemoAdjustment>[] = [
+  { id: "amount", label: "Importe", inputType: "number", getValue: (value) => value.amount, setValue: (value, amount) => ({ ...value, amount: Number(amount) }), validate: (amount) => Number(amount) > 0 ? undefined : "El importe debe ser positivo." },
+  { id: "category", label: "Clasificación", inputType: "select", options: [{ label: "General", value: "general" }, { label: "Proyecto", value: "project" }], getValue: (value) => value.category, setValue: (value, category) => ({ ...value, category: String(category) }) },
+  { id: "note", label: "Descripción", inputType: "textarea", getValue: (value) => value.note, setValue: (value, note) => ({ ...value, note: String(note) }) },
+]
+
+/** Vista del patrón de correcciones trazables. */
+function AdjustmentEditorView() {
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 5" title="NAdjustmentEditor" description="Mantiene visible el registro original mientras construye una corrección tipada, validada y acompañada por un motivo auditable." />
+    <Card.Root variant="outline" bg="bg.panel"><Card.Body><NAdjustmentEditor item={demoAdjustment} getItemId={(item) => item.id} getItemTitle={(item) => item.title} getItemDescription={() => "Ejemplo neutral: puede ser una operación, reserva, movimiento o registro."} createAdjustment={(item) => ({ ...item })} fields={demoAdjustmentFields} onSubmit={() => ({ success: true })} /></Card.Body></Card.Root>
+    <ComponentDocs
+      purpose="NAdjustmentEditor construye una propuesta sin mutar ni ocultar el original. El consumidor define campos, clonación, validación y persistencia; las correcciones definitivas deben conservarse en la auditoría del dominio."
+      steps={["Adapta identidad y encabezado del elemento.", "Crea un borrador independiente con createAdjustment.", "Declara campos o usa renderEditor para una interfaz especializada.", "Valida y persiste el motivo junto con changedFieldIds."]}
+      variants={[{ name: "fields", description: "Editor declarativo para texto, número, selección y texto largo." }, { name: "renderEditor", description: "Composición completa para modelos especializados." }, { name: "value/reason", description: "Estado totalmente controlado por formulario o store." }]}
+      variantExamples={[{ id: "editable", label: "Editable", summary: "fields declarativos", preview: <NAdjustmentEditor item={demoAdjustment} getItemId={(item) => item.id} getItemTitle={(item) => item.title} createAdjustment={(item) => ({ ...item })} fields={demoAdjustmentFields.slice(0, 1)} />, code: `<NAdjustmentEditor item={record} fields={fields} {...adapters} />` }, { id: "readonly", label: "Lectura", summary: "readOnly", preview: <NAdjustmentEditor item={demoAdjustment} getItemId={(item) => item.id} getItemTitle={(item) => item.title} createAdjustment={(item) => ({ ...item })} fields={demoAdjustmentFields.slice(0, 1)} readOnly />, code: `<NAdjustmentEditor readOnly {...props} />` }, { id: "empty", label: "Vacío", summary: "item=null", preview: <NAdjustmentEditor<DemoAdjustment> item={null} getItemId={(item) => item.id} getItemTitle={(item) => item.title} createAdjustment={(item) => ({ ...item })} />, code: `<NAdjustmentEditor item={null} {...adapters} />` }]}
+      propExamples={[{ label: "Validación remota", code: `<NAdjustmentEditor validate={(details) => api.validate(details)} {...props} />` }, { label: "Motivo opcional", code: `<NAdjustmentEditor requireReason={false} {...props} />` }]}
+      code={`<NAdjustmentEditor
+  item={record}
+  getItemId={(item) => item.id}
+  getItemTitle={(item) => item.title}
+  createAdjustment={(item) => ({ ...item })}
+  fields={fields}
+  onSubmit={saveAdjustment}
+/>`}
+    />
+  </Stack>
+}
+
+type DemoDocument = { id: string; title: string; folio: string; status: string; total: number }
+const demoDocument: DemoDocument = { id: "document-2048", title: "Documento operativo", folio: "DOC-2048", status: "Emitido", total: 2850 }
+
+/** Vista del patrón de documentos adaptable e imprimible. */
+function DocumentViewView() {
+  const actions: NDocumentAction<DemoDocument>[] = [{ id: "download", label: "Preparar descarga", variant: "solid", onAction: async () => ({ success: true }) }]
+  const common = { document: demoDocument, getDocumentId: (item: DemoDocument) => item.id, getDocumentTitle: (item: DemoDocument) => item.title, getDocumentSubtitle: (item: DemoDocument) => item.folio, getDocumentStatus: (item: DemoDocument) => item.status, fields: [{ id: "folio", label: "Folio", getValue: (item: DemoDocument) => item.folio }, { id: "total", label: "Total", getValue: (item: DemoDocument) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(item.total) }], sections: [{ id: "detail", title: "Contenido", description: "El consumidor decide si aquí aparecen partidas, firmas, gráficos o anexos.", render: () => <Box p="4" bg="bg.subtle" rounded="md">Sección documental adaptable</Box> }] }
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 5" title="NDocumentView" description="Presenta órdenes, recibos, reportes o expedientes con metadatos, secciones, estado, impresión y acciones asíncronas." />
+    <NDocumentView {...common} actions={actions} showPrint onPrint={() => undefined} />
+    <ComponentDocs
+      purpose="NDocumentView estandariza la lectura y las acciones alrededor de un documento, no su modelo. Campos, secciones y renderizadores permiten usarlo en cualquier sector y mantener una salida limpia para impresión."
+      steps={["Adapta identidad, título y estado.", "Declara metadatos y secciones tipadas.", "Agrega acciones asíncronas con restricciones externas.", "Conecta impresión o deja que el navegador la ejecute."]}
+      variants={[{ name: "paper", description: "Superficie elevada y preparada para impresión." }, { name: "plain", description: "Sin contenedor visual para integrarse en otra pantalla." }, { name: "renderBody", description: "Cuerpo completamente sustituible con contexto tipado." }]}
+      variantExamples={[{ id: "paper", label: "Papel", summary: "variant=paper", preview: <NDocumentView {...common} />, code: `<NDocumentView variant="paper" {...props} />` }, { id: "plain", label: "Plano", summary: "variant=plain", preview: <NDocumentView {...common} variant="plain" />, code: `<NDocumentView variant="plain" {...props} />` }, { id: "loading", label: "Cargando", summary: "loading", preview: <NDocumentView {...common} loading />, code: `<NDocumentView loading {...props} />` }]}
+      propExamples={[{ label: "Acción protegida", code: `<NDocumentView canPerformAction={(doc, action) => can(action.id, doc)} {...props} />` }, { label: "Impresión propia", code: `<NDocumentView showPrint onPrint={(doc) => printPdf(doc)} {...props} />` }]}
+      code={`<NDocumentView
+  document={document}
+  getDocumentId={(item) => item.id}
+  getDocumentTitle={(item) => item.title}
+  fields={metadata}
+  sections={sections}
+  actions={actions}
+  showPrint
+/>`}
+    />
+  </Stack>
+}
+
+/** Demostración reactiva de captura manual, por teclado y mediante proveedor externo. */
+function CodeCaptureView() {
+  const [lastCapture, setLastCapture] = useState("Ningún código procesado")
+  const [externalSequence, setExternalSequence] = useState(100)
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 6" title="NCodeCapture" description="Recibe códigos, folios, QR o identificadores por escritura, pegado, lectores de teclado y proveedores externos sin acoplar la librería a una cámara." />
+    <Card.Root variant="outline"><Card.Body gap="4">
+      <NCodeCapture
+        validate={(code) => code.length < 3 ? "El código debe contener al menos tres caracteres." : undefined}
+        onRequestScan={async () => { const next = externalSequence + 1; setExternalSequence(next); return `EXT-${next}` }}
+        onCapture={async (code, details) => { setLastCapture(`${code} · origen: ${details.source}`); return { success: true, message: `Código ${code} aceptado.` } }}
+      />
+      <Box p="3" rounded="md" bg="bg.subtle"><Text color="fg.muted" fontSize="xs">Última captura confirmada</Text><Text fontWeight="semibold">{lastCapture}</Text></Box>
+    </Card.Body></Card.Root>
+    <ComponentDocs
+      purpose="NCodeCapture unifica la entrada de identificadores, pero delega el acceso a cámara o hardware mediante onRequestScan. Sólo anuncia éxito después de que onCapture lo confirma."
+      steps={["Escribe, pega o entrega un código desde un proveedor externo.", "Normaliza y valida antes de publicar la captura.", "Procesa onCapture una sola vez y bloquea duplicados accidentales.", "Conserva mensajes de éxito o error visibles y accesibles."]}
+      variants={[{ name: "manual", description: "Entrada y botón explícito para cualquier identificador." }, { name: "keyboard", description: "Lectores que emulan teclado se procesan con Enter." }, { name: "external", description: "Cámara, QR nativo o SDK inyectado por onRequestScan." }]}
+      variantExamples={[{ id: "manual", label: "Manual", summary: "entrada + Enter", preview: <NCodeCapture onCapture={() => true} />, code: `<NCodeCapture onCapture={processCode} />` }, { id: "external", label: "Lector externo", summary: "onRequestScan", preview: <NCodeCapture onCapture={() => true} onRequestScan={() => "QR-001"} />, code: `<NCodeCapture onRequestScan={camera.scan} onCapture={processCode} />` }, { id: "readonly", label: "Lectura", summary: "readOnly", preview: <NCodeCapture defaultValue="DOC-2048" readOnly onCapture={() => true} />, code: `<NCodeCapture readOnly defaultValue="DOC-2048" onCapture={processCode} />` }]}
+      propExamples={[{ label: "Normalización", code: `<NCodeCapture normalize={(raw) => raw.trim().toUpperCase()} {...props} />` }, { label: "Duplicados permitidos", code: `<NCodeCapture allowDuplicate {...props} />` }]}
+      code={`<NCodeCapture
+  onRequestScan={() => scanner.read()}
+  validate={(code) => validateFormat(code)}
+  onCapture={(code, details) => api.process(code, details)}
+/>`}
+    />
+  </Stack>
+}
+
+/** Demostración controlada del estado suministrado por un motor de sincronización. */
+function SyncStatusView() {
+  const [status, setStatus] = useState<NSyncState>("pending")
+  const [pendingCount, setPendingCount] = useState(4)
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | undefined>()
+  const retry = async () => {
+    setStatus("syncing")
+    await new Promise((resolve) => window.setTimeout(resolve, 500))
+    setPendingCount(0)
+    setLastSyncedAt(new Date())
+    setStatus("synced")
+    return { success: true }
+  }
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 6" title="NSyncStatus" description="Representa sincronización, pendientes, errores y última confirmación sin asumir qué motor local, API o base de datos utiliza la aplicación." />
+    <Stack gap="3">
+      <Flex gap="2" wrap="wrap">
+        <Button size="sm" variant="outline" onClick={() => { setStatus("pending"); setPendingCount(4) }}>Simular pendientes</Button>
+        <Button size="sm" variant="outline" onClick={() => setStatus("offline")}>Simular sin conexión</Button>
+        <Button size="sm" variant="outline" onClick={() => setStatus("error")}>Simular error</Button>
+      </Flex>
+      <NSyncStatus status={status} syncKey="catalog-demo" pendingCount={pendingCount} lastSyncedAt={lastSyncedAt} message={status === "error" ? "El servidor rechazó el último lote." : undefined} error={status === "error" ? "HTTP 503 · vuelve a intentarlo cuando el servicio esté disponible." : undefined} onRetry={retry} details={<Text>La cola y el estado pertenecen al motor de datos; el componente sólo los presenta.</Text>} />
+    </Stack>
+    <ComponentDocs
+      purpose="NSyncStatus es una superficie controlada: nunca deduce que un lote llegó al servidor. La aplicación entrega el estado real, los pendientes y la fecha confirmada por su motor de sincronización."
+      steps={["Obtén el estado desde el motor local o remoto.", "Publica pendingCount y lastSyncedAt confirmados.", "Conecta onRetry a una operación real.", "Actualiza status cuando esa operación termine."]}
+      variants={[{ name: "panel", description: "Estado completo con fecha, cola, detalles y recuperación." }, { name: "compact", description: "Indicador breve para headers o barras móviles." }, { name: "controlled", description: "El consumidor conserva toda la fuente de verdad." }]}
+      variantExamples={[{ id: "synced", label: "Sincronizado", summary: "status=synced", preview: <NSyncStatus status="synced" lastSyncedAt={new Date()} />, code: `<NSyncStatus status="synced" lastSyncedAt={date} />` }, { id: "pending", label: "Pendiente", summary: "4 en cola", preview: <NSyncStatus status="pending" pendingCount={4} onRetry={() => true} />, code: `<NSyncStatus status="pending" pendingCount={4} onRetry={sync} />` }, { id: "compact", label: "Compacto", summary: "variant=compact", preview: <NSyncStatus status="offline" pendingCount={2} variant="compact" />, code: `<NSyncStatus status="offline" variant="compact" />` }]}
+      propExamples={[{ label: "Clave de contexto", code: `<NSyncStatus syncKey={workspaceId} status={sync.status} />` }, { label: "Fecha localizada", code: `<NSyncStatus formatTimestamp={(date) => formatter.format(date)} {...props} />` }]}
+      code={`<NSyncStatus
+  status={sync.status}
+  pendingCount={sync.pendingCount}
+  lastSyncedAt={sync.lastConfirmedAt}
+  onRetry={sync.retry}
+/>`}
+    />
+  </Stack>
+}
+
+/** Demostración controlada de continuidad de interfaz ante conectividad intermitente. */
+function OfflineBoundaryView() {
+  const [online, setOnline] = useState(false)
+  return <Stack gap="8">
+    <PageIntro eyebrow="Flujos generalizables · Fase 6" title="NOfflineBoundary" description="Comunica conectividad intermitente y decide si el contenido continúa visible o usa un fallback, sin prometer persistencia que la aplicación no haya implementado." />
+    <Flex gap="2" wrap="wrap"><Button size="sm" onClick={() => setOnline((current) => !current)}>{online ? "Desconectar demo" : "Restablecer demo"}</Button></Flex>
+    <NOfflineBoundary online={online} queuedCount={online ? 0 : 3} showOnlineStatus onOnlineChange={setOnline} onCheckConnectivity={async () => { await new Promise((resolve) => window.setTimeout(resolve, 400)); return { online: true } }}>
+      <Card.Root variant="outline"><Card.Body><Heading as="h2" size="md">Formulario de visita</Heading><Text color="fg.muted">El contenido permanece operativo porque esta vista usa behavior=&quot;banner&quot;.</Text></Card.Body></Card.Root>
+    </NOfflineBoundary>
+    <ComponentDocs
+      purpose="NOfflineBoundary conserva la jerarquía y comunica el riesgo de red. navigator.onLine sólo detecta la interfaz del navegador; para confirmar el servidor debe usarse onCheckConnectivity o el estado online controlado."
+      steps={["Entrega online desde tu monitor de conectividad o permite eventos del navegador.", "Elige banner para continuidad o fallback para funciones dependientes de red.", "Muestra queuedCount sólo si existe una cola local real.", "Comprueba el servicio con onCheckConnectivity."]}
+      variants={[{ name: "banner", description: "Advierte y mantiene disponible el contenido." }, { name: "fallback", description: "Sustituye funciones que realmente necesitan red." }, { name: "controlled", description: "Acepta conectividad verificada por el consumidor." }]}
+      variantExamples={[{ id: "banner", label: "Banner", summary: "contenido preservado", preview: <NOfflineBoundary online={false} queuedCount={2}><Text>Edición local disponible</Text></NOfflineBoundary>, code: `<NOfflineBoundary online={false}>...</NOfflineBoundary>` }, { id: "fallback", label: "Fallback", summary: "función remota", preview: <NOfflineBoundary online={false} behavior="fallback" fallback={<Text>Consulta no disponible</Text>}><Text>Consulta remota</Text></NOfflineBoundary>, code: `<NOfflineBoundary behavior="fallback" fallback={<OfflineView />}>...</NOfflineBoundary>` }, { id: "online", label: "En línea", summary: "estado recuperado", preview: <NOfflineBoundary online showOnlineStatus><Text>Contenido disponible</Text></NOfflineBoundary>, code: `<NOfflineBoundary online showOnlineStatus>...</NOfflineBoundary>` }]}
+      propExamples={[{ label: "Detección del navegador", code: `<NOfflineBoundary detectBrowserEvents>...</NOfflineBoundary>` }, { label: "Comprobación real", code: `<NOfflineBoundary onCheckConnectivity={() => api.healthcheck()}>...</NOfflineBoundary>` }]}
+      code={`<NOfflineBoundary
+  online={connectivity.online}
+  queuedCount={queue.pendingCount}
+  onCheckConnectivity={connectivity.checkServer}
+>
+  <FieldApplication />
+</NOfflineBoundary>`}
+    />
+  </Stack>
 }
 
 /** Vista de ejemplo y documentación de NHeader. */
@@ -1653,7 +2517,7 @@ function WorkspaceSwitcherView() {
 function DevelopmentApp() {
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
-    const allowed: DemoView[] = ["overview", "theme", "item-picker", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions"]
+    const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "pos-example", "panel", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions"]
     return requestedView && allowed.includes(requestedView as DemoView) ? requestedView as DemoView : "overview"
   })
 
@@ -1661,6 +2525,50 @@ function DevelopmentApp() {
     ? <ThemeView />
     : activeView === "item-picker"
       ? <ItemPickerView />
+    : activeView === "line-item-editor"
+      ? <LineItemEditorView />
+    : activeView === "amount-input"
+      ? <AmountInputView />
+    : activeView === "amount-allocator"
+      ? <AmountAllocatorView />
+    : activeView === "step-flow"
+      ? <StepFlowView />
+    : activeView === "approval-flow"
+      ? <ApprovalFlowView />
+    : activeView === "balance-session"
+      ? <BalanceSessionView />
+    : activeView === "adjustment-editor"
+      ? <AdjustmentEditorView />
+    : activeView === "document-view"
+      ? <DocumentViewView />
+    : activeView === "code-capture"
+      ? <CodeCaptureView />
+    : activeView === "sync-status"
+      ? <SyncStatusView />
+    : activeView === "offline-boundary"
+      ? <OfflineBoundaryView />
+    : activeView === "cart"
+      ? <CartView />
+    : activeView === "checkout"
+      ? <CheckoutView />
+    : activeView === "receipt"
+      ? <ReceiptView />
+    : activeView === "pos-example"
+      ? <PosExampleView />
+    : activeView === "panel"
+      ? <PanelView />
+    : activeView === "page-patterns"
+      ? <PagePatternsView />
+    : activeView === "data-patterns"
+      ? <DataPatternsView />
+    : activeView === "activity-patterns"
+      ? <ActivityPatternsView />
+    : activeView === "dashboard-patterns"
+      ? <DashboardPatternsView />
+    : activeView === "saas-patterns"
+      ? <SaasPatternsView />
+    : activeView === "vertical-patterns"
+      ? <VerticalPatternsView />
     : activeView === "header"
     ? <HeaderView />
     : activeView === "sidebar"

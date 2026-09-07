@@ -11,9 +11,15 @@ Nissi UI es una librería de componentes React reutilizables, publicable en npm 
 La prioridad del proyecto es desarrollar componentes genéricos capaces de componer un punto de venta, compras, inventarios, servicios, recursos humanos y otros flujos sin introducir reglas de un dominio específico en el núcleo. La fuente canónica del plan es [docs/generalized-workflows-roadmap.md](./docs/generalized-workflows-roadmap.md).
 
 - Fase 1, `NItemPicker<T>`: completada. Selección visible con búsqueda, agrupación, layouts y estado controlado/no controlado.
-- **Siguiente sesión — Fase 2, `NLineItemEditor<TItem, TLine>`:** objetivo inmediato. Debe servir para cotizaciones, pedidos, facturas, requisiciones, presupuestos y carritos.
-- Fases posteriores: valores/distribución, flujos/aprobaciones, operación/documentos, captura/resiliencia y finalmente presets POS.
-- No construir componentes POS monolíticos ni adelantar `NCart`/`NCheckout`: deben ser presets delgados sobre primitivas y patrones estabilizados.
+- Fase 2, `NLineItemEditor<TItem, TLine>`: completada. Altas adaptables, campos editables, validación, orden y eliminación con estado controlado/no controlado.
+- Fase 3, `NAmountInput` y `NAmountAllocator<TMethod>`: completada. Captura internacionalizable y distribución precisa de valores entre destinos tipados.
+- Fase 4, `NStepFlow<TState>` y `NApprovalFlow<TRequest>`: completada. Flujos por pasos y decisiones adaptables con validación y concurrencia asíncrona.
+- Fase 5, `NBalanceSession<TEntry>`, `NAdjustmentEditor<T>` y `NDocumentView<TDocument>`: completada. Operación, correcciones auditables y documentos adaptables.
+- Fase 6, `NCodeCapture`, `NSyncStatus` y `NOfflineBoundary`: completada. Captura multicanal y comunicación resiliente para conectividad intermitente.
+- Fase 7, `NCart<TItem, TLine>`, `NCheckout<TMethod>`, `NReceipt<TReceipt, TLine>` y ejemplo POS: completada como composiciones delgadas.
+- Las siete fases prioritarias y las seis fases posteriores están completas. La prioridad actual es estabilización para publicación.
+- `NPanel` está completado como plus adelantado de esa siguiente fase: superficie lateral modal, dinámica y opuesta al sidebar.
+- No construir componentes POS monolíticos: cualquier preset futuro debe permanecer sobre primitivas y patrones estabilizados.
 
 ## Principios de diseño
 
@@ -77,6 +83,28 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
 - `src/components/item-picker/`: `NItemPicker<T>`, tipos, labels, búsqueda normalizada, selección y pruebas de la Fase 1 prioritaria.
+- `src/components/line-item-editor/`: `NLineItemEditor<TItem, TLine>`, tipos, labels, utilidades y pruebas de la Fase 2 prioritaria.
+- `src/components/amount-input/`: `NAmountInput`, tipos, labels, análisis regional y pruebas de captura numérica de la Fase 3.
+- `src/components/amount-allocator/`: `NAmountAllocator<TMethod>`, tipos, labels, aritmética de precisión y pruebas de distribución de la Fase 3.
+- `src/components/step-flow/`: `NStepFlow<TState>`, tipos, labels, navegación, validación y pruebas de la Fase 4.
+- `src/components/approval-flow/`: `NApprovalFlow<TRequest>`, tipos, labels, decisiones, historial y pruebas de la Fase 4.
+- `src/components/balance-session/`: `NBalanceSession<TEntry>`, tipos, labels, cálculo, cierre asíncrono y pruebas de la Fase 5.
+- `src/components/adjustment-editor/`: `NAdjustmentEditor<T>`, tipos, labels, comparación, validación y pruebas de la Fase 5.
+- `src/components/document-view/`: `NDocumentView<TDocument>`, tipos, labels, acciones, impresión y pruebas de la Fase 5.
+- `src/components/code-capture/`: `NCodeCapture`, tipos, labels, validación, captura externa y pruebas de la Fase 6.
+- `src/components/sync-status/`: `NSyncStatus`, tipos, labels, reintentos y pruebas de la Fase 6.
+- `src/components/offline-boundary/`: `NOfflineBoundary`, tipos, labels, eventos de conectividad y pruebas de la Fase 6.
+- `src/components/cart/`: `NCart<TItem, TLine>`, resumen inyectado, composición de partidas y pruebas de la Fase 7.
+- `src/components/checkout/`: `NCheckout<TMethod>`, composición de distribución, confirmación y pruebas de la Fase 7.
+- `src/components/receipt/`: `NReceipt<TReceipt, TLine>`, adaptación documental y pruebas de la Fase 7.
+- `src/components/panel/`: `NPanel`, señales controladas/no controladas, contenido dinámico, accesibilidad modal y pruebas.
+- `src/components/page/`, `data-patterns/`, `activity/`, `dashboard/`, `saas/` y `verticals/`: entrega final consolidada; contratos, implementación y pruebas de los patrones restantes.
+- `src/dev/FinalPhaseViews.tsx`: seis vistas de catálogo con documentación y ejemplos reactivos de la entrega final.
+- `src/dev/Phase7Views.tsx`: vistas del catálogo y ejemplo POS integrado; no pertenece a la API pública.
+- `src/dev/PanelView.tsx`: catálogo interactivo de `NPanel` alternando `NCheckout` y `NReceipt`.
+- `AI_CONTEXT.md`: contrato de integración portable para asistentes de IA y aplicaciones consumidoras.
+- `llms.txt`: índice breve y descubrible del contexto para IA.
+- `CHANGELOG.md`: historial de versiones públicas.
 - `docs/README.md`: índice de documentación.
 - `docs/tables.md`: contrato y ejemplos de tablas.
 - `docs/sidebar.md`: contrato y ejemplos de NSidebar.
@@ -85,6 +113,14 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/permissions.md`: contrato y ejemplos de NPermissionGate/useCanAccess.
 - `docs/app-shell.md`, `docs/module-registry.md` y `docs/workspace-switcher.md`: contratos de la capa de plataforma.
 - `docs/item-picker.md`: contrato y ejemplos de `NItemPicker<T>`.
+- `docs/line-item-editor.md`: contrato y ejemplos de `NLineItemEditor<TItem, TLine>`.
+- `docs/amount-input.md` y `docs/amount-allocator.md`: contratos y ejemplos de captura y distribución de valores.
+- `docs/step-flow.md` y `docs/approval-flow.md`: contratos y ejemplos de flujos por pasos y decisiones.
+- `docs/balance-session.md`, `docs/adjustment-editor.md` y `docs/document-view.md`: contratos de sesiones, ajustes y documentos.
+- `docs/code-capture.md`, `docs/sync-status.md` y `docs/offline-boundary.md`: contratos de captura y resiliencia.
+- `docs/cart.md`, `docs/checkout.md`, `docs/receipt.md` y `docs/pos-example.md`: presets y referencia integrada de la Fase 7.
+- `docs/panel.md`: contrato, responsive, foco, posición y composición dinámica de `NPanel`.
+- `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
 - `public/brand/`: isotipo, hero e iconos web de Nissi UI. `docs/brand.md` define el slogan y sus reglas de uso.
@@ -96,6 +132,7 @@ No se deben exportar los componentes de `internal/` sin una decisión explícita
 
 - `NTable` es la base configurable. El `Card` está activo por defecto y puede quitarse con `card={false}`.
 - `NDataTable` activa por defecto búsqueda, filtro, paginación, selección, ActionBar, visibilidad, exportación y reordenamiento de columnas y filas.
+- `server` permite controlar `query`, `rowCount` y `loading`; en ese modo la aplicación resuelve búsqueda, filtro, orden y paginación remotos y entrega la página actual.
 - `getRowId` debe usarse para identidad estable. Si no existe, se intenta `row.id`, después `row.key` y finalmente el índice con advertencia en desarrollo.
 - La edición sólo aplica a una fila. El borrado puede aplicar a varias y admite `onBeforeDelete`.
 - `NTableAction.selectionRequirement` controla si una acción aparece con selección `single`, `multiple` o `any`.
@@ -194,6 +231,96 @@ La referencia completa está en `docs/theme.md`.
 - `groupBy`, `layout="grid" | "list"`, `columns`, `renderItem`, `renderLeading`, `renderTrailing`, `header`, `footer` y `emptyState` permiten composición sin acoplamiento de dominio.
 - Cada opción es un botón nativo con `aria-pressed`, foco visible, flechas/Home/End, estados disabled/loading/empty y anuncios `aria-live`.
 - Todos los textos pertenecen a `NItemPickerLabels`; la referencia completa está en `docs/item-picker.md`.
+
+## Contrato actual de NLineItemEditor
+
+- `NLineItemEditor<TItem, TLine>` no presupone productos, cantidades, precios ni monedas: `createLine` traduce la entidad y `NLineItemField<TLine>` define cada valor visible o editable.
+- `lines`/`defaultLines` ofrecen estado controlado/no controlado; `onLinesChange` entrega el siguiente estado y la causa `add`, `update`, `remove` o `reorder`.
+- `resolveAdd` permite agregar, fusionar, sustituir o rechazar duplicados sin incorporar reglas de negocio al núcleo.
+- Reutiliza `NItemPicker` mediante `pickerProps`; ofrece slots de línea, estados loading/error/empty, restricciones por línea y modo `readOnly`.
+- La lista se apila en móvil y usa columnas alineadas desde `md`, sin duplicar controles. Inputs y acciones tienen nombres accesibles, foco visible y textos en `NLineItemEditorLabels`.
+- La referencia completa está en `docs/line-item-editor.md`.
+
+## Contrato actual de NAmountInput
+
+- `NAmountInput` conserva `number | null` como contrato y ofrece `value`/`defaultValue` para estado controlado/no controlado.
+- `locale` y `formatOptions` delegan la presentación a `Intl.NumberFormat`; no presupone moneda, porcentaje ni unidad.
+- Durante el foco conserva un borrador numérico sin adornos y sólo aplica moneda, agrupación y decimales de relleno al salir; esto evita que los renders controlados destruyan la captura en `NAmountAllocator`, `NCheckout` y POS.
+- `min`, `max`, `step`, controles incrementales y `quickValues` cubren captura táctil, teclado y atajos configurables.
+- Etiqueta, ayuda, error, requerido, disabled y readOnly usan `Field` y `NumberInput` de Chakra UI v3; todos los nombres internos pertenecen a `NAmountInputLabels`.
+- La referencia completa está en `docs/amount-input.md`.
+
+## Contrato actual de NAmountAllocator
+
+- `NAmountAllocator<TMethod>` requiere `total`, `methods`, `getMethodId` y `getMethodLabel`; cada `NAmountAllocation<TMethod>` conserva método y valor.
+- `allocations`/`defaultAllocations` ofrecen estado controlado/no controlado. El callback entrega asignaciones, resumen (`under`, `balanced`, `over`) y causa del cambio.
+- La aritmética usa `precision`; el reparto equitativo distribuye unidades mínimas restantes para conservar el total exacto.
+- Por defecto impide sobreasignación y negativos; ambos comportamientos sólo se habilitan explícitamente. Límites, bloqueo y validación pueden variar por método.
+- Resumen, progressbar, lista responsive, acciones y estados usan semántica accesible, tokens y `NAmountAllocatorLabels`.
+- La referencia completa está en `docs/amount-allocator.md`.
+
+## Contrato actual de NStepFlow
+
+- `NStepFlow<TState>` conserva un borrador tipado y un paso activo, ambos en modo controlado o no controlado.
+- Cada paso aporta contenido, metadatos y validación síncrona o asíncrona; los pasos opcionales, omitibles y deshabilitados no introducen reglas de dominio.
+- La navegación lineal evita saltos hacia adelante, permite volver a pasos habilitados y considera final al último paso habilitado.
+- Las acciones predeterminadas y sustituibles comparten un contexto tipado; la espera asíncrona bloquea acciones duplicadas y anuncia errores.
+- La referencia completa está en `docs/step-flow.md`.
+
+## Contrato actual de NApprovalFlow
+
+- `NApprovalFlow<TRequest>` adapta identidad, título, descripción y presentación de cualquier solicitud sin conocer su dominio.
+- El estado puede ser controlado o no controlado; las acciones, restricciones, comentarios e historial son configurables y traducibles.
+- Las decisiones asíncronas bloquean duplicados. Al cambiar `requestId`, se descarta el estado transitorio y cualquier respuesta tardía de la solicitud anterior.
+- `canPerformAction` controla presentación, no autorización: el backend debe revalidar identidad, tenant, permisos y vigencia de la solicitud.
+- La referencia completa está en `docs/approval-flow.md`.
+
+## Contrato actual de NBalanceSession
+
+- `NBalanceSession<TEntry>` calcula saldo esperado mediante saldo inicial y movimientos firmados aportados por `getEntryAmount`.
+- El conteo admite estado controlado/no controlado; `tolerance` y `allowCloseWithVariance` gobiernan exclusivamente la experiencia de cierre.
+- `onClose` es asíncrono, bloquea duplicados y descarta respuestas cuando cambia `sessionId`.
+- La persistencia, autorización y validación definitiva corresponden al backend. La referencia está en `docs/balance-session.md`.
+
+## Contrato actual de NAdjustmentEditor
+
+- `NAdjustmentEditor<T>` exige `createAdjustment` para mantener un borrador independiente del original.
+- Campos declarativos o `renderEditor` construyen la corrección; `changedFieldIds`, motivo y errores acompañan el envío.
+- Cambiar `itemId` reinicia el estado transitorio y descarta respuestas anteriores. El backend conserva la trazabilidad definitiva.
+- La referencia completa está en `docs/adjustment-editor.md`.
+
+## Contrato actual de NDocumentView
+
+- `NDocumentView<TDocument>` adapta identidad, encabezado, estado, metadatos y secciones sin fijar un modelo documental.
+- Las acciones son asíncronas y restringibles visualmente; la autorización real continúa en el servidor.
+- `paper` y `plain`, slots completos e impresión permiten integrarlo en pantallas y salidas físicas.
+- La referencia completa está en `docs/document-view.md`.
+
+## Contrato actual de la Fase 6
+
+- `NCodeCapture` recibe identificadores manuales, pegados, emitidos por lectores de teclado o entregados por `onRequestScan`; normaliza, valida, controla duplicados y sólo confirma cuando `onCapture` tiene éxito.
+- `NSyncStatus` es controlado y representa `synced`, `syncing`, `pending`, `offline` o `error`. No crea colas ni infiere éxito remoto; `syncKey` descarta reintentos obsoletos.
+- `NOfflineBoundary` ofrece continuidad con `banner` o sustitución con `fallback`. Los eventos de `navigator.onLine` son orientativos; `online` controlado y `onCheckConnectivity` permiten usar una comprobación real del servicio.
+- La persistencia local, resolución de conflictos, autenticación y sincronización pertenecen a la aplicación consumidora.
+- Las referencias completas están en `docs/code-capture.md`, `docs/sync-status.md` y `docs/offline-boundary.md`.
+
+## Contrato actual de la Fase 7
+
+- `NCart<TItem, TLine>` reutiliza `NLineItemEditor`; `getLineAmount` y `calculateSummary` mantienen precios, impuestos, descuentos y promociones fuera de la librería.
+- `NCheckout<TMethod>` reutiliza `NAmountAllocator`; sólo intenta completar una distribución válida, bloquea duplicados y descarta respuestas cuando cambia `checkoutKey`.
+- `NReceipt<TReceipt, TLine>` reutiliza `NDocumentView`; extractores tipados presentan folio, fecha, partidas y totales ya calculados.
+- La demo POS en `src/dev/Phase7Views.tsx` valida la interoperabilidad con `NCodeCapture`, `NOfflineBoundary` y `NSyncStatus`. Su cola es sólo demostrativa y no se publica como motor de datos.
+- La persistencia local, claves de idempotencia, pagos, reglas fiscales, autorización e integridad definitiva corresponden a la aplicación y su backend.
+- Las referencias completas están en `docs/cart.md`, `docs/checkout.md`, `docs/receipt.md` y `docs/pos-example.md`.
+
+## Contrato actual de NPanel
+
+- `NPanel` es una superficie lateral modal agnóstica al contenido; `open`/`defaultOpen` y `onOpenChange` permiten controlarla desde señales de la aplicación.
+- `children`, `title`, `description`, `headerActions` y `footer` pueden cambiar mientras permanece abierta. `contentKey` reinicia opcionalmente el subárbol sustituido.
+- `placement="auto"` consume internamente `sidebarPosition` de `NAppShell` y aparece en el lado contrario; fuera del shell admite `sidebarPosition` explícito.
+- Ocupa `100vw` en móvil, conserva un ancho legible configurable en escritorio y siempre mide `100dvh`; sólo su cuerpo desplaza contenido.
+- Portal, overlay, animación, bloqueo de scroll, foco atrapado/restaurado, Escape y botón de cierre se apoyan en el Drawer de Chakra UI v3.
+- La aplicación conserva permisos, navegación de vistas, cambios sin guardar, persistencia y reglas de negocio. La referencia completa está en `docs/panel.md`.
 
 ## Flujo recomendado para agentes
 

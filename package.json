@@ -1,7 +1,16 @@
 {
   "name": "nissi-ui",
   "version": "0.1.0",
-  "description": "Reusable React components built with Chakra UI",
+  "description": "Accessible, reusable React components for modular products, operational workflows and SaaS applications",
+  "author": "Lic. Informática Joaquin Villegas Chavez",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaquinv106/NissiUI.git"
+  },
+  "homepage": "https://github.com/joaquinv106/NissiUI#readme",
+  "bugs": {
+    "url": "https://github.com/joaquinv106/NissiUI/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,6 +25,11 @@
   "files": [
     "dist",
     "docs",
+    "AI_CONTEXT.md",
+    "llms.txt",
+    "CHANGELOG.md",
+    "PROJECT_CONTEXT.md",
+    "AGENTS.md",
     "README.md",
     "LICENSE"
   ],
@@ -34,7 +48,12 @@
     "chakra-ui",
     "components",
     "ui",
-    "design-system"
+    "design-system",
+    "typescript",
+    "vite",
+    "saas",
+    "dashboard",
+    "offline-first"
   ],
   "license": "MIT",
   "publishConfig": {

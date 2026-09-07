@@ -16,4 +16,7 @@ export type {
   NTableProps,
   NTableRow,
   NTableSelectOption,
+  NTableServerOptions,
+  NTableServerQuery,
+  NTableSort,
 } from "./types"

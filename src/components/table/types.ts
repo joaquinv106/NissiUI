@@ -121,6 +121,29 @@ export interface NTablePaginationOptions {
   pageSizeOptions?: number[]
 }
 
+export interface NTableSort {
+  id: string
+  desc: boolean
+}
+
+/** Estado serializable para consultar una tabla paginada en API, RPC o almacenamiento local. */
+export interface NTableServerQuery {
+  pageIndex: number
+  pageSize: number
+  sorting: NTableSort[]
+  search: string
+  filterColumn: string
+  filterValue: string
+}
+
+export interface NTableServerOptions {
+  /** Total de registros en el origen, no sólo los incluidos en `config.data`. */
+  rowCount: number
+  query: NTableServerQuery
+  loading?: boolean
+  onQueryChange: (query: NTableServerQuery) => void
+}
+
 export interface NTableExportOptions {
   fileName?: string
   pdf?: boolean
@@ -154,6 +177,8 @@ export interface NTableProps<T extends NTableRow = NTableRow> {
   useTanStack?: boolean
   columnGroups?: boolean
   pagination?: boolean | NTablePaginationOptions
+  /** Activa paginación, búsqueda, filtro y orden remotos controlados. */
+  server?: NTableServerOptions
   selectable?: boolean
   selectionMode?: "single" | "multiple"
   actions?: NTableAction<T>[]

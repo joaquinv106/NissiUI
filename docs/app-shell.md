@@ -21,4 +21,6 @@
 - `header`, `sidebar` y `footer`: slots desacoplados.
 - `labels`: traduce el enlace para saltar al contenido y los nombres de regiones.
 
+`sidebarPosition` también se comparte internamente con `NPanel`: cuando el panel usa `placement="auto"`, se abre en el borde opuesto sin que la aplicación duplique esa configuración.
+
 Genera regiones `aside`, `main` y `footer`, además de un skip link visible al recibir foco. `NHeader` y `NSidebar` siguen siendo responsables de sus propios Drawers y estados controlados.
