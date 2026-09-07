@@ -33,13 +33,17 @@ createRoot(document.getElementById("root")!).render(
 )
 ```
 
-Importa siempre desde la API raíz:
+La API raíz continúa siendo la opción general:
 
 ```tsx
 import { NAppShell, NDataTable, NForm, NPanel } from "nissi-ui"
 ```
 
 No importes rutas `dist/`, `src/` o `internal/`.
+
+Para imports especialmente acotados también existen `nissi-ui/theme`, `nissi-ui/styling`, `nissi-ui/panel`, `nissi-ui/document-view`, `nissi-ui/receipt` y `nissi-ui/thermal-print`. Estas subrutas son públicas; cualquier otra ruta interna sigue fuera del contrato.
+
+`NPanel`, `NDocumentView`, `NReceipt` y `NThermalPrint` aceptan opcionalmente `unstyled`, `classNames` y `styles`. Sin esas props conservan exactamente la apariencia predeterminada. `NThemeProvider.system` permite entregar un sistema Chakra v3 propio y usa `nissiSystem` por defecto.
 
 ## Modelo de integración
 
@@ -79,13 +83,16 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 - Plataforma: `NAppShell`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`.
 - Acceso: `NPermissionsProvider`, `NPermissionGate`, `useCanAccess`, `NSubscriptionGate`.
 - Formularios y selección: `NForm`, `NItemPicker`, `NAmountInput`, `NCodeCapture`, `NDateRangePicker`, `NFileUpload`.
+- `NCodeCapture` integra lectores HID, cámaras y handhelds mediante `scannerAdapter`; la decodificación y los permisos permanecen en el SDK consumidor, mientras el componente aporta sesiones, cola, estados y `parse` tipado.
 - Datos: `NTable`, `NDataTable`, `NFilterBar`, `NDescriptionList`, `NDetailPanel`.
 - Operación: `NLineItemEditor`, `NAmountAllocator`, `NStepFlow`, `NApprovalFlow`, `NBalanceSession`, `NAdjustmentEditor`.
-- Comercio: `NCart`, `NCheckout`, `NReceipt`, `NDocumentView`.
-- Estados: `NAsyncState`, `NEmptyState`, `NConfirmDialog`, `NPanel`, `NSyncStatus`, `NOfflineBoundary`.
+- Comercio: `NCart`, `NCheckout`, `NReceipt`, `NDocumentView`, `NThermalPrint`.
+- `NThermalPrint` aísla contenido para rollos de 58/80 mm; usa `window.print()` por defecto y permite inyectar un `adapter` para puentes locales, ESC/POS o aplicaciones de escritorio. Corte, copias y cajón son responsabilidad de ese adaptador.
+- Estados y productividad: `NAsyncState`, `NEmptyState`, `NConfirmDialog`, `NPanel`, `NCtrl`, `NSyncStatus`, `NOfflineBoundary`.
 - Actividad: `NActivityTimeline`, `NNotificationCenter`, `NAuditLog`, `NImpersonationBanner`.
 - Dashboards: `NStatCard`, `NDashboardGrid`, `NDashboardGridItem`, `NChartFrame`.
 - Verticales: `NKanban`, `NScheduler`, `NMapView`.
+- Proyecto fiscal: `NFacture`, `NissiInvoicingProvider`, `createNFactureNavigation` para sidebar y `createNFactureHeaderNavigation` para header; toda validación y operación fiscal definitiva vive en backend/PAC.
 
 La documentación detallada vive en `docs/README.md` dentro del paquete y del repositorio.
 
@@ -103,6 +110,7 @@ La documentación detallada vive en `docs/README.md` dentro del paquete y del re
 10. Revalida autenticación, tenant, permisos, suscripciones, importes e idempotencia en el backend.
 11. `NOfflineBoundary` y `NSyncStatus` comunican estado; IndexedDB/SQLite y el motor de sincronización pertenecen a la aplicación.
 12. Los `renderer` de `NChartFrame` y `NMapView` permiten conectar motores externos sin volverlos dependencias obligatorias.
+13. Personaliza slots mediante `classNames`/`styles`; no dependas de clases hash de Chakra ni importes `internal/`.
 
 ## Arquitectura recomendada
 

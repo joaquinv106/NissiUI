@@ -9,6 +9,8 @@ Este directorio es la fuente de documentación de los componentes antes de gener
 Para integrar la librería mediante un asistente de IA consulta primero [AI_CONTEXT.md](../AI_CONTEXT.md) y el índice [llms.txt](../llms.txt).
 El historial de versiones públicas se mantiene en [CHANGELOG.md](../CHANGELOG.md).
 
+Consulta también [Personalización compatible](./customization.md) y [Empaquetado, tree shaking y SSR](./package-compatibility.md).
+
 ## Componentes
 
 | Componente | Estado | Documentación | Pruebas |
@@ -38,14 +40,17 @@ El historial de versiones públicas se mantiene en [CHANGELOG.md](../CHANGELOG.m
 | `NCart<TItem, TLine>` | Flujos generalizables · Fase 7 | [Carrito](./cart.md) | `src/components/cart/NCart.test.tsx` |
 | `NCheckout<TMethod>` | Flujos generalizables · Fase 7 | [Finalización](./checkout.md) | `src/components/checkout/NCheckout.test.tsx` |
 | `NReceipt<TReceipt, TLine>` | Flujos generalizables · Fase 7 | [Recibo](./receipt.md) | `src/components/receipt/NReceipt.test.tsx` |
+| `NThermalPrint` | Impresión · Complemento | [Impresión térmica](./thermal-print.md) | `src/components/thermal-print/NThermalPrint.test.tsx` |
 | Ejemplo POS integrado | Flujos generalizables · Fase 7 | [Integración POS](./pos-example.md) | `src/dev/Phase7Views.test.tsx` |
 | `NPanel` | Estados y navegación · Plus | [Panel lateral](./panel.md) | `src/components/panel/NPanel.test.tsx` |
+| `NCtrl` | Productividad · Atajos | [Atajos contextuales](./ctrl.md) | `src/components/ctrl/NCtrl.test.tsx` |
 | Estados y navegación (`NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState`, `NConfirmDialog`) | Fase final | [Fase final](./final-components.md) | `src/components/page/page.test.tsx` |
 | Datos (`NFilterBar`, `NDateRangePicker`, `NDescriptionList`, `NDetailPanel`) | Fase final | [Fase final](./final-components.md) | `src/components/data-patterns/data-patterns.test.tsx` |
 | Actividad (`NFileUpload`, `NActivityTimeline`, `NNotificationCenter`) | Fase final | [Fase final](./final-components.md) | `src/components/activity/activity.test.tsx` |
 | Dashboard (`NStatCard`, `NDashboardGrid`, `NChartFrame`) | Fase final | [Fase final](./final-components.md) | `src/components/dashboard/dashboard.test.tsx` |
 | SaaS (`NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`) | Fase final | [Fase final](./final-components.md) | `src/components/saas/saas.test.tsx` |
 | Verticales (`NKanban`, `NScheduler`, `NMapView`) | Fase final | [Fase final](./final-components.md) | `src/components/verticals/verticals.test.tsx` |
+| `NFacture` | Proyecto vertical · CFDI México | [Facturación electrónica](./facture.md) | `src/components/facture/NFacture.test.tsx` |
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 

@@ -1,3 +1,4 @@
+import type { SystemContext } from "@chakra-ui/react"
 import type { PropsWithChildren } from "react"
 
 /** Temas visuales mantenidos por Nissi UI. */
@@ -21,6 +22,8 @@ export interface NThemeLabels {
 }
 
 export interface NThemeProviderProps extends PropsWithChildren {
+  /** Sistema Chakra sustituible; conserva `nissiSystem` como valor predeterminado. */
+  system?: SystemContext
   /** Tema controlado. Si se omite, NTheme administra y persiste la preferencia. */
   theme?: NThemePreference
   defaultTheme?: NThemePreference

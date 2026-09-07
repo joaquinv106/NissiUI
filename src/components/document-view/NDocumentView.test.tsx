@@ -81,4 +81,20 @@ describe("NDocumentView", () => {
     view.rerender(<ChakraProvider value={defaultSystem}><NDocumentView {...baseProps} document={null} /></ChakraProvider>)
     expect(screen.getByRole("status")).toHaveTextContent("No hay un documento")
   })
+
+  it("expone slots estables y conserva semántica en modo unstyled", () => {
+    renderDocument({
+      unstyled: true,
+      classNames: { root: "custom-document", document: "custom-paper", metadata: "custom-metadata" },
+      styles: { document: { px: "10" } },
+    })
+
+    const root = screen.getByRole("region", { name: "Vista de documento" })
+    const article = screen.getByRole("article", { name: "Orden de servicio" })
+    expect(root).toHaveClass("custom-document")
+    expect(root).toHaveAttribute("data-scope", "n-document-view")
+    expect(article).toHaveClass("custom-paper")
+    expect(article).toHaveAttribute("data-part", "document")
+    expect(screen.getByRole("definition").closest("dl")).toHaveClass("custom-metadata")
+  })
 })

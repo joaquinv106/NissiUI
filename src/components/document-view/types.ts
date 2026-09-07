@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 
+import type { NComponentStyleProps } from "../styling"
+
 export interface NDocumentField<TDocument> {
   id: string
   label: ReactNode
@@ -48,7 +50,20 @@ export interface NDocumentViewLabels {
   emptyDescription: string
 }
 
-export interface NDocumentViewProps<TDocument> {
+export type NDocumentViewSlot =
+  | "root"
+  | "actions"
+  | "error"
+  | "loading"
+  | "empty"
+  | "document"
+  | "documentHeader"
+  | "title"
+  | "metadata"
+  | "section"
+  | "documentFooter"
+
+export interface NDocumentViewProps<TDocument> extends NComponentStyleProps<NDocumentViewSlot> {
   document?: TDocument | null
   getDocumentId: (document: TDocument) => string
   getDocumentTitle: (document: TDocument) => ReactNode

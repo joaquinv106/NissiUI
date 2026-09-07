@@ -82,6 +82,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
+- `src/components/styling/`: contrato público aditivo de `unstyled`, `classNames` y `styles` por slots tipados.
 - `src/components/item-picker/`: `NItemPicker<T>`, tipos, labels, búsqueda normalizada, selección y pruebas de la Fase 1 prioritaria.
 - `src/components/line-item-editor/`: `NLineItemEditor<TItem, TLine>`, tipos, labels, utilidades y pruebas de la Fase 2 prioritaria.
 - `src/components/amount-input/`: `NAmountInput`, tipos, labels, análisis regional y pruebas de captura numérica de la Fase 3.
@@ -97,7 +98,10 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/cart/`: `NCart<TItem, TLine>`, resumen inyectado, composición de partidas y pruebas de la Fase 7.
 - `src/components/checkout/`: `NCheckout<TMethod>`, composición de distribución, confirmación y pruebas de la Fase 7.
 - `src/components/receipt/`: `NReceipt<TReceipt, TLine>`, adaptación documental y pruebas de la Fase 7.
+- `src/components/thermal-print/`: `NThermalPrint`, aislamiento de contenido para rollos de 58/80 mm y adaptadores de impresión sustituibles.
 - `src/components/panel/`: `NPanel`, señales controladas/no controladas, contenido dinámico, accesibilidad modal y pruebas.
+- `src/components/ctrl/`: `NCtrl`, provider, hooks, normalización de combinaciones, ejecución contextual y pruebas.
+- `src/components/facture/`: proyecto vertical `NFacture`, contratos CFDI, navegación, permisos y adaptadores de integración; las reglas fiscales definitivas permanecen en backend/PAC.
 - `src/components/page/`, `data-patterns/`, `activity/`, `dashboard/`, `saas/` y `verticals/`: entrega final consolidada; contratos, implementación y pruebas de los patrones restantes.
 - `src/dev/FinalPhaseViews.tsx`: seis vistas de catálogo con documentación y ejemplos reactivos de la entrega final.
 - `src/dev/Phase7Views.tsx`: vistas del catálogo y ejemplo POS integrado; no pertenece a la API pública.
@@ -120,7 +124,11 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/balance-session.md`, `docs/adjustment-editor.md` y `docs/document-view.md`: contratos de sesiones, ajustes y documentos.
 - `docs/code-capture.md`, `docs/sync-status.md` y `docs/offline-boundary.md`: contratos de captura y resiliencia.
 - `docs/cart.md`, `docs/checkout.md`, `docs/receipt.md` y `docs/pos-example.md`: presets y referencia integrada de la Fase 7.
+- `docs/thermal-print.md`: contrato de impresión térmica, aislamiento del DOM y adaptadores locales.
+- `docs/customization.md` y `docs/package-compatibility.md`: slots visuales, sistema Chakra sustituible, subrutas, tree shaking, SSR y build del portal.
 - `docs/panel.md`: contrato, responsive, foco, posición y composición dinámica de `NPanel`.
+- `docs/ctrl.md`: contrato de atajos por vista, registro, ejecución, conflictos y accesibilidad de `NCtrl`.
+- `docs/facture.md`: alcance, contratos, seguridad, navegación y referencias oficiales de `NFacture`.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
@@ -214,7 +222,7 @@ Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.m
 
 ## Contrato actual de NTheme
 
-- `NThemeProvider` es el proveedor raíz: instala `nissiSystem`, sincroniza `next-themes`, persiste la preferencia y admite estado controlado mediante `theme`/`onThemeChange`.
+- `NThemeProvider` es el proveedor raíz: instala `nissiSystem` por defecto o un `system` Chakra sustituible, sincroniza `next-themes`, persiste la preferencia y admite estado controlado mediante `theme`/`onThemeChange`.
 - Las preferencias públicas son `light`, `dark`, `navy`, `nissi` y `system`; el tema efectivo siempre es `light`, `dark`, `navy` o `nissi`.
 - `NTheme` es el selector accesible con `presentation="icon" | "button"`. Sus textos pertenecen a `NThemeLabels` y tienen español predeterminado.
 - `navy` hereda recetas y paletas de estados del modo oscuro de Chakra, pero redefine `bg.*`, `fg.*` y `border.*` con una escala azul marino armónica.
@@ -299,7 +307,7 @@ La referencia completa está en `docs/theme.md`.
 
 ## Contrato actual de la Fase 6
 
-- `NCodeCapture` recibe identificadores manuales, pegados, emitidos por lectores de teclado o entregados por `onRequestScan`; normaliza, valida, controla duplicados y sólo confirma cuando `onCapture` tiene éxito.
+- `NCodeCapture` recibe identificadores manuales, pegados, lectores HID globales o adaptadores de cámara/handheld; soporta sesiones cancelables y continuas, cola acotada, simbología/dispositivo, parser tipado, permisos, desconexión y linterna opcional, y sólo confirma cuando `onCapture` tiene éxito.
 - `NSyncStatus` es controlado y representa `synced`, `syncing`, `pending`, `offline` o `error`. No crea colas ni infiere éxito remoto; `syncKey` descarta reintentos obsoletos.
 - `NOfflineBoundary` ofrece continuidad con `banner` o sustitución con `fallback`. Los eventos de `navigator.onLine` son orientativos; `online` controlado y `onCheckConnectivity` permiten usar una comprobación real del servicio.
 - La persistencia local, resolución de conflictos, autenticación y sincronización pertenecen a la aplicación consumidora.
@@ -314,6 +322,15 @@ La referencia completa está en `docs/theme.md`.
 - La persistencia local, claves de idempotencia, pagos, reglas fiscales, autorización e integridad definitiva corresponden a la aplicación y su backend.
 - Las referencias completas están en `docs/cart.md`, `docs/checkout.md`, `docs/receipt.md` y `docs/pos-example.md`.
 
+## Contrato actual de NThermalPrint
+
+- `NThermalPrint` envuelve cualquier contenido React y lo clona temporalmente bajo `body` para imprimir sólo ese fragmento, sin header, sidebar ni otras superficies de la aplicación.
+- `paperWidthMm`, `contentWidthMm`, `marginMm`, `fontSizePt`, `fontFamily` y `printBackground` configuran rollos de 58/80 mm u otros anchos.
+- Sin `adapter` usa `window.print()`; con `adapter` entrega DOM, HTML y configuración resuelta a un puente local, escritorio o ESC/POS aportado por el consumidor.
+- `job` comunica copias, corte y apertura de cajón al adaptador. El navegador no garantiza esas capacidades ni impresión silenciosa.
+- Expone `print()` por render prop y `ref`, de modo que `NReceipt` y `NDocumentView` pueden reutilizar sus botones mediante `onPrint`.
+- Los controles propios se excluyen del ticket, los errores se anuncian y todos los textos pertenecen a `NThermalPrintLabels`. La referencia está en `docs/thermal-print.md`.
+
 ## Contrato actual de NPanel
 
 - `NPanel` es una superficie lateral modal agnóstica al contenido; `open`/`defaultOpen` y `onOpenChange` permiten controlarla desde señales de la aplicación.
@@ -322,6 +339,22 @@ La referencia completa está en `docs/theme.md`.
 - Ocupa `100vw` en móvil, conserva un ancho legible configurable en escritorio y siempre mide `100dvh`; sólo su cuerpo desplaza contenido.
 - Portal, overlay, animación, bloqueo de scroll, foco atrapado/restaurado, Escape y botón de cierre se apoyan en el Drawer de Chakra UI v3.
 - La aplicación conserva permisos, navegación de vistas, cambios sin guardar, persistencia y reglas de negocio. La referencia completa está en `docs/panel.md`.
+
+## Contrato actual de NCtrl
+
+- `NCtrl` escucha combinaciones de la vista activa, abre un `NPanel` con F11 y conserva un botón flotante como alternativa táctil o cuando el navegador reserva esa tecla.
+- `NCtrlProvider`, `useNCtrlShortcut` y `useNCtrlShortcuts` permiten que componentes montados registren y retiren acciones sin conocer la ubicación del panel global.
+- `Mod`, modificadores, teclas de función, alternativas, prioridad, conflictos, repetición e inputs editables son configurables; los handlers asíncronos bloquean duplicados.
+- El host deriva atajos visibles/deshabilitados desde permisos y estado. El backend revalida toda operación sensible. La referencia está en `docs/ctrl.md`.
+
+## Contrato actual de NFacture
+
+- `NFacture` es un proyecto vertical componible para CFDI 4.0; reutiliza primitivas públicas y no introduce sellado, XML, secretos ni comunicación PAC en el cliente.
+- `NissiInvoicingProvider` inyecta datos y `NFactureDataAdapter` delega carga, tickets, CSD, Constancia Fiscal, PAC, webhooks y timbrado al consumidor.
+- `createNFactureNavigation` produce el árbol para `NSidebar`; `createNFactureHeaderNavigation` genera su equivalente filtrado para `NHeader`. Ambos incluyen `docs`.
+- La navegación embebida está desactivada por defecto para evitar un segundo sidebar. El alta de receptores, visor y administración usan `NPanel` para conservar una pantalla operativa compacta.
+- `role="admin" | "operator" | "pos"` ofrece presets; `permissions` permite RBAC explícito. El backend siempre revalida identidad, tenant y autorización.
+- Los catálogos SAT se inyectan desde el host para evitar congelar reglas temporales. La referencia completa está en `docs/facture.md`.
 
 ## Flujo recomendado para agentes
 

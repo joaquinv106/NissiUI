@@ -8,4 +8,5 @@ export type {
   NDocumentViewContext,
   NDocumentViewLabels,
   NDocumentViewProps,
+  NDocumentViewSlot,
 } from "./types"

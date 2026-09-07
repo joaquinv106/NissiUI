@@ -1,5 +1,7 @@
 import type { Key, ReactElement, ReactNode, RefObject } from "react"
 
+import type { NComponentStyleProps } from "../styling"
+
 export type NPanelPlacement = "auto" | "start" | "end"
 
 export interface NPanelLabels {
@@ -7,7 +9,21 @@ export interface NPanelLabels {
   closePanel: string
 }
 
-export interface NPanelProps {
+export type NPanelSlot =
+  | "root"
+  | "trigger"
+  | "backdrop"
+  | "positioner"
+  | "content"
+  | "header"
+  | "title"
+  | "description"
+  | "headerActions"
+  | "body"
+  | "footer"
+  | "closeTrigger"
+
+export interface NPanelProps extends NComponentStyleProps<NPanelSlot> {
   /** Señal controlada que muestra u oculta el panel. */
   open?: boolean
   /** Estado inicial para uso no controlado. */

@@ -110,4 +110,20 @@ describe("NPanel", () => {
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(screen.getByRole("dialog", { name: "Proceso crítico" })).toBeInTheDocument()
   })
+
+  it("admite personalización por slots sin alterar el comportamiento accesible", async () => {
+    renderPanel(<NPanel
+      open
+      unstyled
+      title="Panel personalizado"
+      classNames={{ content: "custom-panel", body: "custom-panel-body" }}
+      styles={{ body: { px: "9" } }}
+    ><Text>Contenido conservado</Text></NPanel>)
+
+    const dialog = await screen.findByRole("dialog", { name: "Panel personalizado" })
+    expect(dialog).toHaveClass("custom-panel")
+    expect(dialog).toHaveAttribute("data-scope", "n-panel")
+    expect(dialog.querySelector("[data-part='body']")).toHaveClass("custom-panel-body")
+    expect(within(dialog).getByRole("button", { name: "Cerrar panel lateral" })).toBeEnabled()
+  })
 })

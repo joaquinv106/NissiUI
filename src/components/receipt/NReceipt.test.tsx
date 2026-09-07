@@ -62,4 +62,12 @@ describe("NReceipt", () => {
     view.rerender(<ChakraProvider value={defaultSystem}><NReceipt<Receipt, Line> receipt={receipt} getReceiptId={(value) => value.id} getReceiptNumber={(value) => value.folio} getLines={(value) => value.lines} getLineId={(line) => line.id} getLineLabel={(line) => line.name} getLineTotal={(line) => line.price * line.quantity} getTotal={(value) => value.total} loading /></ChakraProvider>)
     expect(screen.getByRole("status")).toHaveTextContent("Cargando documento")
   })
+
+  it("personaliza slots del recibo sin cambiar partidas ni totales", () => {
+    renderReceipt({ unstyled: true, classNames: { lines: "custom-lines", line: "custom-line", total: "custom-total" } })
+    expect(screen.getByRole("list", { name: "Partidas del recibo" }).closest("[data-part='lines']")).toHaveClass("custom-lines")
+    expect(screen.getByRole("listitem")).toHaveClass("custom-line")
+    expect(screen.getByText("Total").closest("div")).toHaveClass("custom-total")
+    expect(screen.getByText("$92.80")).toBeInTheDocument()
+  })
 })

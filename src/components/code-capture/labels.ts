@@ -8,6 +8,18 @@ export const defaultNCodeCaptureLabels: NCodeCaptureLabels = {
   submit: "Procesar código",
   requestScan: "Abrir lector",
   requestingScan: "Abriendo lector",
+  startScanner: "Iniciar lector",
+  stopScanner: "Detener lector",
+  scannerIdle: "Lector detenido",
+  scannerStarting: "Iniciando lector",
+  scannerActive: "Lector activo",
+  scannerStopping: "Deteniendo lector",
+  scannerUnsupported: "Lector no compatible",
+  scannerPermissionDenied: "Permiso del lector denegado",
+  scannerDisconnected: "Lector desconectado",
+  scannerError: "Error del lector",
+  enableTorch: "Encender linterna",
+  disableTorch: "Apagar linterna",
   processing: "Procesando código",
   clear: "Limpiar código",
   required: "Captura un código antes de continuar.",
@@ -16,6 +28,7 @@ export const defaultNCodeCaptureLabels: NCodeCaptureLabels = {
   captured: "Código procesado correctamente.",
   captureFailed: "No fue posible procesar el código.",
   scannerFailed: "No fue posible obtener un código del lector.",
+  queueFull: "El lector envió demasiados códigos. Intenta nuevamente.",
 }
 
 export function resolveNCodeCaptureLabels(labels?: Partial<NCodeCaptureLabels>): NCodeCaptureLabels {

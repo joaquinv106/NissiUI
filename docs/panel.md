@@ -71,6 +71,10 @@ En aperturas controladas desde un botón externo, `returnFocusRef` identifica de
 | `modal` / `trapFocus` / `preventScroll` | `boolean` | `true` | Comportamiento modal accesible. |
 | `initialFocusRef` / `returnFocusRef` | `RefObject` | — | Destinos explícitos de foco. |
 | `labels` | `Partial<NPanelLabels>` | español | Título alternativo y nombre del cierre. |
+| `unstyled` | `boolean` | `false` | Retira decoración conservando Drawer, foco y controles. |
+| `classNames` / `styles` | slots tipados | — | Personaliza partes públicas sin depender del DOM interno. |
+
+Los slots disponibles incluyen `content`, `header`, `title`, `description`, `headerActions`, `body`, `footer`, `closeTrigger`, `backdrop`, `positioner` y `trigger`. Consulta [Personalización compatible](./customization.md).
 
 ## Responsabilidades
 

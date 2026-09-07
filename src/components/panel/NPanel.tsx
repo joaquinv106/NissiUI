@@ -36,6 +36,9 @@ export function NPanel({
   role = "dialog",
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NPanelProps) {
   const labels = useMemo(() => resolveNPanelLabels(labelsProp), [labelsProp])
   const appShellLayout = useNAppShellLayout()
@@ -46,6 +49,7 @@ export function NPanel({
 
   return (
     <Drawer.Root
+      unstyled={unstyled}
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={(details) => onOpenChange?.(details.open)}
@@ -63,38 +67,53 @@ export function NPanel({
       unmountOnExit={unmountOnExit}
       role={role}
     >
-      {trigger ? <Drawer.Trigger asChild>{trigger}</Drawer.Trigger> : null}
+      {trigger ? <Drawer.Trigger asChild className={classNames?.trigger} css={styles?.trigger} data-scope="n-panel" data-part="trigger">{trigger}</Drawer.Trigger> : null}
       <Portal>
-        <Drawer.Backdrop _motionReduce={{ animation: "none" }} />
-        <Drawer.Positioner>
+        <Drawer.Backdrop unstyled={unstyled} className={classNames?.backdrop} css={styles?.backdrop} data-scope="n-panel" data-part="backdrop" _motionReduce={{ animation: "none" }} />
+        <Drawer.Positioner unstyled={unstyled} className={classNames?.positioner} css={styles?.positioner} data-scope="n-panel" data-part="positioner">
           <Drawer.Content
+            unstyled={unstyled}
+            className={classNames?.content ?? classNames?.root}
+            css={styles?.content ?? styles?.root}
+            data-scope="n-panel"
+            data-part="content"
             data-n-panel=""
             data-placement={resolvedPlacement}
             width={{ base: "100vw", md: desktopWidth }}
             maxW={{ base: "100vw", md: "calc(100vw - 4rem)" }}
             height="100dvh"
             maxH="100dvh"
-            bg="bg.panel"
-            color="fg"
+            bg={unstyled ? undefined : "bg.panel"}
+            color={unstyled ? undefined : "fg"}
             colorPalette={colorPalette}
-            borderInlineStartWidth={resolvedPlacement === "end" ? "1px" : undefined}
-            borderInlineEndWidth={resolvedPlacement === "start" ? "1px" : undefined}
-            borderColor="border"
-            shadow="2xl"
+            borderInlineStartWidth={!unstyled && resolvedPlacement === "end" ? "1px" : undefined}
+            borderInlineEndWidth={!unstyled && resolvedPlacement === "start" ? "1px" : undefined}
+            borderColor={unstyled ? undefined : "border"}
+            shadow={unstyled ? undefined : "2xl"}
             _motionReduce={{ animation: "none" }}
           >
             <Drawer.Header
-              minH={{ base: "4.5rem", md: "5rem" }}
-              px={{ base: "4", md: "6" }}
-              py="4"
-              pe={{ base: "14", md: "16" }}
-              borderBottomWidth="1px"
-              borderColor="border"
+              unstyled={unstyled}
+              className={classNames?.header}
+              css={styles?.header}
+              data-scope="n-panel"
+              data-part="header"
+              minH={unstyled ? undefined : { base: "4.5rem", md: "5rem" }}
+              px={unstyled ? undefined : { base: "4", md: "6" }}
+              py={unstyled ? undefined : "4"}
+              pe={unstyled ? undefined : { base: "14", md: "16" }}
+              borderBottomWidth={unstyled ? undefined : "1px"}
+              borderColor={unstyled ? undefined : "border"}
               alignItems="flex-start"
             >
               <Flex flex="1" minW="0" align="flex-start" justify="space-between" gap="4">
                 <Stack gap="1" minW="0">
                   <Drawer.Title
+                    unstyled={unstyled}
+                    className={classNames?.title}
+                    css={styles?.title}
+                    data-scope="n-panel"
+                    data-part="title"
                     {...(title == null ? {
                       position: "absolute",
                       width: "1px",
@@ -109,28 +128,33 @@ export function NPanel({
                   >
                     {title ?? labels.defaultTitle}
                   </Drawer.Title>
-                  {description ? <Drawer.Description>{description}</Drawer.Description> : null}
+                  {description ? <Drawer.Description unstyled={unstyled} className={classNames?.description} css={styles?.description} data-scope="n-panel" data-part="description">{description}</Drawer.Description> : null}
                 </Stack>
-                {headerActions ? <Box flexShrink="0">{headerActions}</Box> : null}
+                {headerActions ? <Box className={classNames?.headerActions} css={styles?.headerActions} data-scope="n-panel" data-part="header-actions" flexShrink="0">{headerActions}</Box> : null}
               </Flex>
             </Drawer.Header>
 
-            <Drawer.Body px={{ base: "4", md: "6" }} py={{ base: "5", md: "6" }} overscrollBehavior="contain">
+            <Drawer.Body unstyled={unstyled} className={classNames?.body} css={styles?.body} data-scope="n-panel" data-part="body" px={unstyled ? undefined : { base: "4", md: "6" }} py={unstyled ? undefined : { base: "5", md: "6" }} overscrollBehavior="contain">
               <Box key={contentKey ?? "n-panel-content"} minW="0">
                 {children}
               </Box>
             </Drawer.Body>
 
             {footer ? (
-              <Drawer.Footer px={{ base: "4", md: "6" }} py="4" borderTopWidth="1px" borderColor="border">
+              <Drawer.Footer unstyled={unstyled} className={classNames?.footer} css={styles?.footer} data-scope="n-panel" data-part="footer" px={unstyled ? undefined : { base: "4", md: "6" }} py={unstyled ? undefined : "4"} borderTopWidth={unstyled ? undefined : "1px"} borderColor={unstyled ? undefined : "border"}>
                 {footer}
               </Drawer.Footer>
             ) : null}
 
             <Drawer.CloseTrigger asChild>
               <IconButton
+                unstyled={unstyled}
+                className={classNames?.closeTrigger}
+                css={styles?.closeTrigger}
+                data-scope="n-panel"
+                data-part="close-trigger"
                 aria-label={labels.closePanel}
-                variant="ghost"
+                variant={unstyled ? undefined : "ghost"}
                 size="sm"
                 position="absolute"
                 top={{ base: "4", md: "5" }}

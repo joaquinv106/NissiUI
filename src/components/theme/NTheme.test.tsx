@@ -1,4 +1,4 @@
-import { Box, Text } from "@chakra-ui/react"
+import { Box, Text, defaultSystem } from "@chakra-ui/react"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
@@ -122,5 +122,10 @@ describe("NTheme", () => {
     fireEvent.click(screen.getByRole("button", { name: /Choose theme/ }))
     expect(await screen.findByRole("menuitemradio", { name: /Navy blue/ })).toBeInTheDocument()
     expect(screen.queryByRole("menuitemradio", { name: /Oscuro/ })).not.toBeInTheDocument()
+  })
+
+  it("permite sustituir el sistema Chakra sin cambiar el contrato de temas", () => {
+    render(<NThemeProvider system={defaultSystem} theme="light"><ThemeProbe /></NThemeProvider>)
+    expect(screen.getByText("light:light")).toBeInTheDocument()
   })
 })

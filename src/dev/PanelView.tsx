@@ -180,8 +180,9 @@ export function PanelView() {
         variantExamples={[
           { id: "controlled", label: "Controlado", summary: "open + onOpenChange", preview: <PanelDemo compact />, code: `<NPanel open={open} onOpenChange={setOpen} title="Finalizar operación"><NCheckout {...checkoutProps} /></NPanel>` },
           { id: "uncontrolled", label: "Disparador", summary: "trigger", preview: <NPanel trigger={<Button>Abrir panel local</Button>} title="Detalle rápido"><Text>Contenido desacoplado de la navegación.</Text></NPanel>, code: `<NPanel trigger={<Button>Abrir</Button>} title="Detalle"><Detail /></NPanel>` },
+          { id: "unstyled", label: "Sin estilo", summary: "unstyled + styles", preview: <NPanel unstyled trigger={<Button>Abrir panel personalizado</Button>} title="Superficie propia" styles={{ content: { bg: "bg.panel", borderWidth: "1px", borderColor: "border", p: "4" }, body: { p: "4" } }}><Text>El foco, Escape y cierre se conservan.</Text></NPanel>, code: `<NPanel unstyled styles={{ content: surfaceStyles, body: bodyStyles }}>...</NPanel>` },
         ]}
-        propExamples={[{ label: "Cambio dinámico", code: `<NPanel open={open} contentKey={activeView} title={titles[activeView]}>{views[activeView]}</NPanel>` }, { label: "Sidebar a la derecha", code: `<NPanel sidebarPosition="end">{/* aparece a la izquierda */}</NPanel>` }, { label: "Proceso no descartable", code: `<NPanel closeOnEscape={false} closeOnInteractOutside={false}>...</NPanel>` }]}
+        propExamples={[{ label: "Cambio dinámico", code: `<NPanel open={open} contentKey={activeView} title={titles[activeView]}>{views[activeView]}</NPanel>` }, { label: "Slots propios", code: `<NPanel classNames={{ content: "panel", body: "panel__body" }}>...</NPanel>` }, { label: "Sidebar a la derecha", code: `<NPanel sidebarPosition="end">{/* aparece a la izquierda */}</NPanel>` }, { label: "Proceso no descartable", code: `<NPanel closeOnEscape={false} closeOnInteractOutside={false}>...</NPanel>` }]}
         code={`const [panel, setPanel] = useState<"checkout" | "receipt" | null>(null)
 
 <NPanel

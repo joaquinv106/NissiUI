@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 
-import type { NDocumentField, NDocumentSection, NDocumentViewLabels, NDocumentViewProps } from "../document-view"
+import type { NDocumentField, NDocumentSection, NDocumentViewLabels, NDocumentViewProps, NDocumentViewSlot } from "../document-view"
+import type { NComponentStyleProps } from "../styling"
 
 export interface NReceiptSummaryRow {
   id: string
@@ -23,6 +24,8 @@ export interface NReceiptLabels {
   emptyLines: string
 }
 
+export type NReceiptSlot = NDocumentViewSlot | "lines" | "line" | "lineLabel" | "summary" | "total"
+
 export interface NReceiptProps<TReceipt, TLine> extends Omit<
   NDocumentViewProps<TReceipt>,
   | "document"
@@ -37,7 +40,9 @@ export interface NReceiptProps<TReceipt, TLine> extends Omit<
   | "renderBody"
   | "renderFooter"
   | "labels"
-> {
+  | "classNames"
+  | "styles"
+>, NComponentStyleProps<NReceiptSlot> {
   receipt?: TReceipt | null
   getReceiptId: (receipt: TReceipt) => string
   getReceiptNumber: (receipt: TReceipt) => ReactNode

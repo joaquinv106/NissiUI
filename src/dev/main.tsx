@@ -27,6 +27,7 @@ import {
   CreditCard,
   Database,
   Home,
+  Keyboard,
   Layers3,
   LayoutDashboard,
   ListPlus,
@@ -51,12 +52,14 @@ import {
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
 
-import { NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NBalanceSession, NCodeCapture, NDataTable, NDocumentView, NForm, NHeader, NItemPicker, NLineItemEditor, NModuleRegistry, NOfflineBoundary, NPermissionGate, NPermissionsProvider, NSidebar, NStepFlow, NSyncStatus, NTable, NTheme, NWorkspaceSwitcher, useNTheme, type NAdjustmentField, type NAmountAllocation, type NApprovalHistoryEntry, type NApprovalStatus, type NDocumentAction, type NFormConfig, type NLineItemField, type NModuleDefinition, type NSidebarItem, type NStepFlowStep, type NSyncState, type NTableConfig, type NWorkspace } from "../index"
+import { NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NBalanceSession, NCodeCapture, NCtrl, NCtrlProvider, NDataTable, NDocumentView, NForm, NHeader, NItemPicker, NLineItemEditor, NModuleRegistry, NOfflineBoundary, NPermissionGate, NPermissionsProvider, NSidebar, NStepFlow, NSyncStatus, NTable, NTheme, NWorkspaceSwitcher, canUseNFactureView, createNFactureNavigation, useNTheme, type NAdjustmentField, type NAmountAllocation, type NApprovalHistoryEntry, type NApprovalStatus, type NCtrlShortcut, type NDocumentAction, type NFactureRole, type NFactureView, type NFormConfig, type NLineItemField, type NModuleDefinition, type NSidebarItem, type NStepFlowStep, type NSyncState, type NTableConfig, type NWorkspace } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 import { PanelView } from "./PanelView"
-import { CartView, CheckoutView, PosExampleView, ReceiptView } from "./Phase7Views"
+import { CartView, CheckoutView, PosExampleView, ReceiptView, ThermalPrintView } from "./Phase7Views"
 import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatternsView, SaasPatternsView, VerticalPatternsView } from "./FinalPhaseViews"
 import { DemoProvider } from "./provider"
+import { FactureProjectView } from "./FactureProjectView"
+import { CtrlView } from "./CtrlView"
 
 type Product = {
   id: number
@@ -165,8 +168,36 @@ const employeeFormConfig: NFormConfig<EmployeeFormValues> = {
 }
 
 
-type DemoView = "overview" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "pos-example" | "panel" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions"
-type DemoNavigationData = { view?: DemoView }
+type DemoView = "overview" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "thermal-print" | "pos-example" | "panel" | "ctrl" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions" | "facture"
+type DemoNavigationData = { view?: DemoView; factureView?: NFactureView }
+
+function createFactureProjectNavigation(role: NFactureRole): NSidebarItem<DemoNavigationData> {
+  const factureNavigation = createNFactureNavigation({ role })[0]!
+  return {
+  id: factureNavigation.id,
+  label: factureNavigation.label,
+  icon: factureNavigation.icon,
+  href: factureNavigation.href,
+  badge: factureNavigation.badge,
+  disabled: factureNavigation.disabled,
+  requiredPermission: factureNavigation.requiredPermission,
+  permissionMode: factureNavigation.permissionMode,
+  data: { view: "facture", factureView: "dashboard" },
+  children: factureNavigation.children?.map((item) => ({
+    id: item.id,
+    label: item.label,
+    icon: item.icon,
+    href: item.href,
+    badge: item.badge,
+    disabled: item.disabled,
+    requiredPermission: item.requiredPermission,
+    permissionMode: item.permissionMode,
+    data: { view: "facture", factureView: item.data?.view },
+  })),
+  }
+}
+
+const factureProjectNavigation = createFactureProjectNavigation("admin")
 
 const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
   { id: "overview", label: "Inicio", icon: <Home size={18} />, data: { view: "overview" } },
@@ -191,8 +222,10 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
       { id: "cart", label: "NCart", icon: <ShoppingCart size={17} />, badge: "Nuevo", data: { view: "cart" } },
       { id: "checkout", label: "NCheckout", icon: <CreditCard size={17} />, badge: "Nuevo", data: { view: "checkout" } },
       { id: "receipt", label: "NReceipt", icon: <ReceiptText size={17} />, badge: "Nuevo", data: { view: "receipt" } },
+      { id: "thermal-print", label: "NThermalPrint", icon: <ReceiptText size={17} />, badge: "Nuevo", data: { view: "thermal-print" } },
       { id: "pos-example", label: "Ejemplo POS", icon: <Store size={17} />, badge: "Fase 7", data: { view: "pos-example" } },
       { id: "panel", label: "NPanel", icon: <PanelRight size={17} />, badge: "Nuevo", data: { view: "panel" } },
+      { id: "ctrl", label: "NCtrl", icon: <Keyboard size={17} />, badge: "Nuevo", data: { view: "ctrl" } },
       { id: "page-patterns", label: "Estados y navegación", icon: <Layers3 size={17} />, badge: "Final", data: { view: "page-patterns" } },
       { id: "data-patterns", label: "Datos server-side", icon: <Database size={17} />, badge: "Final", data: { view: "data-patterns" } },
       { id: "activity-patterns", label: "Actividad y archivos", icon: <Bell size={17} />, badge: "Final", data: { view: "activity-patterns" } },
@@ -215,6 +248,7 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
     label: "Proyecto",
     icon: <Layers3 size={18} />,
     children: [
+      { ...factureProjectNavigation, badge: "Nuevo" },
       { id: "accessibility", label: "Accesibilidad", icon: <Check size={17} />, disabled: true },
       { id: "roadmap", label: "Próximamente", icon: <Sparkles size={17} />, disabled: true },
     ],
@@ -268,8 +302,10 @@ const viewTitles: Record<DemoView, string> = {
   cart: "NCart",
   checkout: "NCheckout",
   receipt: "NReceipt",
+  "thermal-print": "NThermalPrint",
   "pos-example": "Ejemplo POS integrado",
   panel: "NPanel",
+  ctrl: "NCtrl · Atajos contextuales",
   "page-patterns": "Estados y navegación",
   "data-patterns": "Datos server-side",
   "activity-patterns": "Actividad y archivos",
@@ -285,6 +321,7 @@ const viewTitles: Record<DemoView, string> = {
   datatable: "NDataTable",
   form: "NForm",
   permissions: "NPermissionGate",
+  facture: "NFacture · Facturación México",
 }
 
 /** Encabezado repetido en cada vista del catálogo: eyebrow, título y descripción. */
@@ -1430,28 +1467,32 @@ function DocumentViewView() {
   </Stack>
 }
 
-/** Demostración reactiva de captura manual, por teclado y mediante proveedor externo. */
+/** Demostración reactiva de captura manual, HID y mediante proveedor externo estructurado. */
 function CodeCaptureView() {
   const [lastCapture, setLastCapture] = useState("Ningún código procesado")
   const [externalSequence, setExternalSequence] = useState(100)
   return <Stack gap="8">
-    <PageIntro eyebrow="Flujos generalizables · Fase 6" title="NCodeCapture" description="Recibe códigos, folios, QR o identificadores por escritura, pegado, lectores de teclado y proveedores externos sin acoplar la librería a una cámara." />
+    <PageIntro eyebrow="Flujos generalizables · Fase 6" title="NCodeCapture" description="Integra teclado, lectores HID, cámaras y handhelds con sesiones cancelables, metadatos de simbología e interpretación tipada." />
     <Card.Root variant="outline"><Card.Body gap="4">
       <NCodeCapture
         validate={(code) => code.length < 3 ? "El código debe contener al menos tres caracteres." : undefined}
-        onRequestScan={async () => { const next = externalSequence + 1; setExternalSequence(next); return `EXT-${next}` }}
-        onCapture={async (code, details) => { setLastCapture(`${code} · origen: ${details.source}`); return { success: true, message: `Código ${code} aceptado.` } }}
+        keyboardWedge={{ captureGlobally: true, minLength: 3 }}
+        onRequestScan={async () => { const next = externalSequence + 1; setExternalSequence(next); return { code: `EXT-${next}`, source: "camera", format: "qr_code", device: { id: "demo", type: "camera" } } }}
+        parse={(code) => ({ identifier: code, family: code.split("-")[0] })}
+        onCapture={async (code, details) => { setLastCapture(`${code} · ${details.source} · ${details.format ?? "sin formato"}`); return { success: true, message: `Código ${code} aceptado.` } }}
       />
       <Box p="3" rounded="md" bg="bg.subtle"><Text color="fg.muted" fontSize="xs">Última captura confirmada</Text><Text fontWeight="semibold">{lastCapture}</Text></Box>
     </Card.Body></Card.Root>
     <ComponentDocs
-      purpose="NCodeCapture unifica la entrada de identificadores, pero delega el acceso a cámara o hardware mediante onRequestScan. Sólo anuncia éxito después de que onCapture lo confirma."
-      steps={["Escribe, pega o entrega un código desde un proveedor externo.", "Normaliza y valida antes de publicar la captura.", "Procesa onCapture una sola vez y bloquea duplicados accidentales.", "Conserva mensajes de éxito o error visibles y accesibles."]}
-      variants={[{ name: "manual", description: "Entrada y botón explícito para cualquier identificador." }, { name: "keyboard", description: "Lectores que emulan teclado se procesan con Enter." }, { name: "external", description: "Cámara, QR nativo o SDK inyectado por onRequestScan." }]}
+      purpose="NCodeCapture unifica identificadores y delega el driver/decodificador a un adaptador neutral. Administra sesiones, cola, permisos, desconexión, linterna, validación e interpretación sin acoplar el paquete a una marca."
+      steps={["Recibe texto o una lectura estructurada con formato y dispositivo.", "Normaliza, valida e interpreta antes de publicar.", "Serializa ráfagas y bloquea duplicados accidentales.", "Cancela el hardware y anuncia estados accesibles al desmontar."]}
+      variants={[{ name: "manual", description: "Entrada y botón explícito para cualquier identificador." }, { name: "keyboardWedge", description: "Lectores USB/Bluetooth HID con sufijo y captura global opcional." }, { name: "scannerAdapter", description: "Sesión continua de cámara, handheld o bridge nativo." }]}
       variantExamples={[{ id: "manual", label: "Manual", summary: "entrada + Enter", preview: <NCodeCapture onCapture={() => true} />, code: `<NCodeCapture onCapture={processCode} />` }, { id: "external", label: "Lector externo", summary: "onRequestScan", preview: <NCodeCapture onCapture={() => true} onRequestScan={() => "QR-001"} />, code: `<NCodeCapture onRequestScan={camera.scan} onCapture={processCode} />` }, { id: "readonly", label: "Lectura", summary: "readOnly", preview: <NCodeCapture defaultValue="DOC-2048" readOnly onCapture={() => true} />, code: `<NCodeCapture readOnly defaultValue="DOC-2048" onCapture={processCode} />` }]}
-      propExamples={[{ label: "Normalización", code: `<NCodeCapture normalize={(raw) => raw.trim().toUpperCase()} {...props} />` }, { label: "Duplicados permitidos", code: `<NCodeCapture allowDuplicate {...props} />` }]}
+      propExamples={[{ label: "Lector HID global", code: `<NCodeCapture keyboardWedge={{ captureGlobally: true, minLength: 6 }} {...props} />` }, { label: "Interpretación tipada", code: `<NCodeCapture<GS1> parse={(code) => gs1.parse(code)} {...props} />` }, { label: "Sesión continua", code: `<NCodeCapture scannerAdapter={adapter} continuousScan autoStartScanner {...props} />` }]}
       code={`<NCodeCapture
-  onRequestScan={() => scanner.read()}
+  scannerAdapter={scannerAdapter}
+  continuousScan
+  parse={(code, input) => parser.read(code, input.format)}
   validate={(code) => validateFormat(code)}
   onCapture={(code, details) => api.process(code, details)}
 />`}
@@ -2517,11 +2558,46 @@ function WorkspaceSwitcherView() {
 function DevelopmentApp() {
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
-    const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "pos-example", "panel", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions"]
+    const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "thermal-print", "pos-example", "panel", "ctrl", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions", "facture"]
     return requestedView && allowed.includes(requestedView as DemoView) ? requestedView as DemoView : "overview"
   })
+  const [activeFactureView, setActiveFactureView] = useState<NFactureView>(() => {
+    const requested = new URLSearchParams(window.location.search).get("factureView")
+    const allowed: NFactureView[] = ["dashboard", "issue", "history", "ticket", "certificates", "catalogs", "integrations", "docs"]
+    return requested && allowed.includes(requested as NFactureView) ? requested as NFactureView : "dashboard"
+  })
+  const [activeFactureRole, setActiveFactureRole] = useState<NFactureRole>("admin")
+  const navigationItems = catalogNavigation.map((item) => item.id === "project" ? {
+    ...item,
+    children: [createFactureProjectNavigation(activeFactureRole), ...(item.children?.filter((child) => child.id !== "facture") ?? [])],
+  } : item)
+  const ctrlShortcuts: readonly NCtrlShortcut[] = [
+    { id: "catalog-home", keys: "Alt+H", label: "Ir al inicio", description: "Abre la vista general del catálogo.", group: "Navegación", handler: () => setActiveView("overview") },
+    { id: "catalog-pos", keys: "Alt+P", label: "Abrir ejemplo POS", description: "Abre el flujo integrado de punto de venta.", group: "Navegación", handler: () => setActiveView("pos-example") },
+    { id: "catalog-ctrl", keys: "Alt+K", label: "Abrir demostración NCtrl", description: "Muestra el ejemplo de operación rápida.", group: "Navegación", handler: () => setActiveView("ctrl") },
+    ...(activeView === "table" || activeView === "datatable" ? [
+      { id: "table-columns", keys: ["Alt+ArrowLeft", "Alt+ArrowRight"], label: "Reordenar columna", description: "Con el asa de columna enfocada.", group: "Tabla" },
+      { id: "table-rows", keys: ["Alt+ArrowUp", "Alt+ArrowDown"], label: "Reordenar fila", description: "Con el asa de fila enfocada.", group: "Tabla" },
+    ] satisfies NCtrlShortcut[] : []),
+    ...(activeView === "sidebar" ? [
+      { id: "sidebar-navigation", keys: ["ArrowUp", "ArrowDown", "Home", "End"], label: "Recorrer navegación", group: "NSidebar" },
+      { id: "sidebar-groups", keys: ["ArrowLeft", "ArrowRight"], label: "Contraer o expandir grupos", group: "NSidebar" },
+    ] satisfies NCtrlShortcut[] : []),
+    ...(activeView === "item-picker" ? [{ id: "picker-navigation", keys: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"], label: "Recorrer opciones", group: "NItemPicker" }] satisfies NCtrlShortcut[] : []),
+    ...(activeView === "code-capture" ? [{ id: "capture-enter", keys: "Enter", label: "Procesar código", group: "NCodeCapture", allowInEditable: true }] satisfies NCtrlShortcut[] : []),
+    ...(activeView === "panel" ? [{ id: "panel-close", keys: "Escape", label: "Cerrar panel", group: "NPanel" }] satisfies NCtrlShortcut[] : []),
+    ...(activeView === "facture" ? [
+      { id: "facture-dashboard", keys: "F2", label: "Resumen de facturación", group: "NFacture", handler: () => setActiveFactureView("dashboard") },
+      { id: "facture-issue", keys: "F3", label: "Emitir CFDI", group: "NFacture", handler: () => setActiveFactureView("issue") },
+      { id: "facture-history", keys: "F4", label: "Historial CFDI", group: "NFacture", handler: () => setActiveFactureView("history") },
+      { id: "facture-ticket", keys: "F5", label: "Facturar ticket", group: "NFacture", handler: () => setActiveFactureView("ticket") },
+      { id: "facture-docs", keys: "F10", label: "Documentación NFacture", group: "NFacture", handler: () => setActiveFactureView("docs") },
+    ] satisfies NCtrlShortcut[] : []),
+  ]
 
-  const content = activeView === "theme"
+  const content = activeView === "facture"
+    ? <FactureProjectView view={activeFactureView} onViewChange={setActiveFactureView} role={activeFactureRole} onRoleChange={(nextRole) => { setActiveFactureRole(nextRole); if (!canUseNFactureView(nextRole, activeFactureView)) setActiveFactureView("dashboard") }} />
+    : activeView === "theme"
     ? <ThemeView />
     : activeView === "item-picker"
       ? <ItemPickerView />
@@ -2553,10 +2629,14 @@ function DevelopmentApp() {
       ? <CheckoutView />
     : activeView === "receipt"
       ? <ReceiptView />
+    : activeView === "thermal-print"
+      ? <ThermalPrintView />
     : activeView === "pos-example"
       ? <PosExampleView />
     : activeView === "panel"
       ? <PanelView />
+    : activeView === "ctrl"
+      ? <CtrlView />
     : activeView === "page-patterns"
       ? <PagePatternsView />
     : activeView === "data-patterns"
@@ -2590,6 +2670,7 @@ function DevelopmentApp() {
               : <OverviewView onNavigate={setActiveView} />
 
   return (
+    <NCtrlProvider>
     <NAppShell
       contentPadding={activeView === "overview" ? "none" : "comfortable"}
       header={(
@@ -2605,9 +2686,10 @@ function DevelopmentApp() {
       )}
       sidebar={(
         <NSidebar
-          items={catalogNavigation}
-          activeItemId={activeView}
+          items={navigationItems}
+          activeItemId={activeView === "facture" ? `facture-${activeFactureView}` : activeView}
           onItemSelect={(item) => {
+            if (item.data?.factureView) setActiveFactureView(item.data.factureView)
             if (item.data?.view) setActiveView(item.data.view)
           }}
           searchable
@@ -2627,6 +2709,12 @@ function DevelopmentApp() {
     >
       {content}
     </NAppShell>
+    <NCtrl
+      viewId={activeView === "facture" ? `facture-${activeFactureView}` : activeView}
+      viewLabel={viewTitles[activeView]}
+      shortcuts={ctrlShortcuts}
+    />
+    </NCtrlProvider>
   )
 }
 

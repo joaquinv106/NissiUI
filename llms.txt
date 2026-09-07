@@ -12,5 +12,10 @@
 - Contexto para contribuir: ./PROJECT_CONTEXT.md
 - Instrucciones para agentes: ./AGENTS.md
 - Roadmap y estado: ./docs/roadmap.md
+- Facturación electrónica mexicana: ./docs/facture.md
+- Atajos contextuales y operación rápida: ./docs/ctrl.md
+- Impresión térmica y adaptadores locales: ./docs/thermal-print.md
+- Personalización, slots y modo unstyled: ./docs/customization.md
+- Empaquetado, tree shaking, subrutas y SSR: ./docs/package-compatibility.md
 
 Reglas esenciales: importar sólo desde `nissi-ui`; usar React 18–19 y Chakra UI v3; conectar API mediante props y callbacks; mantener reglas, persistencia y autorización real en el backend; usar estado controlado para información compartida; conservar accesibilidad, responsive, tokens semánticos e i18n mediante `labels`.

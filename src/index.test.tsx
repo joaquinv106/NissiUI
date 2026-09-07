@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NWorkspaceSwitcher, formatTableValue, nissiSystem, useNTheme } from "./index"
+import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NissiInvoicingProvider, createNFactureHeaderNavigation, createNFactureNavigation, formatTableValue, nissiSystem, useNTheme } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -51,10 +51,13 @@ describe("API pública de tablas", () => {
     expect(NCart).toBeTypeOf("function")
     expect(NCheckout).toBeTypeOf("function")
     expect(NReceipt).toBeTypeOf("function")
+    expect(NThermalPrint).toBeTypeOf("object")
   })
 
   it("exporta el panel lateral reactivo", () => {
     expect(NPanel).toBeTypeOf("function")
+    expect(NCtrl).toBeTypeOf("function")
+    expect(NCtrlProvider).toBeTypeOf("function")
   })
 
   it("exporta la fase final consolidada", () => {
@@ -66,6 +69,13 @@ describe("API pública de tablas", () => {
     expect(NThemeProvider).toBeTypeOf("function")
     expect(useNTheme).toBeTypeOf("function")
     expect(nissiSystem).toBeTruthy()
+  })
+
+  it("exporta el proyecto de facturación y su integración standalone", () => {
+    expect(NFacture).toBeTypeOf("function")
+    expect(NissiInvoicingProvider).toBeTypeOf("function")
+    expect(createNFactureNavigation).toBeTypeOf("function")
+    expect(createNFactureHeaderNavigation).toBeTypeOf("function")
   })
 
   it("genera una tabla desde la configuración JSON", () => {

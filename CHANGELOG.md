@@ -2,6 +2,18 @@
 
 Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguiendo versionado semántico.
 
+## Sin publicar
+
+### Añadido
+
+- Contrato aditivo `unstyled`/`classNames`/`styles` para `NPanel`, `NDocumentView`, `NReceipt` y `NThermalPrint`, con slots y atributos `data-*` estables.
+- Sistema Chakra sustituible en `NThemeProvider`, subrutas ESM/CommonJS para componentes estabilizados y build estático del catálogo.
+- Comprobaciones automáticas de SSR, directivas `"use client"`, imports por subruta y tree shaking con presupuestos.
+- `NThermalPrint`, complemento configurable para aislar tickets de 58/80 mm, usar el diálogo del navegador o delegar impresión, copias, corte y cajón a un adaptador local.
+- `NFacture`, provider standalone, adaptadores, navegación detectable por `NSidebar`/`NHeader`, alta de receptores en `NPanel`, roles y demo CFDI 4.0 en Proyectos.
+- `NCodeCapture` profesional: adaptadores de sesión para cámara/handheld, lectura HID global configurable, captura continua, cola, metadatos de simbología/dispositivo, parser tipado, estados de permisos/desconexión y control opcional de linterna.
+- `NCtrl`, `NCtrlProvider` y hooks de registro para ejecutar y descubrir atajos contextuales mediante un panel responsive activado con F11.
+
 ## 0.1.1 — 2026-09-07
 
 ### Corregido

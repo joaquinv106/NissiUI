@@ -9,10 +9,12 @@ import {
   NOfflineBoundary,
   NReceipt,
   NSyncStatus,
+  NThermalPrint,
   type NAmountAllocation,
   type NCartSummary,
   type NLineItemField,
   type NSyncState,
+  type NThermalPrintAdapter,
 } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 
@@ -171,8 +173,8 @@ export function ReceiptView() {
     <ComponentDocs
       purpose="NReceipt adapta un comprobante a NDocumentView. Los extractores conservan el modelo del consumidor y los importes llegan ya calculados; el preset sólo organiza folio, fecha, partidas y totales."
       steps={["Adapta identidad, folio, fecha y estado.", "Extrae partidas y valores ya calculados.", "Agrega filas de resumen y total.", "Conecta impresión y acciones documentales."]}
-      variants={[{ name: "paper", description: "Documento elevado e imprimible." }, { name: "plain", description: "Recibo embebido en otra superficie." }, { name: "custom", description: "Metadata, secciones, encabezado y pie ampliables." }]}
-      variantExamples={[{ id: "paper", label: "Papel", summary: "variant=paper", preview: <NReceipt {...receiptBaseProps} receipt={demoReceipt} />, code: `<NReceipt receipt={receipt} {...adapters} />` }, { id: "plain", label: "Plano", summary: "variant=plain", preview: <NReceipt {...receiptBaseProps} receipt={demoReceipt} variant="plain" />, code: `<NReceipt variant="plain" receipt={receipt} {...adapters} />` }, { id: "empty", label: "Vacío", summary: "receipt=null", preview: <NReceipt {...receiptBaseProps} receipt={null} />, code: `<NReceipt receipt={null} {...adapters} />` }]}
+      variants={[{ name: "paper", description: "Documento elevado e imprimible." }, { name: "plain", description: "Recibo embebido en otra superficie." }, { name: "unstyled", description: "Conserva semántica y comportamiento sin decoración predeterminada." }, { name: "custom", description: "Metadata, secciones, encabezado y pie ampliables." }]}
+      variantExamples={[{ id: "paper", label: "Papel", summary: "variant=paper", preview: <NReceipt {...receiptBaseProps} receipt={demoReceipt} />, code: `<NReceipt receipt={receipt} {...adapters} />` }, { id: "plain", label: "Plano", summary: "variant=plain", preview: <NReceipt {...receiptBaseProps} receipt={demoReceipt} variant="plain" />, code: `<NReceipt variant="plain" receipt={receipt} {...adapters} />` }, { id: "unstyled", label: "Sin estilo", summary: "unstyled + styles", preview: <NReceipt {...receiptBaseProps} receipt={demoReceipt} unstyled styles={{ document: { borderWidth: "1px", borderColor: "border", p: "4" }, total: { color: "colorPalette.fg" } }} />, code: `<NReceipt unstyled styles={{ document: { p: "4" }, total: { fontWeight: "bold" } }} {...props} />` }, { id: "empty", label: "Vacío", summary: "receipt=null", preview: <NReceipt {...receiptBaseProps} receipt={null} />, code: `<NReceipt receipt={null} {...adapters} />` }]}
       propExamples={[{ label: "Totales propios", code: `<NReceipt getSummaryRows={(receipt) => receipt.totals} {...props} />` }, { label: "Impresión propia", code: `<NReceipt showPrint onPrint={printReceipt} {...props} />` }]}
       code={`<NReceipt
   receipt={receipt}
@@ -182,6 +184,41 @@ export function ReceiptView() {
   getTotal={(receipt) => receipt.total}
   {...receiptAdapters}
 />`}
+    />
+  </Stack>
+}
+
+export function ThermalPrintView() {
+  const [lastJob, setLastJob] = useState("Ningún trabajo enviado.")
+  const demoAdapter: NThermalPrintAdapter = async ({ configuration }) => {
+    setLastJob(`${configuration.paperWidthMm} mm · ${configuration.job.copies} copia(s) · corte ${configuration.job.cut}`)
+  }
+
+  return <Stack gap="8">
+    <PhaseIntro title="NThermalPrint" description="Complemento que aísla contenido para rollos térmicos y permite sustituir el diálogo del navegador por un adaptador local o de escritorio." />
+    <Text role="status" color="fg.muted" fontSize="sm">{lastJob}</Text>
+    <NThermalPrint adapter={demoAdapter} paperWidthMm={80} job={{ cut: "partial" }}>
+      <NReceipt {...receiptBaseProps} receipt={demoReceipt} afterLines={<Text color="fg.muted" fontSize="sm">Gracias por su compra.</Text>} />
+    </NThermalPrint>
+    <ComponentDocs
+      purpose="NThermalPrint prepara cualquier fragmento React para papel térmico. El navegador es el transporte predeterminado y adapter permite conectar QZ Tray, ESC/POS, Electron, Tauri o un servicio local sin acoplar dependencias al paquete."
+      steps={["Envuelve el recibo o documento que debe imprimirse.", "Configura ancho, margen y tipografía base.", "Reutiliza print desde el render prop o el ref.", "Inyecta un adapter cuando el producto necesite impresión directa y capacidades de hardware."]}
+      variants={[{ name: "80 mm", description: "Rollo predeterminado con 74 mm disponibles." }, { name: "58 mm", description: "Formato compacto con 52 mm disponibles." }, { name: "adapter", description: "Delega transporte, copias, corte y cajón a la aplicación." }]}
+      variantExamples={[
+        { id: "80mm", label: "80 mm", summary: "margen 3 mm", preview: <NThermalPrint adapter={demoAdapter}><Text>Ticket estándar de 80 mm</Text></NThermalPrint>, code: `<NThermalPrint paperWidthMm={80}><Receipt /></NThermalPrint>` },
+        { id: "58mm", label: "58 mm", summary: "margen 3 mm", preview: <NThermalPrint adapter={demoAdapter} paperWidthMm={58}><Text>Ticket compacto de 58 mm</Text></NThermalPrint>, code: `<NThermalPrint paperWidthMm={58}><Receipt /></NThermalPrint>` },
+        { id: "bridge", label: "Adaptador", summary: "corte + cajón", preview: <NThermalPrint adapter={demoAdapter} job={{ cut: "partial", openCashDrawer: true }}><Text>Trabajo delegado al puente local</Text></NThermalPrint>, code: `<NThermalPrint adapter={posAdapter} job={{ cut: "partial", openCashDrawer: true }}><Receipt /></NThermalPrint>` },
+        { id: "unstyled", label: "Sin estilo", summary: "unstyled + slots", preview: <NThermalPrint unstyled adapter={demoAdapter} styles={{ trigger: { borderWidth: "1px", borderColor: "border", px: "3", py: "2" } }}><Text>Impresión con apariencia propia</Text></NThermalPrint>, code: `<NThermalPrint unstyled classNames={{ trigger: "print-button" }}><Receipt /></NThermalPrint>` },
+      ]}
+      propExamples={[{ label: "Botón de NReceipt", code: `<NThermalPrint showTrigger={false}>{({ print }) => <NReceipt showPrint onPrint={() => void print()} {...props} />}</NThermalPrint>` }, { label: "Control externo", code: `<NThermalPrint ref={printerRef}><Receipt /></NThermalPrint>` }]}
+      code={`<NThermalPrint
+  paperWidthMm={80}
+  marginMm={3}
+  adapter={posAdapter}
+  job={{ copies: 1, cut: "partial" }}
+>
+  <NReceipt receipt={receipt} {...receiptAdapters} />
+</NThermalPrint>`}
     />
   </Stack>
 }

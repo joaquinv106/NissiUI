@@ -64,6 +64,14 @@ const [theme, setTheme] = useState<NThemePreference>("navy")
 
 En modo controlado, el consumidor conserva la fuente de verdad. Sin `theme`, el proveedor administra y persiste el estado. `disableTransitionOnChange` está activo por defecto para evitar destellos entre paletas.
 
+`system` permite sustituir el sistema Chakra sin alterar la administración de preferencias; si se omite continúa usando `nissiSystem`:
+
+```tsx
+<NThemeProvider system={companySystem} defaultTheme="system">
+  <App />
+</NThemeProvider>
+```
+
 ## Integración con NHeader
 
 Dentro de `NThemeProvider`, basta activar el control; `NHeader` consume el contexto sin duplicar estado:
@@ -86,6 +94,7 @@ Si una interfaz propia cambia su contenido según una preferencia persistida, es
 
 | Prop | Tipo | Predeterminado | Uso |
 | --- | --- | --- | --- |
+| `system` | `SystemContext` | `nissiSystem` | Sistema Chakra v3 proporcionado por el consumidor. |
 | `theme` | `"light" \| "dark" \| "navy" \| "nissi" \| "system"` | — | Preferencia controlada. |
 | `defaultTheme` | `NThemePreference` | `"system"` | Preferencia inicial no controlada. |
 | `onThemeChange` | `(theme) => void` | — | Notifica una selección del usuario. |

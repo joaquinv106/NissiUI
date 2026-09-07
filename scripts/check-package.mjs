@@ -8,7 +8,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const temporaryRoot = mkdtempSync(join(tmpdir(), "nissi-ui-consumer-"))
 const packageLink = join(temporaryRoot, "node_modules", "nissi-ui")
 
-const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel"]
+const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel", "NThermalPrint"]
 
 try {
   mkdirSync(dirname(packageLink), { recursive: true })
@@ -18,8 +18,12 @@ try {
   writeFileSync(
     join(temporaryRoot, "smoke.ts"),
     `import { ${publicNames.join(", ")}, type NAmountInputProps } from "nissi-ui"\n` +
+      'import { NThermalPrint as NThermalPrintSubpath, type NThermalPrintProps } from "nissi-ui/thermal-print"\n' +
+      'import type { NComponentStyleProps } from "nissi-ui/styling"\n' +
       "const props: NAmountInputProps = { value: 1250.5, onValueChange: () => undefined }\n" +
-      `void [${publicNames.join(", ")}, props]\n`,
+      "const thermalProps = {} as NThermalPrintProps\n" +
+      "const styleProps = {} as NComponentStyleProps<'root'>\n" +
+      `void [${publicNames.join(", ")}, NThermalPrintSubpath, props, thermalProps, styleProps]\n`,
   )
   writeFileSync(
     join(temporaryRoot, "tsconfig.json"),
@@ -63,6 +67,11 @@ try {
   run(process.execPath, [join(projectRoot, "node_modules", "typescript", "bin", "tsc"), "-p", "tsconfig.bundler.json"])
   run(process.execPath, ["smoke.mjs"])
   run(process.execPath, ["smoke.cjs"])
+  writeFileSync(
+    join(temporaryRoot, "subpaths.mjs"),
+    'import { NThermalPrint } from "nissi-ui/thermal-print"\nimport { NPanel } from "nissi-ui/panel"\nvoid [NThermalPrint, NPanel]\n',
+  )
+  run(process.execPath, ["subpaths.mjs"])
   console.log("TypeScript NodeNext/Bundler OK")
 } finally {
   rmSync(temporaryRoot, { recursive: true, force: true })

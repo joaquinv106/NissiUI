@@ -16,6 +16,8 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 2026-09-06 | Flujos generalizables · Fase 5 | Completada | `NBalanceSession<TEntry>`, `NAdjustmentEditor<T>` y `NDocumentView<TDocument>` para cierres, correcciones auditables y documentos imprimibles. |
 | 2026-09-06 | Flujos generalizables · Fase 6 | Completada | `NCodeCapture`, `NSyncStatus` y `NOfflineBoundary` para captura multicanal y experiencias resilientes con conectividad intermitente. |
 | 2026-09-06 | Flujos generalizables · Fase 7 | Completada | `NCart<TItem, TLine>`, `NCheckout<TMethod>`, `NReceipt<TReceipt, TLine>` y ejemplo POS como composiciones delgadas. |
+| 2026-09-07 | Impresión térmica | Completada | `NThermalPrint` como complemento configurable para rollos de 58/80 mm y adaptadores de impresora. |
+| 2026-09-07 | Personalización, empaquetado y SSR | Completada | Contrato de slots en cuatro componentes prioritarios, sistema Chakra sustituible, módulos preservados, subrutas, directivas cliente y portal estático. |
 | 2026-09-06 | Estados y navegación · Plus | Completada | `NPanel` lateral, modal, responsive, reactivo y dinámico, integrado con la posición de `NSidebar` mediante `NAppShell`. |
 | 2026-09-06 | Fases 2–7 · Entrega final consolidada | Completada | Estados de página, datos server-side, actividad, dashboards, administración SaaS y patrones verticales; 22 componentes/patrones públicos y evolución de `NDataTable`. |
 

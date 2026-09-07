@@ -57,6 +57,7 @@ function NThemeBridge({
 /** Proveedor raíz que sincroniza Chakra, persistencia, preferencia del sistema y controles NTheme. */
 export function NThemeProvider({
   children,
+  system = nissiSystem,
   theme,
   defaultTheme = "system",
   onThemeChange,
@@ -68,7 +69,7 @@ export function NThemeProvider({
   const effectiveDefaultTheme = !enableSystem && defaultTheme === "system" ? "light" : defaultTheme
 
   return (
-    <ChakraProvider value={nissiSystem}>
+    <ChakraProvider value={system}>
       <ThemeProvider
         attribute="class"
         themes={visualThemes}
