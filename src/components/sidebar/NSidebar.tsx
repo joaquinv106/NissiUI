@@ -63,6 +63,9 @@ export function NSidebar<TData = unknown>({
   getItemId,
   labels: customLabels,
   multipleGroupsOpen = true,
+  unstyled = false,
+  classNames,
+  styles,
 }: NSidebarProps<TData>) {
   const labels = useMemo(() => resolveNSidebarLabels(customLabels), [customLabels])
   const { can } = usePermissions()
@@ -230,15 +233,19 @@ export function NSidebar<TData = unknown>({
       minH={mobile ? "100dvh" : "100%"}
       display="flex"
       flexDirection="column"
-      bg="bg.muted"
-      color="fg"
+      bg={unstyled ? undefined : "bg.muted"}
+      color={unstyled ? undefined : "fg"}
       colorPalette={colorPalette}
-      borderWidth={variant === "outline" ? "1px" : undefined}
+      borderWidth={!unstyled && variant === "outline" ? "1px" : undefined}
       borderColor="border"
-      shadow={variant === "elevated" ? "lg" : undefined}
+      shadow={!unstyled && variant === "elevated" ? "lg" : undefined}
       isolation="isolate"
       overflow="hidden"
       onKeyDown={handleNavigationKey}
+      className={classNames?.surface}
+      css={styles?.surface}
+      data-scope="n-sidebar"
+      data-part="surface"
     >
       <SidebarHeader
         collapsible={collapsible && !mobile}
@@ -251,9 +258,9 @@ export function NSidebar<TData = unknown>({
         {header}
       </SidebarHeader>
       {searchable && !isCollapsed ? (
-        <Box py="2"><SidebarSearch value={search} labels={labels} onChange={setSearch} /></Box>
+        <Box py="2" className={classNames?.search} css={styles?.search} data-part="search"><SidebarSearch value={search} labels={labels} onChange={setSearch} /></Box>
       ) : null}
-      <Box flex="1" overflowY="auto" px="2" py="2">
+      <Box flex="1" overflowY="auto" px="2" py="2" className={classNames?.navigation} css={styles?.navigation} data-part="navigation">
         {filteredItems.length > 0 ? (
           <Box as="ul" listStyleType="none" m="0" p="0">
             {renderItems(filteredItems, isCollapsed, `${instanceId}-${mobile ? "mobile" : "desktop"}`, onItemSelected)}
@@ -364,6 +371,10 @@ export function NSidebar<TData = unknown>({
         transitionDuration="moderate"
         transitionTimingFunction="ease-out"
         _motionReduce={{ transitionDuration: "0ms" }}
+        className={classNames?.root}
+        css={styles?.root}
+        data-scope="n-sidebar"
+        data-part="root"
       >
         {renderSidebarContent({ collapsed, width: "full" })}
         {collapsible ? (

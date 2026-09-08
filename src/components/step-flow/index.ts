@@ -12,3 +12,4 @@ export type {
   NStepFlowStepChangeDetails,
   NStepFlowStepContext,
 } from "./types"
+export type { NStepFlowSlot } from "./types"

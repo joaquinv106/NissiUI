@@ -79,6 +79,9 @@ export function NTable<T extends NTableRow>({
   iconMap,
   onSelectionChange,
   onRowOrderChange,
+  unstyled = false,
+  classNames,
+  styles,
 }: NTableProps<T>) {
   const labels = useMemo(() => resolveNTableLabels(customLabels), [customLabels])
   const { can } = usePermissions()
@@ -304,9 +307,9 @@ export function NTable<T extends NTableRow>({
   }
 
   const content = (
-    <Stack gap="4" width="full" aria-busy={server?.loading || undefined}>
+    <Stack className={classNames?.content ?? classNames?.root} css={styles?.content ?? styles?.root} data-scope="n-table" data-part="content" gap="4" width="full" aria-busy={server?.loading || undefined}>
       {title || subtitle ? (
-        <Stack gap="1">
+        <Stack className={classNames?.header} css={styles?.header} data-scope="n-table" data-part="header" gap="1">
           {title ? <Heading as="h2" size="lg">{title}</Heading> : null}
           {subtitle ? <Text color="fg.muted">{subtitle}</Text> : null}
         </Stack>
@@ -391,8 +394,8 @@ export function NTable<T extends NTableRow>({
   if (!card) return content
 
   return (
-    <Card.Root variant="outline" width="full" bg="bg.panel">
-      <Card.Body p={{ base: "4", md: "6" }}>{content}</Card.Body>
+    <Card.Root unstyled={unstyled} className={classNames?.surface ?? classNames?.root} css={styles?.surface ?? styles?.root} data-scope="n-table" data-part="surface" variant={unstyled ? undefined : "outline"} width="full" bg={unstyled ? undefined : "bg.panel"}>
+      <Card.Body unstyled={unstyled} p={unstyled ? undefined : { base: "4", md: "6" }}>{content}</Card.Body>
     </Card.Root>
   )
 }

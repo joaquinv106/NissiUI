@@ -15,3 +15,4 @@ export type {
   NLineItemResolveAddContext,
   NLineItemValue,
 } from "./types"
+export type { NLineItemEditorSlot } from "./types"

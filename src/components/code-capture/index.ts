@@ -17,3 +17,4 @@ export type {
   NCodeCaptureScannerState,
   NCodeCaptureSource,
 } from "./types"
+export type { NCodeCaptureSlot } from "./types"

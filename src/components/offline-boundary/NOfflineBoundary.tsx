@@ -11,7 +11,7 @@ import type { NConnectivityCheckResult, NOfflineBoundaryProps } from "./types"
 export function NOfflineBoundary({
   children, online, defaultOnline = true, onOnlineChange, detectBrowserEvents = true,
   behavior = "banner", fallback, queuedCount = 0, onCheckConnectivity, showOnlineStatus = false,
-  disabled = false, colorPalette = "orange", labels: labelsProp,
+  disabled = false, colorPalette = "orange", labels: labelsProp, unstyled = false, classNames, styles,
 }: NOfflineBoundaryProps) {
   const labels = useMemo(() => resolveNOfflineBoundaryLabels(labelsProp), [labelsProp])
   const [internalOnline, setInternalOnline] = useState(defaultOnline)
@@ -67,7 +67,7 @@ export function NOfflineBoundary({
   }
 
   const notice = !activeOnline ? (
-    <Flex role="status" aria-live="polite" align={{ base: "start", sm: "center" }} justify="space-between" direction={{ base: "column", sm: "row" }} gap="3" p="4" rounded="lg" borderWidth="1px" borderColor="colorPalette.muted" bg="colorPalette.subtle" colorPalette={colorPalette}>
+    <Flex role="status" aria-live="polite" align={{ base: "start", sm: "center" }} justify="space-between" direction={{ base: "column", sm: "row" }} gap="3" p={unstyled ? undefined : "4"} rounded={unstyled ? undefined : "lg"} borderWidth={unstyled ? undefined : "1px"} borderColor="colorPalette.muted" bg={unstyled ? undefined : "colorPalette.subtle"} colorPalette={colorPalette} className={classNames?.banner} css={styles?.banner} data-part="banner">
       <Flex align="start" gap="3">
         <CloudOff aria-hidden size={20} />
         <Box>
@@ -83,7 +83,7 @@ export function NOfflineBoundary({
   ) : null
 
   return (
-    <Stack as="section" aria-label={labels.regionLabel} gap="3" minW="0">
+    <Stack as="section" aria-label={labels.regionLabel} gap="3" minW="0" className={classNames?.root} css={styles?.root} data-scope="n-offline-boundary" data-part="root">
       {notice}
       {checkMessage ? <Box role="alert" p="3" rounded="md" borderWidth="1px" borderColor="border.error" bg="bg.error" color="fg.error">{checkMessage}</Box> : null}
       {!activeOnline && behavior === "fallback" ? fallback ?? null : children}

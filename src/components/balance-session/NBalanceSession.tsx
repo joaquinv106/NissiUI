@@ -16,7 +16,7 @@ export function NBalanceSession<TEntry>({
   countedAmount, defaultCountedAmount = null, onCountedAmountChange, status, tolerance = 0,
   allowCloseWithVariance = false, onClose, formatAmount, locale, formatOptions, renderEntry, renderSummary,
   showEntries = true, disabled = false, readOnly = false, loading = false, error, emptyState, header, footer,
-  colorPalette = "blue", labels: labelsProp,
+  colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles,
 }: NBalanceSessionProps<TEntry>) {
   const labels = useMemo(() => resolveNBalanceSessionLabels(labelsProp), [labelsProp])
   const [internalCounted, setInternalCounted] = useState({ sessionId, amount: defaultCountedAmount })
@@ -68,12 +68,12 @@ export function NBalanceSession<TEntry>({
     }
   }
 
-  if (error) return <Stack as="section" aria-label={labels.sessionLabel} role="alert" gap="1" p="4" borderWidth="1px" borderColor="border.error" rounded="lg" bg="bg.error"><Text color="fg.error" fontWeight="semibold">{labels.errorTitle}</Text><Box color="fg.error">{error}</Box></Stack>
-  if (loading) return <Center as="section" aria-label={labels.sessionLabel} role="status" minH="12rem" gap="3"><Spinner size="sm" /><Text color="fg.muted">{labels.loading}</Text></Center>
+  if (error) return <Stack as="section" aria-label={labels.sessionLabel} role="alert" gap="1" p={unstyled ? undefined : "4"} borderWidth={unstyled ? undefined : "1px"} borderColor="border.error" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.error"} className={classNames?.error} css={styles?.error ?? styles?.root} data-scope="n-balance-session" data-part="error"><Text color="fg.error" fontWeight="semibold">{labels.errorTitle}</Text><Box color="fg.error">{error}</Box></Stack>
+  if (loading) return <Center as="section" aria-label={labels.sessionLabel} role="status" minH="12rem" gap="3" className={classNames?.loading} css={styles?.loading ?? styles?.root} data-scope="n-balance-session" data-part="loading"><Spinner size="sm" /><Text color="fg.muted">{labels.loading}</Text></Center>
   if (!sessionId) return emptyState ?? <Center as="section" aria-label={labels.sessionLabel} role="status" minH="12rem" flexDirection="column" gap="2" p="6" borderWidth="1px" borderColor="border" rounded="lg"><Text fontWeight="semibold">{labels.emptyTitle}</Text><Text color="fg.muted" fontSize="sm">{labels.emptyDescription}</Text></Center>
 
   return (
-    <Stack as="section" aria-label={labels.sessionLabel} gap="5" minW="0" colorPalette={colorPalette} data-session-id={sessionId}>
+    <Stack as="section" aria-label={labels.sessionLabel} gap="5" minW="0" colorPalette={colorPalette} data-session-id={sessionId} className={classNames?.root} css={styles?.root} data-scope="n-balance-session" data-part="root">
       {header}
       {renderSummary ? renderSummary(summary) : (
         <Card.Root variant="outline" bg="bg.panel"><Card.Body gap="4">

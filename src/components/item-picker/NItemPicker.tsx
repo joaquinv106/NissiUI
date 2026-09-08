@@ -51,6 +51,9 @@ export function NItemPicker<TItem>({
   emptyState,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NItemPickerProps<TItem>) {
   const labels = useMemo(() => resolveNItemPickerLabels(labelsProp), [labelsProp])
   const [internalSearch, setInternalSearch] = useState(defaultSearchValue)
@@ -203,7 +206,7 @@ export function NItemPicker<TItem>({
   }
 
   return (
-    <Stack as="section" aria-label={labels.itemsLabel} gap="4" minW="0" colorPalette={colorPalette}>
+    <Stack as="section" aria-label={labels.itemsLabel} gap={unstyled ? undefined : "4"} minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-item-picker" data-part="root">
       {header}
 
       {searchable ? (

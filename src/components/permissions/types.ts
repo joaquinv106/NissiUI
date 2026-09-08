@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NPermissionGateSlot = "root" | "fallback"
 
 export type NPermissionMode = "any" | "all"
 
@@ -23,7 +25,7 @@ export interface NPermissionLabels {
   deniedTooltip: string
 }
 
-export interface NPermissionGateProps {
+export interface NPermissionGateProps extends NComponentStyleProps<NPermissionGateSlot> {
   /** Capacidad o capacidades requeridas para mostrar el contenido. */
   requires: NPermissionCapability | NPermissionCapability[]
   mode?: NPermissionMode

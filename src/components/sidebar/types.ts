@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NPermissionCapability, NPermissionMode } from "../permissions/types"
+import type { NComponentStyleProps } from "../styling"
+export type NSidebarSlot = "root" | "surface" | "search" | "navigation"
 
 export interface NSidebarItem<TData = unknown> {
   id?: string
@@ -34,7 +36,7 @@ export interface NSidebarLabels {
   collapseGroup: (group: string) => string
 }
 
-export interface NSidebarProps<TData = unknown> {
+export interface NSidebarProps<TData = unknown> extends NComponentStyleProps<NSidebarSlot> {
   items: NSidebarItem<TData>[]
   activeItemId?: string
   defaultActiveItemId?: string

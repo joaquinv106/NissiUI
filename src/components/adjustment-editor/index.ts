@@ -13,3 +13,4 @@ export type {
   NAdjustmentSubmitDetails,
   NAdjustmentValue,
 } from "./types"
+export type { NAdjustmentEditorSlot } from "./types"

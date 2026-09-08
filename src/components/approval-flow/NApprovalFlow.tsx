@@ -42,6 +42,9 @@ export function NApprovalFlow<TRequest>({
   locale,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NApprovalFlowProps<TRequest>) {
   const labels = useMemo(() => resolveNApprovalFlowLabels(labelsProp), [labelsProp])
   const defaultActions = useMemo<readonly NApprovalAction[]>(() => [
@@ -155,10 +158,10 @@ export function NApprovalFlow<TRequest>({
   }
 
   return (
-    <Stack as="section" aria-label={labels.flowLabel} gap="5" minW="0" colorPalette={colorPalette} data-request-id={resolvedRequestId}>
+    <Stack as="section" aria-label={labels.flowLabel} gap={unstyled ? undefined : "5"} minW="0" colorPalette={colorPalette} data-request-id={resolvedRequestId} className={classNames?.root} css={styles?.root} data-scope="n-approval-flow" data-part="root">
       {header}
 
-      <Card.Root variant="outline" bg="bg.panel">
+      <Card.Root unstyled={unstyled} variant={unstyled ? undefined : "outline"} bg={unstyled ? undefined : "bg.panel"} className={classNames?.request} css={styles?.request} data-part="request">
         <Card.Body gap="4">
           <Flex justify="space-between" align={{ base: "start", sm: "center" }} direction={{ base: "column", sm: "row" }} gap="3">
             <Box flex="1" minW="0">

@@ -1,4 +1,11 @@
 import type { ReactElement, ReactNode, RefObject } from "react"
+import type { NComponentStyleProps } from "../styling"
+
+export type NBreadcrumbsSlot = "root" | "list" | "item" | "separator" | "menu"
+export type NPageHeaderSlot = "root" | "breadcrumbs" | "backAction" | "content" | "title" | "subtitle" | "metadata" | "actions"
+export type NEmptyStateSlot = "root" | "icon" | "title" | "description" | "actions"
+export type NAsyncStateSlot = "root" | "loading" | "error" | "empty" | "content"
+export type NConfirmDialogSlot = "trigger" | "backdrop" | "positioner" | "content" | "header" | "body" | "error" | "footer" | "close"
 
 export interface NBreadcrumbItem {
   id: string
@@ -15,14 +22,14 @@ export interface NBreadcrumbsLabels {
   overflowLabel: string
 }
 
-export interface NBreadcrumbsProps {
+export interface NBreadcrumbsProps extends NComponentStyleProps<NBreadcrumbsSlot> {
   items: readonly NBreadcrumbItem[]
   maxItems?: number
   separator?: ReactNode
   labels?: Partial<NBreadcrumbsLabels>
 }
 
-export interface NPageHeaderProps {
+export interface NPageHeaderProps extends NComponentStyleProps<NPageHeaderSlot> {
   title: ReactNode
   subtitle?: ReactNode
   eyebrow?: ReactNode
@@ -40,7 +47,7 @@ export interface NEmptyStateLabels {
   defaultDescription: string
 }
 
-export interface NEmptyStateProps {
+export interface NEmptyStateProps extends NComponentStyleProps<NEmptyStateSlot> {
   title?: ReactNode
   description?: ReactNode
   icon?: ReactNode
@@ -62,7 +69,7 @@ export interface NAsyncStateLabels {
   emptyDescription: string
 }
 
-export interface NAsyncStateProps {
+export interface NAsyncStateProps extends NComponentStyleProps<NAsyncStateSlot> {
   status: NAsyncStatus
   children?: ReactNode
   error?: ReactNode
@@ -90,7 +97,7 @@ export interface NConfirmDialogResult {
   message?: ReactNode
 }
 
-export interface NConfirmDialogProps {
+export interface NConfirmDialogProps extends NComponentStyleProps<NConfirmDialogSlot> {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void

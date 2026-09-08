@@ -18,6 +18,9 @@ export function NModuleRegistry<TData = unknown>({
   showUnavailable = false,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NModuleRegistryProps<TData>) {
   const { can } = usePermissions()
   const labels = { ...defaultNModuleRegistryLabels, ...labelsProp }
@@ -35,7 +38,7 @@ export function NModuleRegistry<TData = unknown>({
   }
 
   if (visibleModules.length === 0) {
-    return <Text role="status" color="fg.muted" fontSize="sm">{labels.empty}</Text>
+    return <Text role="status" color="fg.muted" fontSize="sm" className={classNames?.empty} css={styles?.empty ?? styles?.root} data-scope="n-module-registry" data-part="empty">{labels.empty}</Text>
   }
 
   const renderModule = (module: NModuleDefinition<TData>) => {
@@ -45,7 +48,8 @@ export function NModuleRegistry<TData = unknown>({
     const content = (
       <Button
         key={module.id}
-        variant={active ? "subtle" : "ghost"}
+        unstyled={unstyled}
+        variant={unstyled ? undefined : active ? "subtle" : "ghost"}
         colorPalette={colorPalette}
         aria-current={active ? "page" : undefined}
         aria-label={compact ? `${module.label}${unavailable ? `: ${labels.unavailable}` : ""}` : undefined}
@@ -54,12 +58,15 @@ export function NModuleRegistry<TData = unknown>({
         width="full"
         height={compact ? "11" : "auto"}
         minW="0"
-        p={compact ? "2" : "4"}
+        p={unstyled ? undefined : compact ? "2" : "4"}
         justifyContent={compact ? "center" : "flex-start"}
         whiteSpace="normal"
-        borderWidth="1px"
+        borderWidth={unstyled ? undefined : "1px"}
         borderColor={active ? "colorPalette.muted" : "border"}
-        bg={active ? "colorPalette.subtle" : "bg.panel"}
+        bg={unstyled ? undefined : active ? "colorPalette.subtle" : "bg.panel"}
+        className={classNames?.module}
+        css={styles?.module}
+        data-part="module"
       >
         {module.icon ? <Box aria-hidden="true" flexShrink="0">{module.icon}</Box> : null}
         {!compact ? (
@@ -76,7 +83,7 @@ export function NModuleRegistry<TData = unknown>({
   }
 
   return (
-    <Box as="nav" aria-label={labels.navigationLabel}>
+    <Box as="nav" aria-label={labels.navigationLabel} className={classNames?.root} css={styles?.root} data-scope="n-module-registry" data-part="root">
       {layout === "grid" ? (
         <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} gap="3">{visibleModules.map(renderModule)}</SimpleGrid>
       ) : (

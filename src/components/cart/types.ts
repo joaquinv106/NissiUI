@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NLineItemChangeReason, NLineItemEditorLabels, NLineItemEditorProps } from "../line-item-editor"
+import type { NComponentStyleProps } from "../styling"
+export type NCartSlot = "root" | "header" | "editor" | "summary"
 
 export interface NCartSummaryRow {
   id: string
@@ -36,8 +38,8 @@ export interface NCartLabels {
 
 export interface NCartProps<TItem, TLine> extends Omit<
   NLineItemEditorProps<TItem, TLine>,
-  "lines" | "defaultLines" | "onLinesChange" | "header" | "footer" | "labels"
-> {
+  "lines" | "defaultLines" | "onLinesChange" | "header" | "footer" | "labels" | "unstyled" | "classNames" | "styles"
+>, NComponentStyleProps<NCartSlot> {
   lines?: readonly TLine[]
   defaultLines?: readonly TLine[]
   cartKey?: string

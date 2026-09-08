@@ -9,3 +9,4 @@ export type {
   NBalanceSessionStatus,
   NBalanceSessionSummary,
 } from "./types"
+export type { NBalanceSessionSlot } from "./types"

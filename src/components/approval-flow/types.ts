@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NApprovalFlowSlot = "root" | "request"
 
 export type NApprovalStatus = "pending" | "approved" | "rejected" | "changes-requested"
 
@@ -65,7 +67,7 @@ export interface NApprovalFlowLabels {
   emptyDescription: string
 }
 
-export interface NApprovalFlowProps<TRequest> {
+export interface NApprovalFlowProps<TRequest> extends NComponentStyleProps<NApprovalFlowSlot> {
   request?: TRequest | null
   getRequestId: (request: TRequest) => string
   getRequestTitle: (request: TRequest) => ReactNode

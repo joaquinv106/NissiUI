@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, describe, expect, it } from "vitest"
 
 import { NThemeProvider } from "../components/theme"
-import { BeginnerAccessibilityGuideView, DashboardStylesView } from "./AccessibilityViews"
+import { BeginnerAccessibilityGuideView, VisualSystemView } from "./AccessibilityViews"
 
 afterEach(cleanup)
 
@@ -10,7 +10,7 @@ const renderView = (view: React.ReactNode) => render(<NThemeProvider defaultThem
 
 describe("vistas de accesibilidad y personalización", () => {
   it("cambia la dirección visual y conserva un estado anunciado", () => {
-    renderView(<DashboardStylesView />)
+    renderView(<VisualSystemView />)
 
     fireEvent.click(screen.getByRole("button", { name: /coral nocturno/i }))
 
@@ -19,7 +19,7 @@ describe("vistas de accesibilidad y personalización", () => {
   })
 
   it("abre el panel personalizado como diálogo accesible", async () => {
-    renderView(<DashboardStylesView />)
+    renderView(<VisualSystemView />)
 
     fireEvent.click(screen.getByRole("button", { name: /abrir detalle accesible/i }))
 
@@ -28,7 +28,7 @@ describe("vistas de accesibilidad y personalización", () => {
   })
 
   it("ejecuta el adaptador simulado de impresión térmica", async () => {
-    renderView(<DashboardStylesView />)
+    renderView(<VisualSystemView />)
 
     fireEvent.click(screen.getByRole("button", { name: "Simular impresión" }))
 
@@ -41,5 +41,16 @@ describe("vistas de accesibilidad y personalización", () => {
     expect(screen.getByRole("heading", { name: "Diseño y desarrollo web con Nissi UI, desde cero", level: 1 })).toBeInTheDocument()
     expect(screen.getByRole("navigation", { name: "Contenido de la guía" })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: "Accesibilidad práctica", level: 2 })).toBeInTheDocument()
+  })
+
+  it("permite explorar tablas, formularios y el resto del catálogo real", () => {
+    renderView(<VisualSystemView />)
+
+    fireEvent.click(screen.getByRole("button", { name: "NTable" }))
+
+    expect(screen.getByTitle("Ejemplo interactivo de NTable")).toHaveAttribute("src", "?view=table&theme=dark&embed=1")
+    expect(screen.getByRole("button", { name: "NForm" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "NAmountInput" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "NFacture" })).toBeInTheDocument()
   })
 })

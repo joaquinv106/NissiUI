@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NAmountAllocation, NAmountAllocationChange, NAmountAllocationSummary, NAmountAllocatorLabels, NAmountAllocatorProps } from "../amount-allocator"
+import type { NComponentStyleProps } from "../styling"
+export type NCheckoutSlot = "root" | "header" | "review" | "allocator"
 
 export interface NCheckoutDetails<TMethod> {
   total: number
@@ -27,8 +29,8 @@ export interface NCheckoutLabels {
 
 export interface NCheckoutProps<TMethod> extends Omit<
   NAmountAllocatorProps<TMethod>,
-  "allocations" | "defaultAllocations" | "onAllocationsChange" | "header" | "footer" | "labels"
-> {
+  "allocations" | "defaultAllocations" | "onAllocationsChange" | "header" | "footer" | "labels" | "unstyled" | "classNames" | "styles"
+>, NComponentStyleProps<NCheckoutSlot> {
   checkoutKey?: string
   allocations?: readonly NAmountAllocation<TMethod>[]
   defaultAllocations?: readonly NAmountAllocation<TMethod>[]

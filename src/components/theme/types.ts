@@ -1,5 +1,7 @@
 import type { SystemContext } from "@chakra-ui/react"
 import type { PropsWithChildren } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NThemeSlot = "root" | "trigger" | "menu" | "item"
 
 /** Temas visuales mantenidos por Nissi UI. */
 export type NThemeName = "light" | "dark" | "navy" | "nissi"
@@ -33,7 +35,7 @@ export interface NThemeProviderProps extends PropsWithChildren {
   disableTransitionOnChange?: boolean
 }
 
-export interface NThemeProps {
+export interface NThemeProps extends NComponentStyleProps<NThemeSlot> {
   presentation?: NThemePresentation
   /** Limita las opciones visibles sin alterar los temas registrados por el proveedor. */
   themes?: readonly NThemePreference[]

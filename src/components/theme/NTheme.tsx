@@ -23,6 +23,9 @@ export function NTheme({
   themes,
   colorPalette = "blue",
   labels: customLabels,
+  unstyled = false,
+  classNames,
+  styles,
 }: NThemeProps) {
   const context = useNTheme()
   const labels = useMemo(() => resolveNThemeLabels(customLabels), [customLabels])
@@ -40,7 +43,7 @@ export function NTheme({
 
   const trigger = presentation === "button" ? (
     <Menu.Trigger asChild>
-      <Button variant="outline" colorPalette={colorPalette} aria-label={`${labels.selectorLabel}. ${accessibleLabel}`}>
+      <Button unstyled={unstyled} variant={unstyled ? undefined : "outline"} colorPalette={colorPalette} aria-label={`${labels.selectorLabel}. ${accessibleLabel}`} className={classNames?.trigger ?? classNames?.root} css={styles?.trigger ?? styles?.root} data-scope="n-theme" data-part="trigger">
         <CurrentIcon aria-hidden="true" size={17} />
         <Text as="span" display={{ base: "none", sm: "inline" }}>{currentLabel}</Text>
       </Button>
@@ -48,7 +51,7 @@ export function NTheme({
   ) : (
     <NTooltip content={accessibleLabel}>
       <Menu.Trigger asChild>
-        <IconButton variant="ghost" colorPalette={colorPalette} aria-label={`${labels.selectorLabel}. ${accessibleLabel}`}>
+        <IconButton unstyled={unstyled} variant={unstyled ? undefined : "ghost"} colorPalette={colorPalette} aria-label={`${labels.selectorLabel}. ${accessibleLabel}`} className={classNames?.trigger ?? classNames?.root} css={styles?.trigger ?? styles?.root} data-scope="n-theme" data-part="trigger">
           <CurrentIcon aria-hidden="true" size={18} />
         </IconButton>
       </Menu.Trigger>
@@ -60,7 +63,7 @@ export function NTheme({
       {trigger}
       <Portal>
         <Menu.Positioner>
-          <Menu.Content minW="13rem">
+          <Menu.Content unstyled={unstyled} minW="13rem" className={classNames?.menu} css={styles?.menu} data-scope="n-theme" data-part="menu">
             <Menu.RadioItemGroup
               value={context.theme}
               onValueChange={(details) => context.setTheme(details.value as NThemePreference)}
@@ -73,6 +76,9 @@ export function NTheme({
                   <Menu.RadioItem
                     key={theme}
                     value={theme}
+                    className={classNames?.item}
+                    css={styles?.item}
+                    data-part="item"
                   >
                     <Box aria-hidden="true" color="fg.muted"><Icon size={17} /></Box>
                     <Text flex="1">{label}</Text>

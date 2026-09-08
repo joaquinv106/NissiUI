@@ -28,6 +28,9 @@ export function NAppShell({
   minHeight = "100dvh",
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NAppShellProps) {
   const generatedId = useId().replaceAll(":", "")
   const contentId = `n-app-shell-content-${generatedId}`
@@ -43,6 +46,9 @@ export function NAppShell({
       alignSelf="flex-start"
       height={{ md: "100dvh" }}
       zIndex="docked"
+      className={classNames?.sidebar}
+      css={styles?.sidebar}
+      data-part="sidebar"
     >
       {sidebar}
     </Box>
@@ -50,7 +56,7 @@ export function NAppShell({
 
   return (
     <NAppShellLayoutProvider sidebarPosition={sidebarPosition}>
-      <Box minH={minHeight} bg="bg" color="fg" colorPalette={colorPalette} transition="background 0.2s ease, color 0.2s ease">
+      <Box minH={minHeight} bg={unstyled ? undefined : "bg"} color={unstyled ? undefined : "fg"} colorPalette={colorPalette} transition={unstyled ? undefined : "background 0.2s ease, color 0.2s ease"} className={classNames?.root} css={styles?.root} data-scope="n-app-shell" data-part="root">
         <Link
           href={`#${contentId}`}
           position="fixed"
@@ -64,6 +70,9 @@ export function NAppShell({
           color="colorPalette.contrast"
           transform="translateY(-150%)"
           _focusVisible={{ transform: "translateY(0)", outlineWidth: "2px", outlineColor: "colorPalette.focusRing" }}
+          className={classNames?.skipLink}
+          css={styles?.skipLink}
+          data-part="skip-link"
         >
           {labels.skipToContent}
         </Link>
@@ -71,7 +80,7 @@ export function NAppShell({
         <Flex minH={minHeight} align="stretch">
           {sidebarPosition === "start" ? sidebarRegion : null}
           <Flex flex="1" minW="0" direction="column">
-            {header}
+            {header ? <Box display="contents" className={classNames?.header} css={styles?.header} data-part="header">{header}</Box> : null}
             <Box
               as="main"
               id={contentId}
@@ -81,10 +90,13 @@ export function NAppShell({
               maxW={contentMaxWidth === "full" ? undefined : contentMaxWidth}
               mx={contentMaxWidth === "full" ? undefined : "auto"}
               p={paddingByDensity[contentPadding]}
+              className={classNames?.content}
+              css={styles?.content}
+              data-part="content"
             >
               {children}
             </Box>
-            {footer ? <Box as="footer">{footer}</Box> : null}
+            {footer ? <Box as="footer" className={classNames?.footer} css={styles?.footer} data-part="footer">{footer}</Box> : null}
           </Flex>
           {sidebarPosition === "end" ? sidebarRegion : null}
         </Flex>

@@ -82,7 +82,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
-- `src/components/styling/`: contrato público aditivo de `unstyled`, `classNames` y `styles` por slots tipados.
+- `src/components/styling/`: contrato público aditivo de `unstyled`, `classNames` y `styles` por slots tipados, implementado por todos los componentes visuales públicos; los providers sin DOM conservan su configuración específica.
 - `src/components/item-picker/`: `NItemPicker<T>`, tipos, labels, búsqueda normalizada, selección y pruebas de la Fase 1 prioritaria.
 - `src/components/line-item-editor/`: `NLineItemEditor<TItem, TLine>`, tipos, labels, utilidades y pruebas de la Fase 2 prioritaria.
 - `src/components/amount-input/`: `NAmountInput`, tipos, labels, análisis regional y pruebas de captura numérica de la Fase 3.

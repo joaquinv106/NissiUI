@@ -1,4 +1,6 @@
 import type { InputHTMLAttributes, ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NCodeCaptureSlot = "root"
 
 export type NCodeCaptureSource = "manual" | "keyboard" | "paste" | "external" | "hid" | "camera" | "handheld"
 
@@ -111,7 +113,7 @@ export interface NCodeCaptureLabels {
   queueFull: string
 }
 
-export interface NCodeCaptureProps<TParsed = unknown> {
+export interface NCodeCaptureProps<TParsed = unknown> extends NComponentStyleProps<NCodeCaptureSlot> {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void

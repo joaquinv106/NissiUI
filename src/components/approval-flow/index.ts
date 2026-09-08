@@ -10,3 +10,4 @@ export type {
   NApprovalHistoryEntry,
   NApprovalStatus,
 } from "./types"
+export type { NApprovalFlowSlot } from "./types"

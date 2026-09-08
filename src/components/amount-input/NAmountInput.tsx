@@ -45,6 +45,9 @@ export function NAmountInput({
   width = "full",
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NAmountInputProps) {
   const labels = useMemo(() => resolveNAmountInputLabels(labelsProp), [labelsProp])
   const generatedId = useId()
@@ -88,9 +91,10 @@ export function NAmountInput({
   }
 
   return (
-    <Field.Root invalid={isInvalid} required={required} disabled={disabled} width={width} colorPalette={colorPalette}>
-      {label ? <Field.Label htmlFor={inputId}>{label}<Field.RequiredIndicator /></Field.Label> : null}
+    <Field.Root unstyled={unstyled} className={classNames?.root} css={styles?.root} data-scope="n-amount-input" data-part="root" invalid={isInvalid} required={required} disabled={disabled} width={width} colorPalette={colorPalette}>
+      {label ? <Field.Label unstyled={unstyled} className={classNames?.label} css={styles?.label} data-scope="n-amount-input" data-part="label" htmlFor={inputId}>{label}<Field.RequiredIndicator /></Field.Label> : null}
       <NumberInput.Root
+        unstyled={unstyled}
         value={valueText}
         min={min}
         max={max}
@@ -109,6 +113,11 @@ export function NAmountInput({
         onValueChange={(details) => publishValue(amountFromNumber(details.valueAsNumber), details.value, "input")}
       >
         <NumberInput.Input
+          unstyled={unstyled}
+          className={classNames?.input}
+          css={styles?.input}
+          data-scope="n-amount-input"
+          data-part="input"
           asChild
           id={inputId}
           name={name}
@@ -127,7 +136,7 @@ export function NAmountInput({
         {showControls && !readOnly ? (
           <NumberInput.Context>
             {(numberInput) => (
-              <NumberInput.Control width="8" display="grid" gridTemplateRows="repeat(2, 1fr)">
+              <NumberInput.Control unstyled={unstyled} className={classNames?.controls} css={styles?.controls} data-scope="n-amount-input" data-part="controls" width="8" display="grid" gridTemplateRows="repeat(2, 1fr)">
                 <Button
                   type="button"
                   aria-label={labels.increment}
@@ -172,7 +181,7 @@ export function NAmountInput({
         ) : null}
       </NumberInput.Root>
       {quickValues.length > 0 && !readOnly ? (
-        <HStack aria-label={labels.quickValuesLabel} gap="2" flexWrap="wrap">
+        <HStack className={classNames?.quickValues} css={styles?.quickValues} data-scope="n-amount-input" data-part="quick-values" aria-label={labels.quickValuesLabel} gap="2" flexWrap="wrap">
           {quickValues.map((quickValue) => (
             <Button
               key={`${quickValue.value}-${quickValue.label ?? ""}`}
@@ -188,8 +197,8 @@ export function NAmountInput({
           ))}
         </HStack>
       ) : null}
-      {helperText ? <Field.HelperText>{helperText}</Field.HelperText> : null}
-      {errorText ? <Field.ErrorText>{errorText}</Field.ErrorText> : null}
+      {helperText ? <Field.HelperText unstyled={unstyled} className={classNames?.helper} css={styles?.helper} data-scope="n-amount-input" data-part="helper">{helperText}</Field.HelperText> : null}
+      {errorText ? <Field.ErrorText unstyled={unstyled} className={classNames?.error} css={styles?.error} data-scope="n-amount-input" data-part="error">{errorText}</Field.ErrorText> : null}
     </Field.Root>
   )
 }

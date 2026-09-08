@@ -60,7 +60,7 @@ import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatt
 import { DemoProvider } from "./provider"
 import { FactureProjectView } from "./FactureProjectView"
 import { CtrlView } from "./CtrlView"
-import { BeginnerAccessibilityGuideView, DashboardStylesView } from "./AccessibilityViews"
+import { BeginnerAccessibilityGuideView, VisualSystemView } from "./AccessibilityViews"
 
 type Product = {
   id: number
@@ -256,7 +256,7 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
         icon: <Check size={17} />,
         badge: "Nuevo",
         children: [
-          { id: "accessibility-styles", label: "Estilos de dashboard", icon: <Palette size={17} />, data: { view: "accessibility-styles" } },
+          { id: "accessibility-styles", label: "Sistema visual", icon: <Palette size={17} />, data: { view: "accessibility-styles" } },
           { id: "accessibility-guide", label: "Guía desde cero", icon: <ClipboardList size={17} />, data: { view: "accessibility-guide" } },
         ],
       },
@@ -332,7 +332,7 @@ const viewTitles: Record<DemoView, string> = {
   form: "NForm",
   permissions: "NPermissionGate",
   facture: "NFacture · Facturación México",
-  "accessibility-styles": "Accesibilidad · Estilos de dashboard",
+  "accessibility-styles": "Accesibilidad · Sistema visual",
   "accessibility-guide": "Accesibilidad · Guía desde cero",
 }
 
@@ -2568,6 +2568,7 @@ function WorkspaceSwitcherView() {
 
 /** Layout raíz del catálogo: NSidebar + NHeader globales y el contenido según la vista activa. */
 function DevelopmentApp() {
+  const embedded = new URLSearchParams(window.location.search).get("embed") === "1"
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
     const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "thermal-print", "pos-example", "panel", "ctrl", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions", "facture", "accessibility-styles", "accessibility-guide"]
@@ -2650,7 +2651,7 @@ function DevelopmentApp() {
     : activeView === "ctrl"
       ? <CtrlView />
     : activeView === "accessibility-styles"
-      ? <DashboardStylesView />
+      ? <VisualSystemView />
     : activeView === "accessibility-guide"
       ? <BeginnerAccessibilityGuideView />
     : activeView === "page-patterns"
@@ -2684,6 +2685,8 @@ function DevelopmentApp() {
                   : activeView === "workspaces"
                     ? <WorkspaceSwitcherView />
               : <OverviewView onNavigate={setActiveView} />
+
+  if (embedded) return <NCtrlProvider><Box minH="100dvh" bg="bg" p={{ base: "4", md: "6" }}>{content}</Box></NCtrlProvider>
 
   return (
     <NCtrlProvider>

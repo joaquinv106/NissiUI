@@ -31,6 +31,6 @@
 - Para rollos de 58/80 mm, aislamiento del ticket o adaptadores ESC/POS/locales, conecta `onPrint` con [`NThermalPrint`](./thermal-print.md).
 - `documentLabels` traduce el visor base y `labels` los textos del preset.
 
-Las partidas usan lista semántica y cambian de columnas a una distribución compacta en móvil. El documento no genera folios, firma contenido, emite comprobantes fiscales ni garantiza integridad; esas responsabilidades corresponden al backend.
+Las partidas usan lista semántica y container queries: cambian de columnas a una distribución compacta cuando el recibo dispone de menos de `40rem`, aunque el viewport completo sea grande. Esto evita desbordamientos dentro de dashboards, cards y paneles angostos. El documento no genera folios, firma contenido, emite comprobantes fiscales ni garantiza integridad; esas responsabilidades corresponden al backend.
 
 `NReceipt` hereda `unstyled`, `classNames` y `styles` de la capa documental y agrega los slots `lines`, `line`, `lineLabel`, `summary` y `total`. Consulta [Personalización compatible](./customization.md).

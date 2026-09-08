@@ -44,16 +44,21 @@ Para controlar completamente la superficie:
 </NPanel>
 ```
 
-## Componentes cubiertos inicialmente
+## Cobertura completa
 
-| Componente | Slots adicionales principales |
-| --- | --- |
-| `NPanel` | `content`, `header`, `title`, `description`, `body`, `footer`, `closeTrigger`, `backdrop` |
-| `NDocumentView` | `root`, `actions`, `document`, `documentHeader`, `title`, `metadata`, `section`, `documentFooter` |
-| `NReceipt` | Slots de documento más `lines`, `line`, `lineLabel`, `summary`, `total` |
-| `NThermalPrint` | `root`, `trigger`, `error`, `source` |
+Todos los componentes visuales públicos aceptan el contrato compartido. Cada uno exporta además su unión de slots, por ejemplo `NTableSlot`, `NFormSlot`, `NHeaderSlot` o `NReceiptSlot`. Los providers sin DOM visual conservan su contrato específico; `NThemeProvider` permite sustituir el sistema Chakra completo mediante `system`.
 
-Los tipos `NPanelSlot`, `NDocumentViewSlot`, `NReceiptSlot` y `NThermalPrintSlot` son públicos. El contrato se extenderá por familias sin retirar props históricas ni exponer módulos `internal/`.
+| Familia | Componentes | Slots representativos |
+| --- | --- | --- |
+| Navegación y plataforma | `NAppShell`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NTheme`, `NCtrl`, `NPermissionGate` | `root`, `content`, `navigation`, `surface`, `trigger` |
+| Datos y formularios | `NTable`, `NDataTable`, `NForm`, `NAmountInput`, `NItemPicker`, `NLineItemEditor`, `NAmountAllocator`, `NCodeCapture` | `surface`, `form`, `fields`, `input`, `picker`, `summary` |
+| Flujos | `NStepFlow`, `NApprovalFlow`, `NBalanceSession`, `NAdjustmentEditor`, `NDocumentView`, `NSyncStatus`, `NOfflineBoundary` | `root`, `request`, `document`, `error`, `loading`, `banner` |
+| Comercio e impresión | `NCart`, `NCheckout`, `NReceipt`, `NThermalPrint` | `editor`, `allocator`, `lines`, `total`, `source` |
+| Patrones de página y datos | `NPageHeader`, `NBreadcrumbs`, `NEmptyState`, `NAsyncState`, `NConfirmDialog`, `NFilterBar`, `NDateRangePicker`, `NDescriptionList`, `NDetailPanel` | `title`, `actions`, `menu`, `content`, `fields`, `item` |
+| Actividad y dashboard | `NFileUpload`, `NActivityTimeline`, `NNotificationCenter`, `NStatCard`, `NDashboardGrid`, `NDashboardGridItem`, `NChartFrame` | `dropzone`, `marker`, `content`, `value`, `plot` |
+| SaaS y verticales | `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`, `NKanban`, `NScheduler`, `NMapView`, `NFacture` | `root`, `plan`, `entry`, `content`, `navigation` |
+
+Los slots pequeños exponen al menos `root`; los componentes compuestos exponen las partes cuya personalización puede mantenerse estable sin revelar módulos `internal/`. La lista exacta está tipada por componente y es la fuente canónica para autocompletado.
 
 ## Sistema Chakra propio
 

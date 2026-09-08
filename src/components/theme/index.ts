@@ -12,3 +12,4 @@ export type {
   NThemeProps,
   NThemeProviderProps,
 } from "./types"
+export type { NThemeSlot } from "./types"

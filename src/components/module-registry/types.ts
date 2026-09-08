@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NPermissionCapability, NPermissionMode } from "../permissions"
+import type { NComponentStyleProps } from "../styling"
+export type NModuleRegistrySlot = "root" | "module" | "empty"
 
 export type NModuleRegistryLayout = "grid" | "list" | "compact"
 
@@ -24,7 +26,7 @@ export interface NModuleRegistryLabels {
   empty: string
 }
 
-export interface NModuleRegistryProps<TData = unknown> {
+export interface NModuleRegistryProps<TData = unknown> extends NComponentStyleProps<NModuleRegistrySlot> {
   modules: NModuleDefinition<TData>[]
   activeModuleId?: string
   defaultActiveModuleId?: string

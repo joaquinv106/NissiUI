@@ -16,6 +16,9 @@ export function NWorkspaceSwitcher<TData = unknown>({
   compact = false,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NWorkspaceSwitcherProps<TData>) {
   const labels = { ...defaultNWorkspaceSwitcherLabels, ...labelsProp }
   const firstAvailable = workspaces.find((workspace) => !workspace.disabled)
@@ -29,13 +32,14 @@ export function NWorkspaceSwitcher<TData = unknown>({
     onValueChange?.(workspace)
   }
 
-  if (!selected) return <Text role="status" color="fg.muted" fontSize="sm">{labels.noWorkspaces}</Text>
+  if (!selected) return <Text role="status" color="fg.muted" fontSize="sm" className={classNames?.empty} css={styles?.empty ?? styles?.root} data-scope="n-workspace-switcher" data-part="empty">{labels.noWorkspaces}</Text>
 
   return (
     <Menu.Root positioning={{ placement: "bottom-start" }}>
       <Menu.Trigger asChild>
         <Button
-          variant="outline"
+          unstyled={unstyled}
+          variant={unstyled ? undefined : "outline"}
           colorPalette={colorPalette}
           aria-label={`${labels.selectorLabel}: ${selected.name}`}
           minW="0"
@@ -43,6 +47,10 @@ export function NWorkspaceSwitcher<TData = unknown>({
           height="11"
           px={compact ? "2" : "3"}
           justifyContent={compact ? "center" : "flex-start"}
+          className={classNames?.trigger}
+          css={styles?.trigger ?? styles?.root}
+          data-scope="n-workspace-switcher"
+          data-part="trigger"
         >
           <Avatar.Root size="sm" flexShrink="0" bg="colorPalette.subtle" color="colorPalette.fg">
             <Avatar.Fallback>{selected.name.slice(0, 2).toLocaleUpperCase()}</Avatar.Fallback>
@@ -59,7 +67,7 @@ export function NWorkspaceSwitcher<TData = unknown>({
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
-          <Menu.Content width="min(20rem, calc(100vw - 2rem))" maxH="min(28rem, calc(100dvh - 6rem))" overflowY="auto">
+          <Menu.Content unstyled={unstyled} width="min(20rem, calc(100vw - 2rem))" maxH="min(28rem, calc(100dvh - 6rem))" overflowY="auto" className={classNames?.content} css={styles?.content} data-scope="n-workspace-switcher" data-part="content">
             <Menu.ItemGroup>
               <Menu.ItemGroupLabel>{labels.menuLabel}</Menu.ItemGroupLabel>
               {workspaces.map((workspace) => (
@@ -68,6 +76,9 @@ export function NWorkspaceSwitcher<TData = unknown>({
                   value={workspace.id}
                   disabled={workspace.disabled}
                   onClick={() => selectWorkspace(workspace)}
+                  className={classNames?.workspace}
+                  css={styles?.workspace}
+                  data-part="workspace"
                 >
                   <Box aria-hidden="true" color="fg.muted">{workspace.icon ?? <Building2 size={17} />}</Box>
                   <Stack gap="0" minW="0" flex="1">

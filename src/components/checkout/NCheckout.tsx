@@ -13,7 +13,7 @@ import { checkoutMessage, checkoutSucceeded } from "./utils"
 export function NCheckout<TMethod>({
   checkoutKey = "default", allocations, defaultAllocations = [], onAllocationsChange,
   onComplete, validate, canComplete, review, header, footer, allocatorHeader, allocatorFooter, allocatorLabels,
-  labels: labelsProp, precision = 2, colorPalette = "blue", disabled = false, readOnly = false,
+  labels: labelsProp, precision = 2, colorPalette = "blue", disabled = false, readOnly = false, unstyled = false, classNames, styles,
   total, methods, methodLayout = "stacked", ...allocatorProps
 }: NCheckoutProps<TMethod>) {
   const labels = useMemo(() => resolveNCheckoutLabels(labelsProp), [labelsProp])
@@ -76,11 +76,11 @@ export function NCheckout<TMethod>({
   }
 
   return (
-    <Stack as="section" aria-label={labels.checkoutLabel} gap="5" minW="0" colorPalette={colorPalette}>
-      {header}
+    <Stack as="section" aria-label={labels.checkoutLabel} gap="5" minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-checkout" data-part="root">
+      {header ? <Box display="contents" className={classNames?.header} css={styles?.header} data-part="header">{header}</Box> : null}
       <Flex align="center" gap="3"><Flex align="center" justify="center" boxSize="10" rounded="lg" bg="colorPalette.subtle" color="colorPalette.fg"><CreditCard aria-hidden size={20} /></Flex><Heading as="h2" size="md">{labels.title}</Heading></Flex>
-      {review ? <Stack as="section" aria-label={labels.reviewLabel} gap="3" p={{ base: "4", md: "5" }} borderWidth="1px" borderColor="border" rounded="lg" bg="bg.panel">{review}</Stack> : null}
-      <Box as="section" aria-label={labels.paymentLabel}>
+      {review ? <Stack as="section" aria-label={labels.reviewLabel} gap="3" p={unstyled ? undefined : { base: "4", md: "5" }} borderWidth={unstyled ? undefined : "1px"} borderColor="border" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.panel"} className={classNames?.review} css={styles?.review} data-part="review">{review}</Stack> : null}
+      <Box as="section" aria-label={labels.paymentLabel} className={classNames?.allocator} css={styles?.allocator} data-part="allocator">
         <NAmountAllocator
           {...allocatorProps}
           total={total}
@@ -94,6 +94,7 @@ export function NCheckout<TMethod>({
           header={allocatorHeader}
           footer={allocatorFooter}
           labels={allocatorLabels}
+          unstyled={unstyled}
           onAllocationsChange={changeAllocations}
         />
       </Box>

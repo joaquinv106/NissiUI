@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NThemePresentation } from "../theme/types"
+import type { NComponentStyleProps } from "../styling"
+export type NHeaderSlot = "root" | "content" | "brand" | "navigation" | "search" | "actions"
 
 export type NHeaderVariant = "site" | "app"
 export type NHeaderResponsive = "overlay" | "push" | "hidden"
@@ -80,7 +82,7 @@ export interface NHeaderLabels {
   switchToDarkTheme: string
 }
 
-export interface NHeaderProps<TData = unknown> {
+export interface NHeaderProps<TData = unknown> extends NComponentStyleProps<NHeaderSlot> {
   variant?: NHeaderVariant
   brand?: ReactNode
   items?: NHeaderNavItem<TData>[]

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 
+import type { NComponentStyleProps } from "../styling"
+
 export interface NAmountInputQuickValue {
   value: number
   label?: string
@@ -21,7 +23,9 @@ export interface NAmountInputLabels {
   quickValue: (value: number) => string
 }
 
-export interface NAmountInputProps {
+export type NAmountInputSlot = "root" | "label" | "input" | "controls" | "quickValues" | "helper" | "error"
+
+export interface NAmountInputProps extends NComponentStyleProps<NAmountInputSlot> {
   value?: number | null
   defaultValue?: number | null
   onValueChange?: (value: number | null, details: NAmountInputChangeDetails) => void

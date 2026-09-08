@@ -6,3 +6,4 @@ export type {
   NSidebarLabels,
   NSidebarProps,
 } from "./types"
+export type { NSidebarSlot } from "./types"

@@ -19,7 +19,7 @@ export function NCtrl({
   shortcuts = [], viewId = "default", viewLabel, open, defaultOpen = false, onOpenChange,
   toggleShortcut = "F11", enabled = true, executeShortcuts = true, disableShortcutsWhileOpen = true,
   showTrigger = true, trigger, placement = "auto", desktopWidth = "clamp(22rem, 38vw, 38rem)",
-  colorPalette = "blue", onShortcutInvoke, onShortcutError, onShortcutConflict, labels: labelsProp,
+  colorPalette = "blue", onShortcutInvoke, onShortcutError, onShortcutConflict, labels: labelsProp, unstyled = false, classNames, styles,
 }: NCtrlProps) {
   const labels = useMemo(() => resolveNCtrlLabels(labelsProp), [labelsProp])
   const registered = useRegisteredNCtrlShortcuts()
@@ -127,15 +127,18 @@ export function NCtrl({
     contentKey={viewId}
     colorPalette={colorPalette}
     trigger={showTrigger ? (trigger ?? defaultTrigger) : undefined}
+    unstyled={unstyled}
+    classNames={{ content: classNames?.root, trigger: classNames?.trigger }}
+    styles={{ content: styles?.root, trigger: styles?.trigger }}
   >
-    <Stack gap="5">
+    <Stack gap="5" data-scope="n-ctrl" data-part="root">
       <Field.Root>
         <Field.Label position="absolute" width="1px" height="1px" overflow="hidden" clip="rect(0, 0, 0, 0)">{labels.searchLabel}</Field.Label>
         <InputGroup startElement={<Search aria-hidden size={17} />}>
           <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={labels.searchPlaceholder} />
         </InputGroup>
       </Field.Root>
-      {error ? <Box role="alert" bg="bg.error" color="fg.error" borderWidth="1px" borderColor="border.error" rounded="md" p="3">{error}</Box> : null}
+      {error ? <Box role="alert" bg="bg.error" color="fg.error" borderWidth="1px" borderColor="border.error" rounded="md" p="3" className={classNames?.error} css={styles?.error} data-part="error">{error}</Box> : null}
       {groups.length ? groups.map(([group, entries]) => <Stack key={group} as="section" gap="3" aria-labelledby={`n-ctrl-${viewId}-${group}`}>
         <Flex align="center" gap="2"><Zap aria-hidden size={16} /><Text id={`n-ctrl-${viewId}-${group}`} as="h3" fontWeight="semibold">{group}</Text><Badge variant="subtle">{entries.length}</Badge></Flex>
         <SimpleGrid columns={{ base: 1, md: 2 }} gap="3">

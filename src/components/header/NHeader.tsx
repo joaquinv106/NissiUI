@@ -50,6 +50,9 @@ export function NHeader<TData = unknown>({
   surface = "outline",
   colorPalette = "blue",
   labels: customLabels,
+  unstyled = false,
+  classNames,
+  styles,
 }: NHeaderProps<TData>) {
   const labels = useMemo(() => resolveNHeaderLabels(customLabels), [customLabels])
   const themeContext = useOptionalNTheme()
@@ -117,27 +120,31 @@ export function NHeader<TData = unknown>({
       top={sticky ? "0" : undefined}
       zIndex={sticky ? "sticky" : "docked"}
       width="full"
-      bg="bg.muted"
-      color="fg"
+      bg={unstyled ? undefined : "bg.muted"}
+      color={unstyled ? undefined : "fg"}
       colorPalette={colorPalette}
-      borderBottomWidth={surface === "outline" ? "1px" : undefined}
+      borderBottomWidth={!unstyled && surface === "outline" ? "1px" : undefined}
       borderColor="border"
-      shadow={surface === "elevated" ? "sm" : undefined}
+      shadow={!unstyled && surface === "elevated" ? "sm" : undefined}
+      className={classNames?.root}
+      css={styles?.root}
+      data-scope="n-header"
+      data-part="root"
     >
-      <Flex height={height} minW="0" align="center" gap={{ base: "2", md: "4" }} px={{ base: "3", md: "6" }}>
-        <HeaderBrand>{brand}</HeaderBrand>
+      <Flex height={height} minW="0" align="center" gap={{ base: "2", md: "4" }} px={unstyled ? undefined : { base: "3", md: "6" }} className={classNames?.content} css={styles?.content} data-part="content">
+        <Box display="contents" className={classNames?.brand} css={styles?.brand} data-part="brand"><HeaderBrand>{brand}</HeaderBrand></Box>
 
-        <Box display={{ base: "none", md: "block" }} minW="0">
+        <Box display={{ base: "none", md: "block" }} minW="0" className={classNames?.navigation} css={styles?.navigation} data-part="navigation">
           {variant === "site" ? (
             <HeaderNav items={resolvedItems} activeItemId={activeId} colorPalette={colorPalette} navigationLabel={labels.navigationLabel} onSelect={selectItem} />
           ) : extra}
         </Box>
 
         {variant === "app" && searchNode ? (
-          <Flex display={{ base: "none", lg: "flex" }} flex="1" justify="center" minW="0">{searchNode}</Flex>
+          <Flex display={{ base: "none", lg: "flex" }} flex="1" justify="center" minW="0" className={classNames?.search} css={styles?.search} data-part="search">{searchNode}</Flex>
         ) : <Box flex="1" />}
 
-        <HStack gap="1" flexShrink="0">
+        <HStack gap="1" flexShrink="0" className={classNames?.actions} css={styles?.actions} data-part="actions">
           <Box display={{ base: "none", md: "contents" }}>
             <HeaderActions actions={actions} defaultPresentation={variant === "site" ? "button" : "icon"} />
           </Box>

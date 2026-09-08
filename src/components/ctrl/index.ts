@@ -3,3 +3,4 @@ export { NCtrlProvider, useNCtrlShortcut, useNCtrlShortcuts } from "./NCtrlConte
 export { defaultNCtrlLabels, resolveNCtrlLabels } from "./labels"
 export { formatNCtrlChord, matchesNCtrlShortcut, normalizeNCtrlChord } from "./utils"
 export type { NCtrlInvokeDetails, NCtrlLabels, NCtrlProps, NCtrlProviderProps, NCtrlShortcut, NCtrlShortcutKeys } from "./types"
+export type { NCtrlSlot } from "./types"

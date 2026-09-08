@@ -80,13 +80,9 @@ No uses clases internas generadas por Chakra o Emotion. Sólo los slots público
 
 El catálogo incluye las paletas Aurora, Coral nocturno y Cobalto como ejemplos de dashboards expresivos. Son demostraciones locales; una aplicación real debe convertir sus decisiones repetidas en tokens del sistema.
 
-El submenú **Accesibilidad → Estilos de dashboard** reúne todos los componentes cubiertos por el contrato visual inicial:
+El submenú **Accesibilidad → Sistema visual** reúne todos los componentes visuales de la librería y demuestra el contrato compartido `unstyled` + `classNames` + `styles`. La muestra superior enseña una composición profundamente personalizada y el explorador inferior permite comprobar el mismo contrato por familia, incluidas tablas, datatables, formularios, inputs, navegación, flujos, comercio, SaaS, verticales y NFacture.
 
-- `NDocumentView`: raíz, documento, encabezado, metadata y secciones.
-- `NReceipt`: documento, partidas, etiquetas, resumen y total.
-- `NThermalPrint`: fuente imprimible, disparador, errores y contenedor.
-- `NPanel`: backdrop, contenido, encabezado, cuerpo, pie y cierre.
-- `NThemeProvider`: inyección global del sistema, acompañada por el selector visual `NTheme`.
+La misma vista contiene además el explorador **Todo Nissi UI**. Agrupa el catálogo completo por fundación, datos/formularios, flujos, comercio, patrones y proyectos. Cada control abre una vista interactiva embebida con los ejemplos, variantes y código existentes; sólo carga un ejemplo a la vez para conservar rendimiento, una jerarquía comprensible y navegación de teclado predecible.
 
 ## 6. Responsive
 

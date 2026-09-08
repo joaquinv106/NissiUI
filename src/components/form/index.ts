@@ -14,3 +14,4 @@ export type {
   NFormSection,
   NFormSubmitResult,
 } from "./types"
+export type { NFormSlot } from "./types"

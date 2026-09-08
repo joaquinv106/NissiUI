@@ -44,6 +44,9 @@ export function NLineItemEditor<TItem, TLine>({
   emptyState,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NLineItemEditorProps<TItem, TLine>) {
   const labels = useMemo(() => resolveNLineItemEditorLabels(labelsProp), [labelsProp])
   const [internalLines, setInternalLines] = useState<TLine[]>(() => [...defaultLines])
@@ -212,7 +215,7 @@ export function NLineItemEditor<TItem, TLine>({
   }
 
   return (
-    <Stack as="section" aria-label={labels.editorLabel} gap="4" minW="0" colorPalette={colorPalette}>
+    <Stack as="section" aria-label={labels.editorLabel} gap="4" minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-line-item-editor" data-part="root">
       {header}
 
       <HStack justify="space-between" align="center" gap="3" flexWrap="wrap">
@@ -234,7 +237,7 @@ export function NLineItemEditor<TItem, TLine>({
       </HStack>
 
       {isPickerOpen && !readOnly ? (
-        <Box id={pickerRegionId} p={{ base: "3", md: "4" }} borderWidth="1px" borderColor="border" rounded="lg" bg="bg.subtle">
+        <Box id={pickerRegionId} p={unstyled ? undefined : { base: "3", md: "4" }} borderWidth={unstyled ? undefined : "1px"} borderColor="border" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.subtle"} className={classNames?.picker} css={styles?.picker} data-part="picker">
           <NItemPicker
             {...pickerProps}
             items={items}

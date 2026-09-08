@@ -13,7 +13,7 @@ import { normalizeCartSummary, summarizeCart } from "./utils"
 export function NCart<TItem, TLine>({
   lines, defaultLines = [], cartKey = "default", onLinesChange, getLineAmount, calculateSummary, formatAmount,
   locale = "es-MX", formatOptions, showClear = true, renderSummary, header, footer,
-  editorHeader, editorFooter, labels: labelsProp, editorLabels, colorPalette = "blue", ...editorProps
+  editorHeader, editorFooter, labels: labelsProp, editorLabels, colorPalette = "blue", unstyled = false, classNames, styles, ...editorProps
 }: NCartProps<TItem, TLine>) {
   const labels = useMemo(() => resolveNCartLabels(labelsProp), [labelsProp])
   const [internalLines, setInternalLines] = useState<readonly TLine[]>(defaultLines)
@@ -39,8 +39,8 @@ export function NCart<TItem, TLine>({
   }
 
   return (
-    <Stack as="section" aria-label={labels.cartLabel} gap="5" minW="0" colorPalette={colorPalette}>
-      {header}
+    <Stack as="section" aria-label={labels.cartLabel} gap="5" minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-cart" data-part="root">
+      {header ? <Box display="contents" className={classNames?.header} css={styles?.header} data-part="header">{header}</Box> : null}
       <Flex align={{ base: "start", sm: "center" }} justify="space-between" direction={{ base: "column", sm: "row" }} gap="3">
         <Flex align="center" gap="3">
           <Flex align="center" justify="center" boxSize="10" rounded="lg" bg="colorPalette.subtle" color="colorPalette.fg"><ShoppingCart aria-hidden size={20} /></Flex>
@@ -55,10 +55,13 @@ export function NCart<TItem, TLine>({
         header={editorHeader}
         footer={editorFooter}
         labels={editorLabels}
+        unstyled={unstyled}
+        classNames={{ root: classNames?.editor }}
+        styles={{ root: styles?.editor }}
         onLinesChange={(nextLines, change) => publish(nextLines, change)}
       />
       {renderSummary ? renderSummary(summary, activeLines) : (
-        <Stack as="dl" aria-label={labels.summaryLabel} gap="2" m="0" p={{ base: "4", md: "5" }} borderWidth="1px" borderColor="border" rounded="lg" bg="bg.subtle">
+        <Stack as="dl" aria-label={labels.summaryLabel} gap="2" m="0" p={unstyled ? undefined : { base: "4", md: "5" }} borderWidth={unstyled ? undefined : "1px"} borderColor="border" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.subtle"} className={classNames?.summary} css={styles?.summary} data-part="summary">
           <Flex justify="space-between" gap="4"><Text as="dt" color="fg.muted">{labels.subtotal}</Text><Box as="dd" m="0" fontWeight="medium">{presentAmount(summary.subtotal)}</Box></Flex>
           {summary.rows.map((row) => <Flex key={row.id} justify="space-between" gap="4"><Box as="dt" color="fg.muted">{row.label}</Box><Box as="dd" m="0" fontWeight="medium">{presentAmount(row.amount)}</Box></Flex>)}
           <Flex justify="space-between" gap="4" pt="3" borderTopWidth="1px" borderColor="border"><Text as="dt" fontWeight="semibold">{labels.total}</Text><Box as="dd" m="0" fontSize="xl" fontWeight="bold">{presentAmount(summary.total)}</Box></Flex>

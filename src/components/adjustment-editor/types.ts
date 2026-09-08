@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NAdjustmentEditorSlot = "root" | "error" | "loading"
 
 export type NAdjustmentValue = string | number | boolean | null
 export type NAdjustmentInputType = "text" | "number" | "textarea" | "select"
@@ -79,7 +81,7 @@ export interface NAdjustmentEditorLabels {
   emptyDescription: string
 }
 
-export interface NAdjustmentEditorProps<T> {
+export interface NAdjustmentEditorProps<T> extends NComponentStyleProps<NAdjustmentEditorSlot> {
   item?: T | null
   getItemId: (item: T) => string
   getItemTitle: (item: T) => ReactNode

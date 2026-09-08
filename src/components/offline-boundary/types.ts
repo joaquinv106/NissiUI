@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NOfflineBoundarySlot = "root" | "banner"
 
 export type NOfflineBoundaryBehavior = "banner" | "fallback"
 
@@ -18,7 +20,7 @@ export interface NOfflineBoundaryLabels {
   retryFailed: string
 }
 
-export interface NOfflineBoundaryProps {
+export interface NOfflineBoundaryProps extends NComponentStyleProps<NOfflineBoundarySlot> {
   children: ReactNode
   online?: boolean
   defaultOnline?: boolean

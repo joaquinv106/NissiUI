@@ -12,7 +12,7 @@ import { adjustmentChangedFieldIds, adjustmentResultMessage, adjustmentResultSuc
 export function NAdjustmentEditor<T>({
   item, getItemId, getItemTitle, getItemDescription, createAdjustment, fields = [], value, onValueChange,
   reason, defaultReason = "", onReasonChange, requireReason = true, validate, onSubmit, renderOriginal, renderEditor,
-  disabled = false, readOnly = false, loading = false, error, emptyState, header, footer, colorPalette = "blue", labels: labelsProp,
+  disabled = false, readOnly = false, loading = false, error, emptyState, header, footer, colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles,
 }: NAdjustmentEditorProps<T>) {
   const labels = useMemo(() => resolveNAdjustmentEditorLabels(labelsProp), [labelsProp])
   const itemId = item ? getItemId(item) : undefined
@@ -40,8 +40,8 @@ export function NAdjustmentEditor<T>({
     setBusy(false)
   }, [createAdjustment, defaultReason, item, itemId])
 
-  if (error) return <Stack as="section" aria-label={labels.editorLabel} role="alert" gap="1" p="4" borderWidth="1px" borderColor="border.error" rounded="lg" bg="bg.error"><Text color="fg.error" fontWeight="semibold">{labels.errorTitle}</Text><Box color="fg.error">{error}</Box></Stack>
-  if (loading) return <Center as="section" aria-label={labels.editorLabel} role="status" minH="12rem" gap="3"><Spinner size="sm" /><Text color="fg.muted">{labels.loading}</Text></Center>
+  if (error) return <Stack as="section" aria-label={labels.editorLabel} role="alert" gap="1" p={unstyled ? undefined : "4"} borderWidth={unstyled ? undefined : "1px"} borderColor="border.error" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.error"} className={classNames?.error} css={styles?.error ?? styles?.root} data-scope="n-adjustment-editor" data-part="error"><Text color="fg.error" fontWeight="semibold">{labels.errorTitle}</Text><Box color="fg.error">{error}</Box></Stack>
+  if (loading) return <Center as="section" aria-label={labels.editorLabel} role="status" minH="12rem" gap="3" className={classNames?.loading} css={styles?.loading ?? styles?.root} data-scope="n-adjustment-editor" data-part="loading"><Spinner size="sm" /><Text color="fg.muted">{labels.loading}</Text></Center>
   if (!item || !adjustment || !itemId) return emptyState ?? <Center as="section" aria-label={labels.editorLabel} role="status" minH="12rem" flexDirection="column" gap="2" p="6" borderWidth="1px" borderColor="border" rounded="lg"><Text fontWeight="semibold">{labels.emptyTitle}</Text><Text color="fg.muted" fontSize="sm">{labels.emptyDescription}</Text></Center>
 
   const update = (next: T | ((current: T) => T), fieldId?: string) => {
@@ -99,7 +99,7 @@ export function NAdjustmentEditor<T>({
   const context = { original: item, adjustment, update, disabled, busy, changedFieldIds, errors }
 
   return (
-    <Stack as="section" aria-label={labels.editorLabel} gap="5" minW="0" colorPalette={colorPalette} data-item-id={itemId}>
+    <Stack as="section" aria-label={labels.editorLabel} gap="5" minW="0" colorPalette={colorPalette} data-item-id={itemId} className={classNames?.root} css={styles?.root} data-scope="n-adjustment-editor" data-part="root">
       {header}
       <Box><Heading as="h3" size="md">{getItemTitle(item)}</Heading>{getItemDescription ? <Box color="fg.muted" fontSize="sm">{getItemDescription(item)}</Box> : null}</Box>
       {renderEditor ? <Grid templateColumns={{ base: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" }} gap="4"><Card.Root variant="outline"><Card.Header><Card.Title>{labels.originalTitle}</Card.Title></Card.Header><Card.Body>{renderOriginal?.(item) ?? null}</Card.Body></Card.Root><Card.Root variant="outline"><Card.Header><Card.Title>{labels.adjustmentTitle}</Card.Title></Card.Header><Card.Body>{renderEditor(context)}</Card.Body></Card.Root></Grid> : (

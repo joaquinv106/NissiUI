@@ -40,14 +40,19 @@ import type {
   NFactureCustomerResult,
   NFactureData,
   NFactureDataAdapter,
+  NFactureDashboardProps,
+  NFactureDocumentationProps,
   NFactureDraft,
   NFactureLabels,
+  NFactureHistoryProps,
+  NFactureIssuerProps,
   NFactureLine,
   NFactureFiscalProfile,
   NFacturePacConfig,
   NFactureProps,
   NFactureRecord,
   NFactureTicket,
+  NFactureTicketViewProps,
   NFactureView,
   SATItem,
 } from "./types"
@@ -75,10 +80,10 @@ function statusPalette(status: NFactureRecord["status"]) {
   return "red"
 }
 
-export function NFactureDashboard({ invoices, labels, adapter }: { invoices: readonly NFactureRecord[]; labels: NFactureLabels; adapter?: NFactureDataAdapter }) {
+export function NFactureDashboard({ invoices, labels, adapter, unstyled = false, classNames, styles }: NFactureDashboardProps) {
   const count = (status: NFactureRecord["status"]) => invoices.filter((invoice) => invoice.status === status).length
   return (
-    <Stack gap="6">
+    <Stack gap={unstyled ? undefined : "6"} className={classNames?.root} css={styles?.root} data-scope="n-facture-dashboard" data-part="root">
       <NDashboardGrid columns={4} minItemWidth="12rem">
         <NStatCard label={labels.stampedMetric} value={count("stamped")} icon={<FileCheck2 aria-hidden size={20} />} colorPalette="green" />
         <NStatCard label={labels.cancelledMetric} value={count("cancelled")} icon={<FileX2 aria-hidden size={20} />} colorPalette="gray" />
@@ -90,7 +95,7 @@ export function NFactureDashboard({ invoices, labels, adapter }: { invoices: rea
   )
 }
 
-export function NFactureHistory({ invoices, labels, adapter, title }: { invoices: readonly NFactureRecord[]; labels: NFactureLabels; adapter?: NFactureDataAdapter; title?: string }) {
+export function NFactureHistory({ invoices, labels, adapter, title, unstyled = false, classNames, styles }: NFactureHistoryProps) {
   const [selected, setSelected] = useState<NFactureRecord>()
   const headers: NTableColumn<NFactureRecord>[] = [
     { key: "folio", header: labels.folio },
@@ -101,7 +106,7 @@ export function NFactureHistory({ invoices, labels, adapter, title }: { invoices
     { key: "status", header: labels.status, format: (value) => <Badge colorPalette={statusPalette(value as NFactureRecord["status"])}>{statusLabel(value as NFactureRecord["status"], labels)}</Badge> },
     { key: "actions", header: labels.actions, sortable: false, filterable: false, hideable: false, format: (_value, row) => <HStack gap="1"><Button size="xs" variant="ghost" onClick={() => setSelected(row)}>{labels.viewDocument}</Button>{row.pdfUrl ? <Link href={row.pdfUrl} download aria-label={labels.downloadPdf} fontSize="sm">PDF</Link> : null}{row.xmlUrl ? <Link href={row.xmlUrl} download aria-label={labels.downloadXml} fontSize="sm">XML</Link> : null}{adapter?.resendInvoice ? <Button size="xs" variant="ghost" aria-label={labels.resendEmail} onClick={() => void adapter.resendInvoice?.(row)}>{labels.resendEmail}</Button> : null}</HStack> },
   ]
-  return <Stack gap="5"><NTable title={title ?? labels.history} config={{ headers, data: [...invoices] }} getRowId={(row) => row.id} searchable filterable pagination responsive="stack" emptyMessage={labels.noData} /><NPanel open={Boolean(selected)} onOpenChange={(open) => { if (!open) setSelected(undefined) }} title={labels.documentPreview} contentKey={selected?.id}><NDocumentView document={selected} getDocumentId={(invoice) => invoice.id} getDocumentTitle={(invoice) => `${invoice.series}${invoice.folio}`} getDocumentSubtitle={(invoice) => invoice.uuid} getDocumentStatus={(invoice) => statusLabel(invoice.status, labels)} getStatusColorPalette={(invoice) => statusPalette(invoice.status)} fields={[{ id: "customer", label: labels.customer, getValue: (invoice) => invoice.customerName }, { id: "rfc", label: labels.rfc, getValue: (invoice) => invoice.customerRfc }, { id: "issued", label: labels.issuedAt, getValue: (invoice) => new Date(invoice.issuedAt).toLocaleString("es-MX") }, { id: "total", label: labels.total, getValue: (invoice) => currency.format(invoice.total) }]} showPrint labels={{ documentLabel: labels.documentPreview }} /></NPanel></Stack>
+  return <Stack gap={unstyled ? undefined : "5"} className={classNames?.root} css={styles?.root} data-scope="n-facture-history" data-part="root"><NTable title={title ?? labels.history} config={{ headers, data: [...invoices] }} getRowId={(row) => row.id} searchable filterable pagination responsive="stack" emptyMessage={labels.noData} /><NPanel open={Boolean(selected)} onOpenChange={(open) => { if (!open) setSelected(undefined) }} title={labels.documentPreview} contentKey={selected?.id}><NDocumentView document={selected} getDocumentId={(invoice) => invoice.id} getDocumentTitle={(invoice) => `${invoice.series}${invoice.folio}`} getDocumentSubtitle={(invoice) => invoice.uuid} getDocumentStatus={(invoice) => statusLabel(invoice.status, labels)} getStatusColorPalette={(invoice) => statusPalette(invoice.status)} fields={[{ id: "customer", label: labels.customer, getValue: (invoice) => invoice.customerName }, { id: "rfc", label: labels.rfc, getValue: (invoice) => invoice.customerRfc }, { id: "issued", label: labels.issuedAt, getValue: (invoice) => new Date(invoice.issuedAt).toLocaleString("es-MX") }, { id: "total", label: labels.total, getValue: (invoice) => currency.format(invoice.total) }]} showPrint labels={{ documentLabel: labels.documentPreview }} /></NPanel></Stack>
 }
 
 function Totals({ lines, labels }: { lines: readonly NFactureLine[]; labels: NFactureLabels }) {
@@ -115,13 +120,7 @@ function Totals({ lines, labels }: { lines: readonly NFactureLine[]; labels: NFa
   )
 }
 
-export function NFactureIssuer({ data, adapter, labels, colorPalette, initialTicket }: {
-  data: NFactureData
-  adapter?: NFactureDataAdapter
-  labels: NFactureLabels
-  colorPalette: string
-  initialTicket?: NFactureTicket
-}) {
+export function NFactureIssuer({ data, adapter, labels, colorPalette, initialTicket, unstyled = false, classNames, styles }: NFactureIssuerProps) {
   const [customerId, setCustomerId] = useState("")
   const [lines, setLines] = useState<readonly NFactureLine[]>(initialTicket?.lines ?? [])
   const [cfdiUse, setCfdiUse] = useState(data.catalogs.cfdiUses[0]?.value ?? "")
@@ -199,7 +198,7 @@ export function NFactureIssuer({ data, adapter, labels, colorPalette, initialTic
   }
 
   return (
-    <Stack gap="6">
+    <Stack gap={unstyled ? undefined : "6"} className={classNames?.root} css={styles?.root} data-scope="n-facture-issuer" data-part="root">
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap="5">
         <Field.Root required><Field.Label>{labels.customer}</Field.Label><HStack align="stretch"><NativeSelect.Root flex="1"><NativeSelect.Field aria-label={labels.customer} value={customerId} onChange={(event) => setCustomerId(event.target.value)}><option value="">{labels.customerPlaceholder}</option>{customers.map((entry: NFactureCustomer) => <option key={entry.id} value={entry.id}>{entry.rfc} · {entry.name}</option>)}</NativeSelect.Field><NativeSelect.Indicator /></NativeSelect.Root><Button variant="outline" onClick={() => setCustomerPanelOpen(true)}>{labels.addCustomer}</Button></HStack><Field.HelperText>{labels.customerHelp}</Field.HelperText></Field.Root>
         <SimpleGrid columns={{ base: 1, sm: 3 }} gap="3">
@@ -219,7 +218,7 @@ export function NFactureIssuer({ data, adapter, labels, colorPalette, initialTic
   )
 }
 
-export function NFactureTicketView({ tickets, adapter, labels, onUseTicket }: { tickets: readonly NFactureTicket[]; adapter?: NFactureDataAdapter; labels: NFactureLabels; onUseTicket: (ticket: NFactureTicket) => void }) {
+export function NFactureTicketView({ tickets, adapter, labels, onUseTicket, unstyled = false, classNames, styles }: NFactureTicketViewProps) {
   const [folio, setFolio] = useState("")
   const [ticket, setTicket] = useState<NFactureTicket>()
   const [busy, setBusy] = useState(false)
@@ -234,7 +233,7 @@ export function NFactureTicketView({ tickets, adapter, labels, onUseTicket }: { 
     } catch { setMessage(labels.ticketNotFound) } finally { setBusy(false) }
   }
   return (
-    <Stack gap="5" maxW="3xl">
+    <Stack gap={unstyled ? undefined : "5"} maxW="3xl" className={classNames?.root} css={styles?.root} data-scope="n-facture-ticket-view" data-part="root">
       <Field.Root required><Field.Label>{labels.ticketFolio}</Field.Label><HStack align="stretch"><Input value={folio} placeholder={labels.ticketPlaceholder} onChange={(event) => setFolio(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") void search() }} /><Button loading={busy} loadingText={labels.searchingTicket} onClick={() => void search()}>{labels.searchTicket}</Button></HStack></Field.Root>
       {message ? <Box role={ticket ? "status" : "alert"} p="3" rounded="md" bg={ticket ? "bg.success" : "bg.error"} color={ticket ? "fg.success" : "fg.error"}>{message}</Box> : null}
       {ticket ? <Card.Root variant="outline"><Card.Body gap="3"><Flex justify="space-between"><Stack gap="1"><Heading as="h2" size="md">{ticket.folio}</Heading><Text color="fg.muted">{new Date(ticket.issuedAt).toLocaleString("es-MX")}</Text></Stack><Text textStyle="2xl" fontWeight="bold">{currency.format(ticket.total)}</Text></Flex><Text color="fg.muted">{ticket.lines.length} {labels.concepts.toLocaleLowerCase()}</Text><Button alignSelf="start" onClick={() => onUseTicket(ticket)}>{labels.issue}</Button></Card.Body></Card.Root> : null}
@@ -291,21 +290,21 @@ function PanelRoute({ title, description, actionLabel, children }: { title: stri
   )
 }
 
-export function NFactureDocumentation({ labels }: { labels: NFactureLabels }) {
+export function NFactureDocumentation({ labels, unstyled = false, classNames, styles }: NFactureDocumentationProps) {
   const sections = [
     { id: "integration", label: labels.docsIntegration, body: labels.docsIntegrationBody },
     { id: "navigation", label: labels.docsNavigation, body: labels.docsNavigationBody },
     { id: "security", label: labels.docsSecurity, body: labels.docsSecurityBody },
   ]
   return (
-    <Stack gap="5" maxW="4xl">
+    <Stack gap={unstyled ? undefined : "5"} maxW="4xl" className={classNames?.root} css={styles?.root} data-scope="n-facture-documentation" data-part="root">
       <NPageHeader level={2} title={labels.documentationTitle} subtitle={labels.documentationDescription} />
       <Tabs.Root defaultValue="integration" variant="subtle"><Tabs.List flexWrap="wrap">{sections.map((section) => <Tabs.Trigger key={section.id} value={section.id}>{section.label}</Tabs.Trigger>)}</Tabs.List>{sections.map((section) => <Tabs.Content key={section.id} value={section.id}><Card.Root variant="outline"><Card.Body><Text color="fg.muted">{section.body}</Text></Card.Body></Card.Root></Tabs.Content>)}</Tabs.Root>
     </Stack>
   )
 }
 
-export function NFacture({ role = "operator", permissions, data: dataProp, adapter: adapterProp, view, defaultView = "dashboard", onViewChange, showNavigation = false, navigation: navigationProp, contentMaxHeight = "calc(100dvh - 10rem)", colorPalette = "blue", labels: labelsProp }: NFactureProps) {
+export function NFacture({ role = "operator", permissions, data: dataProp, adapter: adapterProp, view, defaultView = "dashboard", onViewChange, showNavigation = false, navigation: navigationProp, contentMaxHeight = "calc(100dvh - 10rem)", colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles }: NFactureProps) {
   const context = useNFacture()
   const labels = useMemo(() => resolveNFactureLabels(labelsProp), [labelsProp])
   const adapter = adapterProp ?? context.adapter
@@ -343,13 +342,13 @@ export function NFacture({ role = "operator", permissions, data: dataProp, adapt
 
   return (
     <NPermissionsProvider permissions={granted}>
-      <Stack as="section" aria-label={labels.moduleName} gap="5" minW="0" colorPalette={colorPalette}>
+      <Stack as="section" aria-label={labels.moduleName} gap={unstyled ? undefined : "5"} minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-facture" data-part="root">
         <NPageHeader title={labels.moduleName} subtitle={labels.moduleDescription} metadata={<Badge colorPalette={role === "admin" ? "purple" : role === "operator" ? "blue" : "green"}>{role === "admin" ? labels.adminRole : role === "operator" ? labels.operatorRole : labels.posRole}</Badge>} />
-        {loading ? <Box role="status">{labels.loading}</Box> : null}
-        {loadError ? <HStack role="alert"><Text color="fg.error">{labels.loadError}</Text><Button size="sm" onClick={() => void load()}>{labels.retry}</Button></HStack> : null}
+        {loading ? <Box role="status" className={classNames?.loading} css={styles?.loading} data-part="loading">{labels.loading}</Box> : null}
+        {loadError ? <HStack role="alert" className={classNames?.error} css={styles?.error} data-part="error"><Text color="fg.error">{labels.loadError}</Text><Button size="sm" onClick={() => void load()}>{labels.retry}</Button></HStack> : null}
         <Flex align="stretch" direction={{ base: "column", lg: "row" }} gap="6" minW="0">
-          {showNavigation ? <Box flex="0 0 17rem" minH={{ lg: "32rem" }}><NSidebar items={navigation[0]?.children ?? navigation} activeItemId={`facture-${resolvedView}`} onItemSelect={(item) => item.data?.view && changeView(item.data.view)} responsive="push" showMobileTrigger={false} collapsible={false} variant="outline" labels={{ navigationLabel: labels.navigationLabel }} /></Box> : null}
-          <Box flex="1" minW="0" maxH={contentMaxHeight} overflowY="auto" overscrollBehavior="contain" pe={{ base: "1", md: "2" }}>{content}</Box>
+          {showNavigation ? <Box flex="0 0 17rem" minH={{ lg: "32rem" }} className={classNames?.navigation} css={styles?.navigation} data-part="navigation"><NSidebar items={navigation[0]?.children ?? navigation} activeItemId={`facture-${resolvedView}`} onItemSelect={(item) => item.data?.view && changeView(item.data.view)} responsive="push" showMobileTrigger={false} collapsible={false} variant="outline" labels={{ navigationLabel: labels.navigationLabel }} unstyled={unstyled} /></Box> : null}
+          <Box flex="1" minW="0" maxH={contentMaxHeight} overflowY="auto" overscrollBehavior="contain" pe={{ base: "1", md: "2" }} className={classNames?.content} css={styles?.content} data-part="content">{content}</Box>
         </Flex>
       </Stack>
     </NPermissionsProvider>

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
 
 import type { NPanelProps } from "../panel"
 
@@ -17,7 +18,8 @@ export interface NFilterBarLabels {
   toggle: string
 }
 
-export interface NFilterBarProps {
+export type NFilterBarSlot = "root" | "header" | "fields" | "activeFilters"
+export interface NFilterBarProps extends NComponentStyleProps<NFilterBarSlot> {
   children: ReactNode
   filters?: NFilterDescriptor[]
   actions?: ReactNode
@@ -29,7 +31,8 @@ export interface NFilterBarProps {
 
 export interface NDateRangeValue { start: string; end: string }
 export interface NDateRangePickerLabels { start: string; end: string; group: string; invalidRange: string }
-export interface NDateRangePickerProps {
+export type NDateRangePickerSlot = "root" | "label" | "fields" | "start" | "end" | "error"
+export interface NDateRangePickerProps extends NComponentStyleProps<NDateRangePickerSlot> {
   value?: NDateRangeValue
   defaultValue?: NDateRangeValue
   onChange?: (value: NDateRangeValue) => void
@@ -46,7 +49,8 @@ export interface NDescriptionItem {
   value: ReactNode
   span?: 1 | 2 | 3 | 4
 }
-export interface NDescriptionListProps {
+export type NDescriptionListSlot = "root" | "item" | "term" | "description"
+export interface NDescriptionListProps extends NComponentStyleProps<NDescriptionListSlot> {
   items: NDescriptionItem[]
   columns?: 1 | 2 | 3 | 4
   orientation?: "stacked" | "inline"

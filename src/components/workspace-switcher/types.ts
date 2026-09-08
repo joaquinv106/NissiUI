@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NWorkspaceSwitcherSlot = "root" | "trigger" | "content" | "workspace" | "empty"
 
 export interface NWorkspace<TData = unknown> {
   id: string
@@ -18,7 +20,7 @@ export interface NWorkspaceSwitcherLabels {
   selected: string
 }
 
-export interface NWorkspaceSwitcherProps<TData = unknown> {
+export interface NWorkspaceSwitcherProps<TData = unknown> extends NComponentStyleProps<NWorkspaceSwitcherSlot> {
   workspaces: NWorkspace<TData>[]
   value?: string
   defaultValue?: string

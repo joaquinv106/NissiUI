@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NItemPickerSlot = "root"
 
 export type NItemPickerSelectionMode = "none" | "single" | "multiple"
 export type NItemPickerLayout = "grid" | "list"
@@ -24,7 +26,7 @@ export interface NItemPickerLabels {
   selectionCount: (count: number) => string
 }
 
-export interface NItemPickerProps<TItem> {
+export interface NItemPickerProps<TItem> extends NComponentStyleProps<NItemPickerSlot> {
   items: readonly TItem[]
   /** Identidad estable utilizada para selección, foco y renderizado. */
   getItemId: (item: TItem, index: number) => string

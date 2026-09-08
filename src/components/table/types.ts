@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 
 import type { NPermissionCapability, NPermissionMode } from "../permissions/types"
+import type { NComponentStyleProps } from "../styling"
 
 export type NTableRow = Record<string, unknown>
 
@@ -152,7 +153,9 @@ export interface NTableExportOptions {
   print?: boolean
 }
 
-export interface NTableProps<T extends NTableRow = NTableRow> {
+export type NTableSlot = "root" | "surface" | "header" | "content"
+
+export interface NTableProps<T extends NTableRow = NTableRow> extends NComponentStyleProps<NTableSlot> {
   config: NTableConfig<T>
   /** Envuelve la tabla en un Card de Chakra UI. Activo por defecto. */
   card?: boolean

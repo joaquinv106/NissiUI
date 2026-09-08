@@ -8,3 +8,4 @@ export type {
   NItemPickerRenderState,
   NItemPickerSelectionMode,
 } from "./types"
+export type { NItemPickerSlot } from "./types"

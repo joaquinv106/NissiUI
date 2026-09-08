@@ -51,7 +51,7 @@ export function NCodeCapture<TParsed = unknown>({
   keyboardWedge = false, normalize = (code) => code.trim(), parse, validate,
   submitOnEnter = true, clearOnSuccess = true, allowDuplicate = false, duplicateWindowMs = 1000,
   autoFocus = false, inputMode = "text", disabled = false, readOnly = false, header, footer,
-  colorPalette = "blue", labels: labelsProp,
+  colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles,
 }: NCodeCaptureProps<TParsed>) {
   const labels = useMemo(() => resolveNCodeCaptureLabels(labelsProp), [labelsProp])
   const wedgeOptions = useMemo(() => ({
@@ -305,7 +305,7 @@ export function NCodeCapture<TParsed = unknown>({
     error: labels.scannerError,
   }
 
-  return <Stack as="section" aria-label={labels.captureLabel} gap="3" colorPalette={colorPalette} minW="0">
+  return <Stack as="section" aria-label={labels.captureLabel} gap={unstyled ? undefined : "3"} colorPalette={colorPalette} minW="0" className={classNames?.root} css={styles?.root} data-scope="n-code-capture" data-part="root">
     {header}
     {scannerAdapter ? <Flex align="center" justify="space-between" gap="3" wrap="wrap">
       <Badge variant="subtle" colorPalette={scannerState === "active" ? "green" : scannerState === "error" || scannerState === "unsupported" || scannerState === "permission-denied" || scannerState === "disconnected" ? "red" : "gray"} role="status">{scannerAdapter.label ? `${scannerAdapter.label} · ` : ""}{scannerStateLabels[scannerState]}</Badge>

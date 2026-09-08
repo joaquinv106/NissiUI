@@ -55,6 +55,9 @@ export function NAmountAllocator<TMethod>({
   emptyState,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NAmountAllocatorProps<TMethod>) {
   const labels = useMemo(() => resolveNAmountAllocatorLabels(labelsProp), [labelsProp])
   const [internalAllocations, setInternalAllocations] = useState<readonly NAmountAllocation<TMethod>[]>(defaultAllocations)
@@ -167,10 +170,10 @@ export function NAmountAllocator<TMethod>({
   const statusPalette = summary.status === "balanced" ? "green" : summary.status === "over" ? "red" : colorPalette
 
   return (
-    <Stack as="section" aria-label={labels.allocatorLabel} gap="5" minW="0" colorPalette={colorPalette}>
+    <Stack as="section" aria-label={labels.allocatorLabel} gap="5" minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-amount-allocator" data-part="root">
       {header}
 
-      <Stack gap="3" p={{ base: "4", md: "5" }} borderWidth="1px" borderColor="border" rounded="lg" bg="bg.subtle">
+      <Stack gap="3" p={unstyled ? undefined : { base: "4", md: "5" }} borderWidth={unstyled ? undefined : "1px"} borderColor="border" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.subtle"} className={classNames?.summary} css={styles?.summary} data-part="summary">
         <SimpleGrid columns={{ base: 1, sm: 3 }} gap="3">
           {[
             [labels.total, presentAmount(summary.total)],

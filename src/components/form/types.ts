@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 
 import type { NPermissionCapability, NPermissionMode } from "../permissions/types"
+import type { NComponentStyleProps } from "../styling"
 
 export type NFormRow = Record<string, unknown>
 
@@ -115,7 +116,9 @@ export interface NFormLabels {
   requiredFieldsNote: string
 }
 
-export interface NFormProps<T extends NFormRow = NFormRow> {
+export type NFormSlot = "root" | "surface" | "form" | "header" | "fields"
+
+export interface NFormProps<T extends NFormRow = NFormRow> extends NComponentStyleProps<NFormSlot> {
   config: NFormConfig<T>
   mode?: NFormMode
   /** Valores iniciales; su presencia infiere `mode="edit"` cuando `mode` no se especifica. */

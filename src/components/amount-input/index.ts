@@ -7,3 +7,4 @@ export type {
   NAmountInputProps,
   NAmountInputQuickValue,
 } from "./types"
+export type { NAmountInputSlot } from "./types"

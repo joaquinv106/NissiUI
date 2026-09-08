@@ -1,4 +1,6 @@
 import type { ReactElement, ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NCtrlSlot = "root" | "error" | "trigger"
 
 export type NCtrlShortcutKeys = string | readonly string[]
 
@@ -40,7 +42,7 @@ export interface NCtrlLabels {
   defaultGroup: string
 }
 
-export interface NCtrlProps {
+export interface NCtrlProps extends NComponentStyleProps<NCtrlSlot> {
   /** Atajos declarados por la vista activa; se combinan con los registrados mediante hooks. */
   shortcuts?: readonly NCtrlShortcut[]
   viewId?: string

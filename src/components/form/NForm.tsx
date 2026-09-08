@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Box,
   Card,
   Heading,
   Portal,
@@ -9,6 +10,7 @@ import {
   Toast,
   Toaster,
   createToaster,
+  chakra,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { FormEvent } from "react"
@@ -44,6 +46,9 @@ export function NForm<T extends NFormRow>({
   resetOnSuccess = true,
   actions,
   labels: customLabels,
+  unstyled = false,
+  classNames,
+  styles,
 }: NFormProps<T>) {
   const labels = useMemo(() => resolveNFormLabels(customLabels), [customLabels])
   const { can } = usePermissions()
@@ -127,16 +132,16 @@ export function NForm<T extends NFormRow>({
   }, [can, config, handleReset, labels, mode, onSubmit, resetOnSuccess, toaster, values])
 
   const body = (
-    <form onSubmit={(event) => void handleSubmit(event)} noValidate>
+    <chakra.form className={classNames?.form ?? classNames?.root} css={styles?.form ?? styles?.root} data-scope="n-form" data-part="form" onSubmit={(event) => void handleSubmit(event)} noValidate>
       <Stack gap="6">
       {title || subtitle ? (
-        <Stack gap="1">
+        <Stack className={classNames?.header} css={styles?.header} data-scope="n-form" data-part="header" gap="1">
           {title ? <Heading as="h2" size="lg">{title}</Heading> : null}
           {subtitle ? <Text color="fg.muted">{subtitle}</Text> : null}
         </Stack>
       ) : null}
 
-      <Stack gap="6">
+      <Stack className={classNames?.fields} css={styles?.fields} data-scope="n-form" data-part="fields" gap="6">
         {groups.map((group, index) => (
           <FormSection key={group.section?.id ?? `section-${index}`} section={group.section ?? { id: `section-${index}`, columns }}>
             {group.fields.map((field) => (
@@ -170,14 +175,14 @@ export function NForm<T extends NFormRow>({
         onReset={handleReset}
       />
       </Stack>
-    </form>
+    </chakra.form>
   )
 
   return (
     <>
       {card ? (
-        <Card.Root variant={variant === "plain" ? undefined : variant} bg="bg.panel">
-          <Card.Body>{body}</Card.Body>
+        <Card.Root unstyled={unstyled} className={classNames?.surface ?? classNames?.root} css={styles?.surface ?? styles?.root} data-scope="n-form" data-part="surface" variant={unstyled || variant === "plain" ? undefined : variant} bg={unstyled ? undefined : "bg.panel"}>
+          <Card.Body unstyled={unstyled}>{body}</Card.Body>
         </Card.Root>
       ) : body}
       <Portal>

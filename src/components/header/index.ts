@@ -12,3 +12,4 @@ export type {
   NHeaderUserAction,
   NHeaderVariant,
 } from "./types"
+export type { NHeaderSlot } from "./types"

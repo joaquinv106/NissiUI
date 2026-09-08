@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NSyncStatusSlot = "root"
 
 export type NSyncState = "synced" | "syncing" | "pending" | "offline" | "error"
 
@@ -23,7 +25,7 @@ export interface NSyncStatusLabels {
   details: string
 }
 
-export interface NSyncStatusProps {
+export interface NSyncStatusProps extends NComponentStyleProps<NSyncStatusSlot> {
   status: NSyncState
   syncKey?: string
   pendingCount?: number

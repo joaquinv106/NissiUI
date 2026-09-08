@@ -11,3 +11,4 @@ export type {
   NPermissionMode,
   NPermissionsProviderProps,
 } from "./types"
+export type { NPermissionGateSlot } from "./types"

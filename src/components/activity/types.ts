@@ -1,7 +1,12 @@
 import type { ReactElement, ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+
+export type NFileUploadSlot = "root" | "label" | "dropzone" | "fileList" | "file" | "error"
+export type NActivityTimelineSlot = "root" | "item" | "marker" | "content"
+export type NNotificationCenterSlot = "root" | "trigger" | "content" | "header" | "list" | "item" | "empty"
 
 export interface NFileUploadLabels { label: string; description: string; browse: string; remove: (name: string) => string; rejected: string }
-export interface NFileUploadProps {
+export interface NFileUploadProps extends NComponentStyleProps<NFileUploadSlot> {
   files?: File[]
   defaultFiles?: File[]
   onFilesChange?: (files: File[]) => void
@@ -23,7 +28,7 @@ export interface NActivityItem {
   colorPalette?: string
   content?: ReactNode
 }
-export interface NActivityTimelineProps { items: NActivityItem[]; compact?: boolean; "aria-label"?: string }
+export interface NActivityTimelineProps extends NComponentStyleProps<NActivityTimelineSlot> { items: NActivityItem[]; compact?: boolean; "aria-label"?: string }
 
 export interface NNotification {
   id: string
@@ -34,7 +39,7 @@ export interface NNotification {
   icon?: ReactNode
 }
 export interface NNotificationCenterLabels { trigger: string; title: string; markAllRead: string; empty: string; unreadCount: (count: number) => string }
-export interface NNotificationCenterProps {
+export interface NNotificationCenterProps extends NComponentStyleProps<NNotificationCenterSlot> {
   notifications: NNotification[]
   trigger?: ReactElement
   onSelect?: (notification: NNotification) => void

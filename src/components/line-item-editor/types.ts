@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NItemPickerProps } from "../item-picker"
+import type { NComponentStyleProps } from "../styling"
+export type NLineItemEditorSlot = "root" | "picker"
 
 export type NLineItemValue = string | number
 export type NLineItemInputType = "text" | "number" | "select"
@@ -101,7 +103,7 @@ export type NLineItemPickerProps<TItem> = Omit<
   | "colorPalette"
 >
 
-export interface NLineItemEditorProps<TItem, TLine> {
+export interface NLineItemEditorProps<TItem, TLine> extends NComponentStyleProps<NLineItemEditorSlot> {
   items: readonly TItem[]
   getItemId: (item: TItem, index: number) => string
   getItemLabel: (item: TItem) => string

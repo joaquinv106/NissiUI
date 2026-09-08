@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NStepFlowSlot = "root"
 
 export type NStepFlowStateUpdater<TState> = TState | ((current: TState) => TState)
 export type NStepFlowNavigationReason = "next" | "previous" | "select"
@@ -64,7 +66,7 @@ export interface NStepFlowActionContext<TState> extends NStepFlowStepContext<TSt
   validationMessage?: string
 }
 
-export interface NStepFlowProps<TState> {
+export interface NStepFlowProps<TState> extends NComponentStyleProps<NStepFlowSlot> {
   steps: readonly NStepFlowStep<TState>[]
   state?: TState
   defaultState: TState

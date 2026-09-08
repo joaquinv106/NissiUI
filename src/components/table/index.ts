@@ -20,3 +20,4 @@ export type {
   NTableServerQuery,
   NTableSort,
 } from "./types"
+export type { NTableSlot } from "./types"

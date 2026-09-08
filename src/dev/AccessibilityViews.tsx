@@ -21,6 +21,18 @@ import "./accessibility.css"
 
 type PaletteId = "aurora" | "coral" | "cobalt"
 
+type CatalogExample = {
+  id: string
+  label: string
+}
+
+type CatalogFamily = {
+  id: string
+  label: string
+  description: string
+  examples: readonly CatalogExample[]
+}
+
 interface DashboardPalette {
   id: PaletteId
   name: string
@@ -103,6 +115,69 @@ const palettes: readonly DashboardPalette[] = [
     text: "#f8fafc",
     muted: "#b8c8df",
     border: "#31527c",
+  },
+]
+
+const catalogFamilies: readonly CatalogFamily[] = [
+  {
+    id: "foundation",
+    label: "Fundación y navegación",
+    description: "Tema, shell, navegación, permisos y productividad.",
+    examples: [
+      { id: "theme", label: "NTheme" }, { id: "app-shell", label: "NAppShell" },
+      { id: "header", label: "NHeader" }, { id: "sidebar", label: "NSidebar" },
+      { id: "modules", label: "NModuleRegistry" }, { id: "workspaces", label: "NWorkspaceSwitcher" },
+      { id: "permissions", label: "NPermissionGate" }, { id: "panel", label: "NPanel" },
+      { id: "ctrl", label: "NCtrl" },
+    ],
+  },
+  {
+    id: "data-forms",
+    label: "Datos, formularios e inputs",
+    description: "Tablas, formularios, captura y selección.",
+    examples: [
+      { id: "table", label: "NTable" }, { id: "datatable", label: "NDataTable" },
+      { id: "form", label: "NForm" }, { id: "amount-input", label: "NAmountInput" },
+      { id: "amount-allocator", label: "NAmountAllocator" }, { id: "item-picker", label: "NItemPicker" },
+      { id: "line-item-editor", label: "NLineItemEditor" }, { id: "code-capture", label: "NCodeCapture" },
+    ],
+  },
+  {
+    id: "workflows",
+    label: "Flujos y operación",
+    description: "Pasos, aprobaciones, balances, ajustes y resiliencia.",
+    examples: [
+      { id: "step-flow", label: "NStepFlow" }, { id: "approval-flow", label: "NApprovalFlow" },
+      { id: "balance-session", label: "NBalanceSession" }, { id: "adjustment-editor", label: "NAdjustmentEditor" },
+      { id: "document-view", label: "NDocumentView" }, { id: "sync-status", label: "NSyncStatus" },
+      { id: "offline-boundary", label: "NOfflineBoundary" },
+    ],
+  },
+  {
+    id: "commerce",
+    label: "Comercio e impresión",
+    description: "Carrito, cobro, recibos y punto de venta.",
+    examples: [
+      { id: "cart", label: "NCart" }, { id: "checkout", label: "NCheckout" },
+      { id: "receipt", label: "NReceipt" }, { id: "thermal-print", label: "NThermalPrint" },
+      { id: "pos-example", label: "Ejemplo POS" },
+    ],
+  },
+  {
+    id: "patterns",
+    label: "Patrones visuales completos",
+    description: "Estados, filtros, actividad, dashboards, SaaS y verticales.",
+    examples: [
+      { id: "page-patterns", label: "Página y estados" }, { id: "data-patterns", label: "Filtros y detalle" },
+      { id: "activity-patterns", label: "Archivos y actividad" }, { id: "dashboard-patterns", label: "KPIs y gráficas" },
+      { id: "saas-patterns", label: "Administración SaaS" }, { id: "vertical-patterns", label: "Kanban, agenda y mapa" },
+    ],
+  },
+  {
+    id: "projects",
+    label: "Proyectos verticales",
+    description: "Composiciones completas construidas con la librería.",
+    examples: [{ id: "facture", label: "NFacture" }],
   },
 ]
 
@@ -429,15 +504,74 @@ function StyledComponentsGallery({ palette }: { palette: DashboardPalette }) {
   )
 }
 
-export function DashboardStylesView() {
+function CompleteLibraryExplorer() {
+  const [selectedExample, setSelectedExample] = useState<CatalogExample>({ id: "datatable", label: "NDataTable" })
+
+  return (
+    <Stack as="section" aria-labelledby="complete-library-title" gap="6">
+      <Stack gap="2" maxW="4xl">
+        <Badge alignSelf="start" colorPalette="purple" variant="subtle">Todo Nissi UI</Badge>
+        <Heading id="complete-library-title" as="h2" size="xl">Explorador de todos los componentes y elementos</Heading>
+        <Text color="fg.muted">Selecciona cualquier componente para abrir aquí mismo su ejemplo real, variantes, documentación y código. Sólo se monta una vista a la vez para mantener rápido el catálogo y comprensible el foco.</Text>
+      </Stack>
+
+      <SimpleGrid columns={{ base: 1, xl: 2 }} gap="4">
+        {catalogFamilies.map((family) => (
+          <Card.Root key={family.id} variant="outline" bg="bg.panel">
+            <Card.Body gap="3">
+              <Box>
+                <Heading as="h3" size="sm">{family.label}</Heading>
+                <Text color="fg.muted" fontSize="sm" mt="1">{family.description}</Text>
+              </Box>
+              <HStack role="group" aria-label={family.label} flexWrap="wrap" gap="2">
+                {family.examples.map((example) => (
+                  <Button
+                    key={example.id}
+                    size="sm"
+                    variant={selectedExample.id === example.id ? "solid" : "outline"}
+                    colorPalette={selectedExample.id === example.id ? "blue" : "gray"}
+                    aria-pressed={selectedExample.id === example.id}
+                    onClick={() => setSelectedExample(example)}
+                  >
+                    {example.label}
+                  </Button>
+                ))}
+              </HStack>
+            </Card.Body>
+          </Card.Root>
+        ))}
+      </SimpleGrid>
+
+      <Card.Root variant="outline" bg="bg.panel" overflow="hidden">
+        <Card.Header borderBottomWidth="1px" borderColor="border" py="4">
+          <HStack justify="space-between" align={{ base: "start", sm: "center" }} flexDirection={{ base: "column", sm: "row" }} gap="3">
+            <Box>
+              <Text color="fg.muted" fontSize="xs" fontWeight="semibold" textTransform="uppercase" letterSpacing="wide">Vista interactiva</Text>
+              <Heading as="h3" size="md">{selectedExample.label}</Heading>
+            </Box>
+            <Badge colorPalette="green" variant="subtle">Componente real</Badge>
+          </HStack>
+        </Card.Header>
+        <iframe
+          className="complete-library-frame"
+          title={`Ejemplo interactivo de ${selectedExample.label}`}
+          src={`?view=${selectedExample.id}&theme=dark&embed=1`}
+          loading="lazy"
+        />
+      </Card.Root>
+    </Stack>
+  )
+}
+
+export function VisualSystemView() {
   const [paletteId, setPaletteId] = useState<PaletteId>("aurora")
   const palette = palettes.find((item) => item.id === paletteId) ?? palettes[0]
 
   return (
     <Stack gap="8" colorPalette="blue">
       <PageIntro
-        eyebrow="Accesibilidad · Laboratorio visual"
-        title="Un dashboard puede ser distintivo sin dejar de ser usable"
+        eyebrow="Accesibilidad · Sistema visual"
+        title="Todos los componentes, un sistema visual flexible"
         description="Explora tres direcciones de color y observa cómo los nuevos slots permiten transformar la apariencia sin reemplazar el comportamiento accesible de los componentes."
       />
 
@@ -468,6 +602,8 @@ export function DashboardStylesView() {
       <DashboardPreview palette={palette} />
 
       <StyledComponentsGallery palette={palette} />
+
+      <CompleteLibraryExplorer />
 
       <SimpleGrid columns={{ base: 1, lg: 3 }} gap="4">
         {[

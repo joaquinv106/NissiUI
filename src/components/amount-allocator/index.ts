@@ -12,3 +12,4 @@ export type {
   NAmountAllocatorMethodState,
   NAmountAllocatorProps,
 } from "./types"
+export type { NAmountAllocatorSlot } from "./types"

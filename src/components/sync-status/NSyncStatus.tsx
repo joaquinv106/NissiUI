@@ -20,7 +20,7 @@ const statusPalette: Record<NSyncState, string> = {
 export function NSyncStatus({
   status, syncKey = "default", pendingCount = 0, lastSyncedAt, message, error, onRetry,
   formatTimestamp, variant = "panel", showDetails = false, details, disabled = false,
-  colorPalette, labels: labelsProp,
+  colorPalette, labels: labelsProp, unstyled = false, classNames, styles,
 }: NSyncStatusProps) {
   const labels = useMemo(() => resolveNSyncStatusLabels(labelsProp), [labelsProp])
   const [retrying, setRetrying] = useState(false)
@@ -67,7 +67,7 @@ export function NSyncStatus({
     : <StatusIcon aria-hidden size={17} />
 
   if (variant === "compact") return (
-    <Flex as="section" aria-label={labels.regionLabel} role="status" aria-live="polite" align="center" gap="2" minW="0" colorPalette={palette}>
+    <Flex as="section" aria-label={labels.regionLabel} role="status" aria-live="polite" align="center" gap="2" minW="0" colorPalette={palette} className={classNames?.root} css={styles?.root} data-scope="n-sync-status" data-part="root">
       <Badge colorPalette={palette} variant="subtle" gap="1.5" flexShrink="0">{icon}{statusText}</Badge>
       {pendingCount > 0 ? <Text color="fg.muted" fontSize="sm" truncate>{labels.pendingCount(pendingCount)}</Text> : null}
       {canRetry ? <Button type="button" size="xs" variant="ghost" disabled={disabled} loading={retrying} loadingText={labels.retrying} onClick={() => void retry()}>{labels.retry}</Button> : null}
@@ -76,7 +76,7 @@ export function NSyncStatus({
   )
 
   return (
-    <Stack as="section" aria-label={labels.regionLabel} role="status" aria-live="polite" gap="3" p="4" borderWidth="1px" borderColor="border" rounded="lg" bg="bg.panel" colorPalette={palette} minW="0">
+    <Stack as="section" aria-label={labels.regionLabel} role="status" aria-live="polite" gap="3" p={unstyled ? undefined : "4"} borderWidth={unstyled ? undefined : "1px"} borderColor="border" rounded={unstyled ? undefined : "lg"} bg={unstyled ? undefined : "bg.panel"} colorPalette={palette} minW="0" className={classNames?.root} css={styles?.root} data-scope="n-sync-status" data-part="root">
       <Flex align={{ base: "start", sm: "center" }} justify="space-between" direction={{ base: "column", sm: "row" }} gap="3">
         <Flex align="center" gap="3" minW="0">
           <Flex align="center" justify="center" boxSize="9" rounded="full" bg="colorPalette.subtle" color="colorPalette.fg" flexShrink="0">{icon}</Flex>

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 
 import type { NAmountInputProps } from "../amount-input"
+import type { NComponentStyleProps } from "../styling"
+export type NAmountAllocatorSlot = "root" | "summary"
 
 export type NAmountAllocationStatus = "under" | "balanced" | "over"
 export type NAmountAllocationChangeReason = "update" | "remaining" | "equal" | "reset"
@@ -72,7 +74,7 @@ export type NAmountAllocatorInputProps = Omit<
   | "labels"
 >
 
-export interface NAmountAllocatorProps<TMethod> {
+export interface NAmountAllocatorProps<TMethod> extends NComponentStyleProps<NAmountAllocatorSlot> {
   total: number
   methods: readonly TMethod[]
   getMethodId: (method: TMethod, index: number) => string

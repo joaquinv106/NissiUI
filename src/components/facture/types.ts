@@ -2,6 +2,8 @@ import type { ReactNode } from "react"
 
 import type { NHeaderNavItem } from "../header"
 import type { NSidebarItem } from "../sidebar"
+import type { NComponentStyleProps } from "../styling"
+export type NFactureSlot = "root" | "navigation" | "content" | "loading" | "error"
 
 export type NFactureRole = "admin" | "operator" | "pos"
 export type NFactureView = "dashboard" | "issue" | "history" | "ticket" | "certificates" | "catalogs" | "integrations" | "docs"
@@ -322,7 +324,7 @@ export interface NFactureLabels {
   fiscalNotice: string
 }
 
-export interface NFactureProps {
+export interface NFactureProps extends NComponentStyleProps<NFactureSlot> {
   role?: NFactureRole
   permissions?: readonly string[]
   data?: Partial<NFactureData>
@@ -337,6 +339,27 @@ export interface NFactureProps {
   colorPalette?: string
   labels?: Partial<NFactureLabels>
 }
+
+export interface NFactureDashboardProps extends NComponentStyleProps<"root"> {
+  invoices: readonly NFactureRecord[]
+  labels: NFactureLabels
+  adapter?: NFactureDataAdapter
+}
+export interface NFactureHistoryProps extends NFactureDashboardProps { title?: string }
+export interface NFactureIssuerProps extends NComponentStyleProps<"root"> {
+  data: NFactureData
+  adapter?: NFactureDataAdapter
+  labels: NFactureLabels
+  colorPalette: string
+  initialTicket?: NFactureTicket
+}
+export interface NFactureTicketViewProps extends NComponentStyleProps<"root"> {
+  tickets: readonly NFactureTicket[]
+  adapter?: NFactureDataAdapter
+  labels: NFactureLabels
+  onUseTicket: (ticket: NFactureTicket) => void
+}
+export interface NFactureDocumentationProps extends NComponentStyleProps<"root"> { labels: NFactureLabels }
 
 /** Alias solicitado por integraciones que nombran el contrato por dominio. */
 export type InvoiceProps = NFactureProps

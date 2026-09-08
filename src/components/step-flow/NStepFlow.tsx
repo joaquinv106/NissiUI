@@ -36,6 +36,9 @@ export function NStepFlow<TState>({
   disabled = false,
   colorPalette = "blue",
   labels: labelsProp,
+  unstyled = false,
+  classNames,
+  styles,
 }: NStepFlowProps<TState>) {
   const labels = useMemo(() => resolveNStepFlowLabels(labelsProp), [labelsProp])
   const [internalState, setInternalState] = useState(defaultState)
@@ -215,7 +218,7 @@ export function NStepFlow<TState>({
   )
 
   return (
-    <Stack as="section" aria-label={labels.flowLabel} gap="5" minW="0" colorPalette={colorPalette}>
+    <Stack as="section" aria-label={labels.flowLabel} gap={unstyled ? undefined : "5"} minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-step-flow" data-part="root">
       {header}
       <Steps.Root
         count={steps.length}

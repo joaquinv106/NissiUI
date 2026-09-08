@@ -33,15 +33,24 @@ export function NReceipt<TReceipt, TLine>({
     render: (activeReceipt) => {
       const lines = getLines(activeReceipt)
       const summaryRows = getSummaryRows?.(activeReceipt) ?? []
-      return <Stack className={classNames?.lines} css={styles?.lines} data-scope="n-receipt" data-part="lines" gap="5">
+      return <Stack className={classNames?.lines} css={styles?.lines} data-scope="n-receipt" data-part="lines" gap="5" minW="0" containerType="inline-size">
         {beforeLines}
         {lines.length === 0 ? <Text role="status" color={unstyled ? undefined : "fg.muted"}>{labels.emptyLines}</Text> : <Stack gap="0">
-          <Grid display={{ base: "none", md: "grid" }} gridTemplateColumns={getLineUnitAmount ? "minmax(12rem, 1fr) 7rem 9rem 9rem" : "minmax(12rem, 1fr) 7rem 9rem"} gap="3" px={unstyled ? undefined : "3"} pb={unstyled ? undefined : "2"} color={unstyled ? undefined : "fg.muted"} fontSize="xs" fontWeight="medium"><Text>{labels.item}</Text><Text textAlign="end">{labels.quantity}</Text>{getLineUnitAmount ? <Text textAlign="end">{labels.unitAmount}</Text> : null}<Text textAlign="end">{labels.lineTotal}</Text></Grid>
-          <Stack as="ul" aria-label={labels.linesLabel} gap="0" m="0" p="0">{lines.map((line, index) => <Grid as="li" className={classNames?.line} css={styles?.line} data-scope="n-receipt" data-part="line" key={getLineId(line, index)} listStyleType="none" gridTemplateColumns={{ base: "minmax(0, 1fr) auto", md: getLineUnitAmount ? "minmax(12rem, 1fr) 7rem 9rem 9rem" : "minmax(12rem, 1fr) 7rem 9rem" }} gap="3" alignItems="center" py={unstyled ? undefined : "3"} px={unstyled ? undefined : "3"} borderTopWidth={unstyled ? undefined : "1px"} borderColor={unstyled ? undefined : "border"}>
+          <Grid data-scope="n-receipt" data-part="line-header" display={{ base: "none", md: "grid" }} gridTemplateColumns={getLineUnitAmount ? "minmax(0, 1fr) minmax(3.5rem, .45fr) minmax(5rem, .65fr) minmax(5rem, .65fr)" : "minmax(0, 1fr) minmax(3.5rem, .45fr) minmax(5rem, .65fr)"} gap="3" px={unstyled ? undefined : "3"} pb={unstyled ? undefined : "2"} color={unstyled ? undefined : "fg.muted"} fontSize="xs" fontWeight="medium" css={{ "@container (max-width: 40rem)": { display: "none" } }}><Text>{labels.item}</Text><Text textAlign="end">{labels.quantity}</Text>{getLineUnitAmount ? <Text textAlign="end">{labels.unitAmount}</Text> : null}<Text textAlign="end">{labels.lineTotal}</Text></Grid>
+          <Stack as="ul" aria-label={labels.linesLabel} gap="0" m="0" p="0">{lines.map((line, index) => <Grid as="li" className={classNames?.line} css={{
+            "@container (max-width: 40rem)": {
+              gridTemplateColumns: "minmax(0, 1fr) auto",
+              "& > [data-part=line-unit-amount]": { display: "none" },
+              "& > [data-part=line-quantity] > [data-part=line-quantity-label]": { display: "block" },
+              "& > [data-part=line-total]": { gridColumn: "1 / -1" },
+              "& > [data-part=line-total] > [data-part=line-total-label]": { display: "inline" },
+            },
+            ...styles?.line,
+          }} data-scope="n-receipt" data-part="line" key={getLineId(line, index)} listStyleType="none" gridTemplateColumns={{ base: "minmax(0, 1fr) auto", md: getLineUnitAmount ? "minmax(0, 1fr) minmax(3.5rem, .45fr) minmax(5rem, .65fr) minmax(5rem, .65fr)" : "minmax(0, 1fr) minmax(3.5rem, .45fr) minmax(5rem, .65fr)" }} gap="3" alignItems="center" py={unstyled ? undefined : "3"} px={unstyled ? undefined : "3"} borderTopWidth={unstyled ? undefined : "1px"} borderColor={unstyled ? undefined : "border"}>
             <Box className={classNames?.lineLabel} css={styles?.lineLabel} data-scope="n-receipt" data-part="line-label" minW="0"><Box fontWeight="medium">{getLineLabel(line)}</Box>{getLineDescription ? <Box color={unstyled ? undefined : "fg.muted"} fontSize="sm">{getLineDescription(line)}</Box> : null}</Box>
-            <Box textAlign="end"><Text display={{ base: "block", md: "none" }} color={unstyled ? undefined : "fg.muted"} fontSize="xs">{labels.quantity}</Text>{getLineQuantity?.(line) ?? 1}</Box>
-            {getLineUnitAmount ? <Box display={{ base: "none", md: "block" }} textAlign="end">{presentAmount(getLineUnitAmount(line))}</Box> : null}
-            <Box gridColumn={{ base: "1 / -1", md: "auto" }} textAlign="end" fontWeight="semibold"><Text display={{ base: "inline", md: "none" }} mr="2" color={unstyled ? undefined : "fg.muted"} fontSize="xs">{labels.lineTotal}</Text>{presentAmount(getLineTotal(line))}</Box>
+            <Box data-scope="n-receipt" data-part="line-quantity" textAlign="end"><Text data-scope="n-receipt" data-part="line-quantity-label" display={{ base: "block", md: "none" }} color={unstyled ? undefined : "fg.muted"} fontSize="xs">{labels.quantity}</Text>{getLineQuantity?.(line) ?? 1}</Box>
+            {getLineUnitAmount ? <Box data-scope="n-receipt" data-part="line-unit-amount" display={{ base: "none", md: "block" }} textAlign="end">{presentAmount(getLineUnitAmount(line))}</Box> : null}
+            <Box data-scope="n-receipt" data-part="line-total" gridColumn={{ base: "1 / -1", md: "auto" }} textAlign="end" fontWeight="semibold"><Text data-scope="n-receipt" data-part="line-total-label" display={{ base: "inline", md: "none" }} mr="2" color={unstyled ? undefined : "fg.muted"} fontSize="xs">{labels.lineTotal}</Text>{presentAmount(getLineTotal(line))}</Box>
           </Grid>)}</Stack>
         </Stack>}
         {afterLines}

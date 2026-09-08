@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { NComponentStyleProps } from "../styling"
+export type NBalanceSessionSlot = "root" | "error" | "loading"
 
 export type NBalanceSessionStatus = "open" | "balanced" | "variance" | "closed"
 
@@ -46,7 +48,7 @@ export interface NBalanceSessionLabels {
   emptyDescription: string
 }
 
-export interface NBalanceSessionProps<TEntry> {
+export interface NBalanceSessionProps<TEntry> extends NComponentStyleProps<NBalanceSessionSlot> {
   sessionId: string
   entries: readonly TEntry[]
   openingAmount?: number
