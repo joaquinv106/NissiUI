@@ -39,6 +39,69 @@
   background: transparent;
 }
 
+.visual-system-embed {
+  background: var(--visual-canvas) !important;
+  color: var(--visual-text) !important;
+  --chakra-colors-bg: var(--visual-canvas);
+  --chakra-colors-bg-panel: var(--visual-surface);
+  --chakra-colors-bg-subtle: var(--visual-surface);
+  --chakra-colors-bg-muted: var(--visual-raised);
+  --chakra-colors-bg-emphasized: var(--visual-raised);
+  --chakra-colors-fg: var(--visual-text);
+  --chakra-colors-fg-muted: var(--visual-muted);
+  --chakra-colors-fg-subtle: var(--visual-muted);
+  --chakra-colors-border: var(--visual-border);
+  --chakra-colors-border-muted: var(--visual-border);
+  --chakra-colors-border-emphasized: var(--visual-accent);
+  --chakra-colors-blue-solid: var(--visual-accent);
+  --chakra-colors-blue-fg: var(--visual-accent);
+  --chakra-colors-blue-subtle: var(--visual-accent-soft);
+  --chakra-colors-blue-muted: var(--visual-raised);
+  --chakra-colors-blue-border: var(--visual-accent);
+  --chakra-colors-blue-focus-ring: var(--visual-accent);
+  --chakra-colors-teal-solid: var(--visual-accent);
+  --chakra-colors-teal-fg: var(--visual-accent);
+  --chakra-colors-teal-subtle: var(--visual-accent-soft);
+  --chakra-colors-green-solid: var(--visual-secondary);
+  --chakra-colors-green-fg: var(--visual-secondary);
+}
+
+.visual-system-embed[data-palette="aurora"] {
+  --visual-canvas: #071421;
+  --visual-surface: #0c2032;
+  --visual-raised: #12304a;
+  --visual-accent: #5eead4;
+  --visual-accent-soft: #123f46;
+  --visual-secondary: #a5b4fc;
+  --visual-text: #f8fafc;
+  --visual-muted: #b6c6d8;
+  --visual-border: #28506a;
+}
+
+.visual-system-embed[data-palette="coral"] {
+  --visual-canvas: #1b101b;
+  --visual-surface: #2a1727;
+  --visual-raised: #3a2036;
+  --visual-accent: #fdba74;
+  --visual-accent-soft: #4a2b2b;
+  --visual-secondary: #f9a8d4;
+  --visual-text: #fff7ed;
+  --visual-muted: #d7bdca;
+  --visual-border: #624055;
+}
+
+.visual-system-embed[data-palette="cobalt"] {
+  --visual-canvas: #071329;
+  --visual-surface: #0d2242;
+  --visual-raised: #14315d;
+  --visual-accent: #93c5fd;
+  --visual-accent-soft: #17375d;
+  --visual-secondary: #bef264;
+  --visual-text: #f8fafc;
+  --visual-muted: #b8c8df;
+  --visual-border: #31527c;
+}
+
 @media (min-width: 62rem) {
   .complete-library-frame {
     height: 64rem;

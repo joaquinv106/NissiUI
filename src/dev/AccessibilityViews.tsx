@@ -9,19 +9,21 @@ import {
   Grid,
   Heading,
   HStack,
+  Menu,
+  Portal,
   SimpleGrid,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { ArrowRight, Check, Eye, Layers3, Palette, ShieldCheck, Sparkles } from "lucide-react"
+import { ArrowRight, Check, ChevronDown, Eye, Layers3, Palette, ShieldCheck, Sparkles } from "lucide-react"
 import { useState } from "react"
 
 import { NDocumentView, NPanel, NReceipt, NThermalPrint, NTheme } from "../index"
 import "./accessibility.css"
 
-type PaletteId = "aurora" | "coral" | "cobalt"
+export type PaletteId = "aurora" | "coral" | "cobalt"
 
-type CatalogExample = {
+export type CatalogExample = {
   id: string
   label: string
 }
@@ -29,6 +31,7 @@ type CatalogExample = {
 type CatalogFamily = {
   id: string
   label: string
+  menuLabel: string
   description: string
   examples: readonly CatalogExample[]
 }
@@ -122,6 +125,7 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "foundation",
     label: "Fundación y navegación",
+    menuLabel: "Fundación",
     description: "Tema, shell, navegación, permisos y productividad.",
     examples: [
       { id: "theme", label: "NTheme" }, { id: "app-shell", label: "NAppShell" },
@@ -134,6 +138,7 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "data-forms",
     label: "Datos, formularios e inputs",
+    menuLabel: "Datos e inputs",
     description: "Tablas, formularios, captura y selección.",
     examples: [
       { id: "table", label: "NTable" }, { id: "datatable", label: "NDataTable" },
@@ -145,6 +150,7 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "workflows",
     label: "Flujos y operación",
+    menuLabel: "Flujos",
     description: "Pasos, aprobaciones, balances, ajustes y resiliencia.",
     examples: [
       { id: "step-flow", label: "NStepFlow" }, { id: "approval-flow", label: "NApprovalFlow" },
@@ -156,6 +162,7 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "commerce",
     label: "Comercio e impresión",
+    menuLabel: "Comercio",
     description: "Carrito, cobro, recibos y punto de venta.",
     examples: [
       { id: "cart", label: "NCart" }, { id: "checkout", label: "NCheckout" },
@@ -166,6 +173,7 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "patterns",
     label: "Patrones visuales completos",
+    menuLabel: "Patrones",
     description: "Estados, filtros, actividad, dashboards, SaaS y verticales.",
     examples: [
       { id: "page-patterns", label: "Página y estados" }, { id: "data-patterns", label: "Filtros y detalle" },
@@ -176,10 +184,13 @@ const catalogFamilies: readonly CatalogFamily[] = [
   {
     id: "projects",
     label: "Proyectos verticales",
+    menuLabel: "Proyectos",
     description: "Composiciones completas construidas con la librería.",
     examples: [{ id: "facture", label: "NFacture" }],
   },
 ]
+
+export const defaultCatalogExample: CatalogExample = { id: "datatable", label: "NDataTable" }
 
 const report: OperationsReport = {
   id: "OPS-0926",
@@ -504,8 +515,68 @@ function StyledComponentsGallery({ palette }: { palette: DashboardPalette }) {
   )
 }
 
-function CompleteLibraryExplorer() {
-  const [selectedExample, setSelectedExample] = useState<CatalogExample>({ id: "datatable", label: "NDataTable" })
+interface VisualSystemControlsProps {
+  paletteId: PaletteId
+  selectedExample: CatalogExample
+  onPaletteChange: (palette: PaletteId) => void
+  onExampleChange: (example: CatalogExample) => void
+}
+
+export function VisualSystemControls({ paletteId, selectedExample, onPaletteChange, onExampleChange }: VisualSystemControlsProps) {
+  return (
+    <HStack as="nav" aria-label="Componentes y paleta del sistema visual" gap="1" maxW="full" overflowX="auto" py="1" css={{ scrollbarWidth: "thin" }}>
+      {catalogFamilies.map((family) => {
+        const containsSelection = family.examples.some((example) => example.id === selectedExample.id)
+        return (
+          <Menu.Root key={family.id} positioning={{ placement: "bottom-start" }}>
+            <Menu.Trigger asChild>
+              <Button size="xs" variant={containsSelection ? "subtle" : "ghost"} colorPalette={containsSelection ? "blue" : "gray"} flexShrink="0">
+                {family.menuLabel}<ChevronDown aria-hidden size={13} />
+              </Button>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content minW="15rem" maxH="min(28rem, calc(100dvh - 6rem))" overflowY="auto" zIndex="dropdown">
+                  <Menu.ItemGroup>
+                    <Menu.ItemGroupLabel>{family.description}</Menu.ItemGroupLabel>
+                    {family.examples.map((example) => (
+                      <Menu.Item key={example.id} value={example.id} fontWeight={selectedExample.id === example.id ? "semibold" : undefined} onClick={() => onExampleChange(example)}>
+                        {example.label}{selectedExample.id === example.id ? <Check aria-hidden size={14} /> : null}
+                      </Menu.Item>
+                    ))}
+                  </Menu.ItemGroup>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
+        )
+      })}
+
+      <Box aria-hidden width="1px" height="5" bg="border" flexShrink="0" mx="1" />
+      <HStack role="group" aria-label="Paleta visual" gap="1" flexShrink="0">
+        {palettes.map((palette) => (
+          <Button
+            key={palette.id}
+            size="xs"
+            minW="7"
+            px="2"
+            variant={paletteId === palette.id ? "solid" : "ghost"}
+            colorPalette={palette.id === "coral" ? "pink" : palette.id === "cobalt" ? "blue" : "teal"}
+            aria-label={`Usar paleta ${palette.name}`}
+            aria-pressed={paletteId === palette.id}
+            title={palette.name}
+            onClick={() => onPaletteChange(palette.id)}
+          >
+            <Box aria-hidden width="2.5" height="2.5" rounded="full" bg={palette.accent} borderWidth="1px" borderColor="blackAlpha.400" />
+            <Text as="span" display={{ base: "none", "2xl": "inline" }} fontSize="xs">{palette.name}</Text>
+          </Button>
+        ))}
+      </HStack>
+    </HStack>
+  )
+}
+
+function CompleteLibraryExplorer({ selectedExample, paletteId }: { selectedExample: CatalogExample; paletteId: PaletteId }) {
 
   return (
     <Stack as="section" aria-labelledby="complete-library-title" gap="6">
@@ -514,33 +585,6 @@ function CompleteLibraryExplorer() {
         <Heading id="complete-library-title" as="h2" size="xl">Explorador de todos los componentes y elementos</Heading>
         <Text color="fg.muted">Selecciona cualquier componente para abrir aquí mismo su ejemplo real, variantes, documentación y código. Sólo se monta una vista a la vez para mantener rápido el catálogo y comprensible el foco.</Text>
       </Stack>
-
-      <SimpleGrid columns={{ base: 1, xl: 2 }} gap="4">
-        {catalogFamilies.map((family) => (
-          <Card.Root key={family.id} variant="outline" bg="bg.panel">
-            <Card.Body gap="3">
-              <Box>
-                <Heading as="h3" size="sm">{family.label}</Heading>
-                <Text color="fg.muted" fontSize="sm" mt="1">{family.description}</Text>
-              </Box>
-              <HStack role="group" aria-label={family.label} flexWrap="wrap" gap="2">
-                {family.examples.map((example) => (
-                  <Button
-                    key={example.id}
-                    size="sm"
-                    variant={selectedExample.id === example.id ? "solid" : "outline"}
-                    colorPalette={selectedExample.id === example.id ? "blue" : "gray"}
-                    aria-pressed={selectedExample.id === example.id}
-                    onClick={() => setSelectedExample(example)}
-                  >
-                    {example.label}
-                  </Button>
-                ))}
-              </HStack>
-            </Card.Body>
-          </Card.Root>
-        ))}
-      </SimpleGrid>
 
       <Card.Root variant="outline" bg="bg.panel" overflow="hidden">
         <Card.Header borderBottomWidth="1px" borderColor="border" py="4">
@@ -555,7 +599,7 @@ function CompleteLibraryExplorer() {
         <iframe
           className="complete-library-frame"
           title={`Ejemplo interactivo de ${selectedExample.label}`}
-          src={`?view=${selectedExample.id}&theme=dark&embed=1`}
+          src={`?view=${selectedExample.id}&theme=dark&embed=1&palette=${paletteId}`}
           loading="lazy"
         />
       </Card.Root>
@@ -563,8 +607,33 @@ function CompleteLibraryExplorer() {
   )
 }
 
-export function VisualSystemView() {
-  const [paletteId, setPaletteId] = useState<PaletteId>("aurora")
+interface VisualSystemViewProps {
+  paletteId?: PaletteId
+  selectedExample?: CatalogExample
+  onPaletteChange?: (palette: PaletteId) => void
+  onExampleChange?: (example: CatalogExample) => void
+  controlsInHeader?: boolean
+}
+
+export function VisualSystemView({
+  paletteId: controlledPaletteId,
+  selectedExample: controlledExample,
+  onPaletteChange,
+  onExampleChange,
+  controlsInHeader = false,
+}: VisualSystemViewProps = {}) {
+  const [internalPaletteId, setInternalPaletteId] = useState<PaletteId>("aurora")
+  const [internalExample, setInternalExample] = useState<CatalogExample>(defaultCatalogExample)
+  const paletteId = controlledPaletteId ?? internalPaletteId
+  const selectedExample = controlledExample ?? internalExample
+  const changePalette = (next: PaletteId) => {
+    if (controlledPaletteId === undefined) setInternalPaletteId(next)
+    onPaletteChange?.(next)
+  }
+  const changeExample = (next: CatalogExample) => {
+    if (controlledExample === undefined) setInternalExample(next)
+    onExampleChange?.(next)
+  }
   const palette = palettes.find((item) => item.id === paletteId) ?? palettes[0]
 
   return (
@@ -575,35 +644,28 @@ export function VisualSystemView() {
         description="Explora tres direcciones de color y observa cómo los nuevos slots permiten transformar la apariencia sin reemplazar el comportamiento accesible de los componentes."
       />
 
-      <Card.Root variant="outline" bg="bg.panel">
-        <Card.Body gap="4">
-          <Stack gap="1">
-            <Heading as="h2" size="md">Elige una dirección visual</Heading>
-            <Text color="fg.muted">Cada paleta mantiene texto claro, bordes perceptibles y estados que no dependen sólo del color.</Text>
-          </Stack>
-          <HStack role="group" aria-label="Paletas del dashboard" gap="3" flexWrap="wrap">
-            {palettes.map((item) => (
-              <Button
-                key={item.id}
-                aria-pressed={paletteId === item.id}
-                variant={paletteId === item.id ? "solid" : "outline"}
-                colorPalette={item.id === "coral" ? "pink" : item.id === "cobalt" ? "blue" : "teal"}
-                onClick={() => setPaletteId(item.id)}
-              >
-                <Box aria-hidden width="3" height="3" rounded="full" bg={item.accent} borderWidth="1px" borderColor="blackAlpha.300" />
-                {item.name}
-              </Button>
-            ))}
-          </HStack>
-          <Text role="status" color="fg.muted" fontSize="sm">{palette.description}</Text>
-        </Card.Body>
-      </Card.Root>
+      {!controlsInHeader ? (
+        <VisualSystemControls paletteId={paletteId} selectedExample={selectedExample} onPaletteChange={changePalette} onExampleChange={changeExample} />
+      ) : (
+        <Box display={{ base: "block", md: "none" }}>
+          <VisualSystemControls paletteId={paletteId} selectedExample={selectedExample} onPaletteChange={changePalette} onExampleChange={changeExample} />
+        </Box>
+      )}
+      <Text role="status" color="fg.muted" fontSize="sm">
+        {palette.name}: {palette.description} Componente activo: {selectedExample.label}.
+      </Text>
 
-      <DashboardPreview palette={palette} />
+      <CompleteLibraryExplorer selectedExample={selectedExample} paletteId={paletteId} />
 
-      <StyledComponentsGallery palette={palette} />
-
-      <CompleteLibraryExplorer />
+      <Box as="details" borderWidth="1px" borderColor="border" rounded="xl" bg="bg.panel">
+        <Box as="summary" cursor="pointer" px="5" py="4" fontWeight="semibold">
+          Ver composición completa y ejemplos avanzados
+        </Box>
+        <Stack gap="8" px={{ base: "4", md: "6" }} pb="6">
+          <DashboardPreview palette={palette} />
+          <StyledComponentsGallery palette={palette} />
+        </Stack>
+      </Box>
 
       <SimpleGrid columns={{ base: 1, lg: 3 }} gap="4">
         {[

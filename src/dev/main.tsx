@@ -60,7 +60,7 @@ import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatt
 import { DemoProvider } from "./provider"
 import { FactureProjectView } from "./FactureProjectView"
 import { CtrlView } from "./CtrlView"
-import { BeginnerAccessibilityGuideView, VisualSystemView } from "./AccessibilityViews"
+import { BeginnerAccessibilityGuideView, VisualSystemControls, VisualSystemView, defaultCatalogExample, type CatalogExample, type PaletteId } from "./AccessibilityViews"
 
 type Product = {
   id: number
@@ -2568,7 +2568,10 @@ function WorkspaceSwitcherView() {
 
 /** Layout raíz del catálogo: NSidebar + NHeader globales y el contenido según la vista activa. */
 function DevelopmentApp() {
-  const embedded = new URLSearchParams(window.location.search).get("embed") === "1"
+  const searchParams = new URLSearchParams(window.location.search)
+  const embedded = searchParams.get("embed") === "1"
+  const requestedPalette = searchParams.get("palette")
+  const embeddedPalette: PaletteId = requestedPalette === "coral" || requestedPalette === "cobalt" ? requestedPalette : "aurora"
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
     const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "thermal-print", "pos-example", "panel", "ctrl", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions", "facture", "accessibility-styles", "accessibility-guide"]
@@ -2580,6 +2583,8 @@ function DevelopmentApp() {
     return requested && allowed.includes(requested as NFactureView) ? requested as NFactureView : "dashboard"
   })
   const [activeFactureRole, setActiveFactureRole] = useState<NFactureRole>("admin")
+  const [visualPaletteId, setVisualPaletteId] = useState<PaletteId>("aurora")
+  const [visualExample, setVisualExample] = useState<CatalogExample>(defaultCatalogExample)
   const navigationItems = catalogNavigation.map((item) => item.id === "project" ? {
     ...item,
     children: [createFactureProjectNavigation(activeFactureRole), ...(item.children?.filter((child) => child.id !== "facture") ?? [])],
@@ -2651,7 +2656,7 @@ function DevelopmentApp() {
     : activeView === "ctrl"
       ? <CtrlView />
     : activeView === "accessibility-styles"
-      ? <VisualSystemView />
+      ? <VisualSystemView paletteId={visualPaletteId} selectedExample={visualExample} onPaletteChange={setVisualPaletteId} onExampleChange={setVisualExample} controlsInHeader />
     : activeView === "accessibility-guide"
       ? <BeginnerAccessibilityGuideView />
     : activeView === "page-patterns"
@@ -2686,7 +2691,7 @@ function DevelopmentApp() {
                     ? <WorkspaceSwitcherView />
               : <OverviewView onNavigate={setActiveView} />
 
-  if (embedded) return <NCtrlProvider><Box minH="100dvh" bg="bg" p={{ base: "4", md: "6" }}>{content}</Box></NCtrlProvider>
+  if (embedded) return <NCtrlProvider><Box className="visual-system-embed" data-palette={embeddedPalette} minH="100dvh" bg="bg" color="fg" p={{ base: "4", md: "6" }}>{content}</Box></NCtrlProvider>
 
   return (
     <NCtrlProvider>
@@ -2698,7 +2703,9 @@ function DevelopmentApp() {
           sticky
           surface="outline"
           brand={<Box display={{ base: "block", md: "none" }}><NissiBrand compact /></Box>}
-          extra={<Text fontWeight="semibold">{viewTitles[activeView]}</Text>}
+          extra={activeView === "accessibility-styles" ? (
+            <VisualSystemControls paletteId={visualPaletteId} selectedExample={visualExample} onPaletteChange={setVisualPaletteId} onExampleChange={setVisualExample} />
+          ) : <Text fontWeight="semibold">{viewTitles[activeView]}</Text>}
           showThemeToggle
           themePresentation="button"
         />

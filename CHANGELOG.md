@@ -8,7 +8,7 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 
 ### Añadido
 
-- Sección interactiva **Sistema visual** con un explorador embebido de todo el catálogo y una guía completa de diseño y desarrollo web desde cero.
+- Sección interactiva **Sistema visual** con navegación compacta por familias desde el header, paletas que transforman los componentes del explorador embebido y una guía completa de diseño y desarrollo web desde cero.
 - Tres direcciones visuales de alto contraste que demuestran `unstyled`, `classNames` y `styles` sin retirar semántica, teclado ni foco de `NDocumentView` y `NPanel`.
 - Contrato aditivo `unstyled`/`classNames`/`styles` en todos los componentes visuales públicos, con slots tipados y atributos `data-scope`/`data-part` estables.
 - Sistema Chakra sustituible en `NThemeProvider`, subrutas ESM/CommonJS para componentes estabilizados y build estático del catálogo.

@@ -16,6 +16,7 @@ describe("vistas de accesibilidad y personalización", () => {
 
     expect(screen.getByRole("button", { name: /coral nocturno/i })).toHaveAttribute("aria-pressed", "true")
     expect(screen.getByText(/Coral y rosa para productos/i)).toHaveAttribute("role", "status")
+    expect(screen.getByTitle("Ejemplo interactivo de NDataTable")).toHaveAttribute("src", "?view=datatable&theme=dark&embed=1&palette=coral")
   })
 
   it("abre el panel personalizado como diálogo accesible", async () => {
@@ -43,14 +44,16 @@ describe("vistas de accesibilidad y personalización", () => {
     expect(screen.getByRole("heading", { name: "Accesibilidad práctica", level: 2 })).toBeInTheDocument()
   })
 
-  it("permite explorar tablas, formularios y el resto del catálogo real", () => {
+  it("permite explorar tablas, formularios y el resto del catálogo real", async () => {
     renderView(<VisualSystemView />)
 
-    fireEvent.click(screen.getByRole("button", { name: "NTable" }))
+    fireEvent.click(screen.getByRole("button", { name: /datos e inputs/i }))
+    fireEvent.click(await screen.findByRole("menuitem", { name: "NTable" }))
 
-    expect(screen.getByTitle("Ejemplo interactivo de NTable")).toHaveAttribute("src", "?view=table&theme=dark&embed=1")
-    expect(screen.getByRole("button", { name: "NForm" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "NAmountInput" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "NFacture" })).toBeInTheDocument()
+    expect(screen.getByTitle("Ejemplo interactivo de NTable")).toHaveAttribute("src", "?view=table&theme=dark&embed=1&palette=aurora")
+    fireEvent.click(screen.getByRole("button", { name: /datos e inputs/i }))
+    expect(await screen.findByRole("menuitem", { name: "NForm" })).toBeInTheDocument()
+    expect(screen.getByRole("menuitem", { name: "NAmountInput" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /proyectos/i })).toBeInTheDocument()
   })
 })
