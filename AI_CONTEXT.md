@@ -5,7 +5,7 @@ Este archivo permite que cualquier asistente de IA integre Nissi UI en aplicacio
 ## Identidad del paquete
 
 - Paquete npm: `nissi-ui`
-- Versión estable actual: `0.1.2`
+- Versión estable actual: `0.2.0`
 - Creador y desarrollador: Lic. Informática Joaquin Villegas Chavez
 - Repositorio: <https://github.com/joaquinv106/NissiUI>
 - Stack consumidor: React 18 o 19, TypeScript recomendado, Chakra UI v3 y Emotion.

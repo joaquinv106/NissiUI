@@ -2,7 +2,7 @@
 
 Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguiendo versionado semántico.
 
-## Sin publicar
+## 0.2.0 — 2026-09-09
 
 ### Añadido
 
