@@ -7,6 +7,7 @@ export type NRouteStrategy = "history" | "hash" | "memory"
 export type NroutesSlot = "root" | "progress"
 export type NRouteOutletSlot = "root" | "pending" | "notFound" | "forbidden" | "error"
 export type NNavigationStatus = "idle" | "loading"
+export type NRouteNavigationAction = "push" | "replace" | "traverse" | "unload"
 
 export interface NRouteLocation {
   pathname: string
@@ -241,6 +242,25 @@ export interface NRouteNavigateOptions {
   preventScrollReset?: boolean
 }
 
+export interface NRouteBlockerDetails {
+  from: NRouteLocation
+  to: NRouteLocation
+  action: NRouteNavigationAction
+}
+
+export type NRouteBlockerCondition = boolean | ((details: NRouteBlockerDetails) => boolean)
+
+export interface NRouteBlocker {
+  state: "idle" | "blocked"
+  from?: NRouteLocation
+  to?: NRouteLocation
+  action?: NRouteNavigationAction
+  /** Continúa exclusivamente la navegación pendiente, sin evaluar otra vez los blockers. */
+  proceed: () => void
+  /** Cancela la navegación pendiente y conserva la location actual. */
+  reset: () => void
+}
+
 export interface NNavigationState<TData = unknown, TContext = unknown> {
   status: NNavigationStatus
   from?: NRouteLocation
@@ -254,6 +274,8 @@ export interface NRouterAdapter {
   navigate: (to: string, options?: NRouteNavigateOptions) => void
   createHref?: (to: string) => string
   prefetch?: (to: string) => void | Promise<unknown>
+  back?: () => void
+  forward?: () => void
 }
 
 export interface NroutesContextValue<TData = unknown, TContext = unknown> {
@@ -265,6 +287,9 @@ export interface NroutesContextValue<TData = unknown, TContext = unknown> {
   navigation: NNavigationState<TData, TContext>
   labels: NroutesLabels
   navigate: (to: NRouteTarget, options?: NRouteNavigateOptions) => void
+  replace: (to: NRouteTarget, options?: Omit<NRouteNavigateOptions, "replace">) => void
+  back: () => void
+  forward: () => void
   prefetch: (to: NRouteTarget) => Promise<void>
   href: (to: NRouteTarget) => string
   invalidate: (filter: NRouteCacheInvalidation) => void
@@ -284,8 +309,9 @@ export type NTypedNroutesContextValue<
   TRoutes extends readonly NRouteDefinition[],
   TData = unknown,
   TContext = unknown,
-> = Omit<NroutesContextValue<TData, TContext>, "navigate" | "prefetch" | "href" | "createLinkProps"> & {
+> = Omit<NroutesContextValue<TData, TContext>, "navigate" | "replace" | "prefetch" | "href" | "createLinkProps"> & {
   navigate: (to: NTypedRouteTarget<TRoutes>, options?: NRouteNavigateOptions) => void
+  replace: (to: NTypedRouteTarget<TRoutes>, options?: Omit<NRouteNavigateOptions, "replace">) => void
   prefetch: (to: NTypedRouteTarget<TRoutes>) => Promise<void>
   href: (to: NTypedRouteTarget<TRoutes>) => string
   createLinkProps: (to: NTypedRouteTarget<TRoutes>, options?: NRouteNavigateOptions) => {

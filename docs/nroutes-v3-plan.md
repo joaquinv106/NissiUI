@@ -1,6 +1,6 @@
 # Nroutes v3 — auditoría y plan de implementación
 
-> Estado: **auditoría y fases 1–6 completadas; fases 7–22 pendientes**.
+> Estado: **auditoría y fases 1–7 completadas; fases 8–22 pendientes**.
 >
 > Este documento es la fuente canónica de Nroutes v3. Describe exclusivamente el estado comprobado del repositorio y separa las capacidades vigentes de las propuestas.
 
@@ -212,7 +212,7 @@ La navegación por string seguirá disponible. Los tests de tipos usarán `@ts-e
 
 ### Blockers componibles
 
-`useNBlocker(condition)` registrará el bloqueo en el runtime y devolverá `idle/blocked`, locations y `proceed/reset`. NLink, navegación programática y traversal compartirán el mismo pipeline. `beforeunload` será un complemento del navegador; la UI interna no dependerá exclusivamente de `window.confirm()` y podrá componerse con `NConfirmDialog`.
+`useNBlocker(condition)` registra el bloqueo en el runtime y devuelve `idle/blocked`, locations, action y `proceed/reset`. NLink, navegación programática y traversal comparten el mismo pipeline. `beforeunload` funciona como complemento del navegador; la UI interna no depende de `window.confirm()` y puede componerse con `NConfirmDialog`. Los límites y adapters externos están documentados en [Navigation blockers](./nroutes-blockers.md).
 
 ### Actions e invalidación
 
@@ -264,7 +264,7 @@ Cada fase actualiza implementación, tipos públicos, pruebas, documentación Ma
 | 4 | P0 | Route modules lazy, retry y prefetch de código | Completada |
 | 5 | P0 | Route ids, params y href tipados | Completada |
 | 6 | P0 | Search codecs opcionales y dependencias selectivas | Completada |
-| 7 | P0 | Navigation blockers y `beforeunload` | Pendiente |
+| 7 | P0 | Navigation blockers y `beforeunload` | Completada |
 | 8 | P1 | Navigation intent enriquecido | Pendiente |
 | 9 | P1 | Route actions e invalidación automática | Pendiente |
 | 10 | P1 | Estado optimista explícito y rollback | Pendiente |

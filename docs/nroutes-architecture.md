@@ -11,6 +11,7 @@ string u objeto NRouteTarget
   → matchRoutes()
   → NRouteMatch con branch
   → createNRouteTransition()
+  → blockers por instancia
   → permisos
   → guards afectados padre→hijo
   → scheduler de loaders por ondas
@@ -19,6 +20,10 @@ string u objeto NRouteTarget
 ```
 
 `location.ts` no depende de React y conserva pathname, search, hash, state y key. `matcher.ts` compila el árbol, ordena branches por especificidad y genera params por nivel. `core/transition.ts` compara el match activo con el siguiente sin ejecutar efectos.
+
+## Blockers por runtime
+
+`navigation/blockers.ts` mantiene condiciones y una única navegación pendiente dentro de cada instancia de router. `NLink`, push, replace y traversal consultan el mismo registro antes de modificar la ubicación. Los hooks que participaron reciben un snapshot propio y pueden continuar o cancelar mediante `proceed/reset`. `beforeunload` consulta las mismas condiciones sin depender de una UI síncrona propia. Consulta [Navigation blockers](./nroutes-blockers.md).
 
 ## Branch diff
 

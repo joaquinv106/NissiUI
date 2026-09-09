@@ -4,8 +4,10 @@ import { createContext, useContext } from "react"
 import type { ReactNode } from "react"
 
 import type { NRouteDefinition, NroutesContextValue, NTypedNroutesContextValue } from "./types"
+import type { NRouteBlockerRegistry } from "./navigation/blockers"
 
 export const NroutesContext = createContext<NroutesContextValue | null>(null)
+export const NRouteBlockerContext = createContext<NRouteBlockerRegistry | null>(null)
 
 export interface NRouteRenderContextValue {
   state: "ready" | "pending" | "not-found" | "forbidden" | "error"

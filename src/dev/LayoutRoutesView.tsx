@@ -1,7 +1,9 @@
 import { Box, Button, Card, HStack, Stack, Text } from "@chakra-ui/react"
 import { FileText, LayoutDashboard, MoveUpRight } from "lucide-react"
+import { useState } from "react"
 
 import {
+  NConfirmDialog,
   NLink,
   NOutlet,
   NRouteOutlet,
@@ -16,6 +18,8 @@ import {
   numberParam,
   parseRouteLocation,
   stringParam,
+  useNBlocker,
+  useNroutes,
   type NlayoutRoute,
 } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
@@ -235,6 +239,52 @@ function SearchCodecsPreview() {
   </Stack>
 }
 
+function NavigationBlockerControls() {
+  const [dirty, setDirty] = useState(true)
+  const blocker = useNBlocker(dirty)
+  const router = useNroutes()
+
+  return (
+    <Stack gap="4">
+      <Stack direction={{ base: "column", md: "row" }} gap="2">
+        <Button size="sm" variant={dirty ? "solid" : "outline"} onClick={() => setDirty((value) => !value)}>
+          {dirty ? "Cambios pendientes" : "Sin cambios"}
+        </Button>
+        <Button asChild size="sm" variant="outline"><NLink to="/blockers/summary">Abrir resumen</NLink></Button>
+        <Button size="sm" variant="outline" onClick={() => router.replace("/blockers/summary")}>Reemplazar ruta</Button>
+      </Stack>
+      <Text fontSize="sm" color="fg.muted">
+        Estado: {blocker.state} · desde {blocker.from?.pathname ?? "—"} · hacia {blocker.to?.pathname ?? "—"}
+      </Text>
+      <NRouteOutlet />
+      <NConfirmDialog
+        open={blocker.state === "blocked"}
+        onOpenChange={(open) => { if (!open) blocker.reset() }}
+        title="Cambios sin guardar"
+        description="Si continúas, los cambios locales de esta vista se perderán."
+        confirmLabel="Salir de la vista"
+        cancelLabel="Permanecer"
+        onConfirm={blocker.proceed}
+      />
+    </Stack>
+  )
+}
+
+function NavigationBlockerPreview() {
+  return (
+    <Nroutes
+      strategy="memory"
+      defaultPath="/blockers/editor"
+      routes={[
+        { id: "blocker-editor", path: "/blockers/editor", title: "Editor", element: <Text>Editor activo</Text> },
+        { id: "blocker-summary", path: "/blockers/summary", title: "Resumen", element: <Text>Resumen activo</Text> },
+      ]}
+    >
+      <NavigationBlockerControls />
+    </Nroutes>
+  )
+}
+
 export function LayoutRoutesView() {
   return (
     <Stack gap="8">
@@ -272,6 +322,7 @@ export function LayoutRoutesView() {
           { name: "Route modules", description: "Importa UI y lifecycle por ruta con deduplicación, pending, retry y prefetch explícito." },
           { name: "Typed routing", description: "Infiere ids y params anidados para navigate, href y prefetch sin retirar URLs libres." },
           { name: "Typed search", description: "Decodifica query params de forma opt-in y limita loaders a sus dependencias declaradas." },
+          { name: "Blockers", description: "Intercepta enlaces, navegación programática y traversal con una confirmación accesible y personalizable." },
           { name: "history | hash | memory", description: "Estrategias para servidor, hosting estático y entornos contenidos." },
         ]}
         variantExamples={[
@@ -442,6 +493,22 @@ const routes = defineNroutes([{
 
 const search = useInvoiceSearch()`,
           },
+          {
+            id: "navigation-blockers",
+            label: "Navigation blockers",
+            summary: "useNBlocker + NConfirmDialog",
+            preview: <NavigationBlockerPreview />,
+            code: `const blocker = useNBlocker(isDirty)
+
+<NConfirmDialog
+  open={blocker.state === "blocked"}
+  onOpenChange={(open) => !open && blocker.reset()}
+  title="Cambios sin guardar"
+  confirmLabel="Salir"
+  cancelLabel="Permanecer"
+  onConfirm={blocker.proceed}
+/>`,
+          },
         ]}
         propExamples={[
           { label: "Ruta con parámetros", code: `{ id: "invoice", path: "/facturas/:folio", title: "Factura", element: ({ params }) => <Invoice folio={params.folio} /> }` },
@@ -453,6 +520,7 @@ const search = useInvoiceSearch()`,
           { label: "Retry de chunk", code: `router.retryRouteModule("treasury")` },
           { label: "Permiso y guard", code: `{ requiredPermission: "facturacion:ver", beforeEnter: ({ context }) => context.session ? true : redirect("/login") }` },
           { label: "Router de Next.js", code: `<Nlayout routeRouter={{ location: pathname, navigate: (to) => router.push(to) }} />` },
+          { label: "Bloqueo condicional", code: `const blocker = useNBlocker(({ to }) => isDirty && to.pathname !== location.pathname)` },
           { label: "Provider existente", code: `<NThemeProvider>\n  <Nlayout provideTheme={false} routes={routes} navigation={items} />\n</NThemeProvider>` },
         ]}
         code={`import { Nlayout, type NlayoutRoute } from "nissi-ui/layout"\n\nconst routes: NlayoutRoute[] = [\n  { id: "home", path: "/", title: "Resumen", navigationId: "home", element: <Dashboard /> },\n]\n\n<Nlayout routes={routes} navigation={items} />`}

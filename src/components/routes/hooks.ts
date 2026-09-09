@@ -1,11 +1,12 @@
 "use client"
 
-import { useCallback, useMemo } from "react"
+import { useCallback, useContext, useEffect, useId, useMemo, useRef, useSyncExternalStore } from "react"
 
-import { useNroutes } from "./context"
+import { NRouteBlockerContext, useNroutes } from "./context"
 import { parseNRouteSearch, rawNRouteSearch } from "./search"
 import type {
   NRouteNavigateOptions,
+  NRouteBlockerCondition,
   NRouteSearchSchema,
   NRouteSearchValues,
   NRouteTarget,
@@ -15,6 +16,10 @@ import type {
 
 export function useNNavigate() {
   return useNroutes().navigate
+}
+
+export function useNReplace() {
+  return useNroutes().replace
 }
 
 export function useNLocation() {
@@ -27,6 +32,18 @@ export function useNRouteParams() {
 
 export function useNNavigation() {
   return useNroutes().navigation
+}
+
+export function useNBlocker(condition: NRouteBlockerCondition) {
+  const registry = useContext(NRouteBlockerContext)
+  if (!registry) throw new Error("useNBlocker debe usarse dentro de Nroutes.")
+  const id = useId()
+  const conditionRef = useRef(condition)
+  conditionRef.current = condition
+  useEffect(() => registry.register(id, () => conditionRef.current), [id, registry])
+  const subscribe = useCallback((listener: () => void) => registry.subscribe(listener), [registry])
+  const getSnapshot = useCallback(() => registry.getSnapshot(id), [id, registry])
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 }
 
 export function useNRouteMatches() {

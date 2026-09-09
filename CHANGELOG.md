@@ -6,6 +6,7 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 
 ### Añadido
 
+- Nroutes v3 Fase 7: navigation blockers componibles con `useNBlocker`, estado `from/to/action`, decisiones `proceed/reset`, cobertura de enlaces, push/replace, back/forward, traversal y protección complementaria `beforeunload`.
 - Nroutes v3 Fase 6: search codecs opcionales y extensibles, defaults, hooks tipados, serialización por route id y dependencias selectivas mediante `reloadOnSearch`, conservando `URLSearchParams`.
 - Auditoría y plan canónico de Nroutes v3 con arquitectura encontrada, deuda comprobada, decisiones progresivas de API, 21 fases, gates, riesgos y benchmark reproducible de 10/100/1,000 rutas.
 - Fase 1 de Nroutes v3: branch diff puro, params por nivel, segmentos retenidos/entrantes/salientes, revalidación configurable y preservación del loader data de padres compartidos.

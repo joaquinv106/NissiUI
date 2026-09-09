@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NLink, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NOutlet, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NRouteCache, NRouteModuleRegistry, NRouteOutlet, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NauthLayout, NauthLogin, Nlayout, NloginPage, NissiInvoicingProvider, Nroutes, createNFactureHeaderNavigation, createNFactureNavigation, createNRouteCacheKey, createNRouteSearchHook, createNRouteTransition, defineNRouteSearch, defineNlayoutConfig, defineNroutes, formatTableValue, nissiSystem, numberParam, redirect, resolveNRouteTarget, stringParam, useNLocation, useNNavigate, useNRouteSearch, useNTheme, useNTypedNroutes, useNroutes } from "./index"
+import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NLink, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NOutlet, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NRouteBlockerRegistry, NRouteCache, NRouteModuleRegistry, NRouteOutlet, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NauthLayout, NauthLogin, Nlayout, NloginPage, NissiInvoicingProvider, Nroutes, createNFactureHeaderNavigation, createNFactureNavigation, createNRouteCacheKey, createNRouteSearchHook, createNRouteTransition, defineNRouteSearch, defineNlayoutConfig, defineNroutes, formatTableValue, nissiSystem, numberParam, redirect, resolveNRouteTarget, stringParam, useNBlocker, useNLocation, useNNavigate, useNReplace, useNRouteSearch, useNTheme, useNTypedNroutes, useNroutes } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -79,6 +79,8 @@ describe("API pública de tablas", () => {
     expect(NLink).toBeTypeOf("object")
     expect(useNroutes).toBeTypeOf("function")
     expect(useNNavigate).toBeTypeOf("function")
+    expect(useNReplace).toBeTypeOf("function")
+    expect(useNBlocker).toBeTypeOf("function")
     expect(useNLocation).toBeTypeOf("function")
     expect(redirect).toBeTypeOf("function")
     expect(defineNroutes).toBeTypeOf("function")
@@ -86,6 +88,7 @@ describe("API pública de tablas", () => {
     expect(createNRouteCacheKey).toBeTypeOf("function")
     expect(NRouteCache).toBeTypeOf("function")
     expect(NRouteModuleRegistry).toBeTypeOf("function")
+    expect(NRouteBlockerRegistry).toBeTypeOf("function")
     expect(resolveNRouteTarget).toBeTypeOf("function")
     expect(useNTypedNroutes).toBeTypeOf("function")
     expect(defineNRouteSearch).toBeTypeOf("function")

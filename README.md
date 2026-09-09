@@ -126,11 +126,12 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - `NloginPage`: pantalla de acceso responsive con tema oscuro inicial, selector de tema integrado y formulario `NauthLogin`.
 - Nauth: `NauthLayout`, `NauthLogin`, registro, recuperación, OTP y primitivas visuales desacopladas del backend.
 - Patrones de página: `NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState` y `NConfirmDialog`.
+- Navegación protegida: `useNBlocker` intercepta enlaces, push/replace y traversal con confirmación personalizada y soporte complementario de `beforeunload`.
 - Datos escalables: `NDataTable` server-side, `NFilterBar`, `NDateRangePicker`, `NDescriptionList` y `NDetailPanel`.
 - Actividad y dashboards: `NFileUpload`, `NActivityTimeline`, `NNotificationCenter`, `NStatCard`, `NDashboardGrid` y `NChartFrame`.
 - Administración y verticales: `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`, `NKanban`, `NScheduler` y `NMapView`.
 
-Consulta [el catálogo técnico](./docs/README.md), [la guía de accesibilidad desde cero](./docs/accessibility.md), [personalización compatible](./docs/customization.md), [empaquetado y SSR](./docs/package-compatibility.md), [la identidad visual](./docs/brand.md), [la guía completa de tablas](./docs/tables.md), el [roadmap por fases](./docs/roadmap.md), el [proyecto prioritario de flujos generalizables](./docs/generalized-workflows-roadmap.md), la [generación vigente del Router SPA](./docs/future-professional-spa-router.md), el [plan auditado de Nroutes v3](./docs/nroutes-v3-plan.md), su [lifecycle de navegación](./docs/nroutes-navigation-lifecycle.md) y la guía de [search params tipados](./docs/nroutes-search.md) para ver contratos, ejemplos y decisiones.
+Consulta [el catálogo técnico](./docs/README.md), [la guía de accesibilidad desde cero](./docs/accessibility.md), [personalización compatible](./docs/customization.md), [empaquetado y SSR](./docs/package-compatibility.md), [la identidad visual](./docs/brand.md), [la guía completa de tablas](./docs/tables.md), el [roadmap por fases](./docs/roadmap.md), el [proyecto prioritario de flujos generalizables](./docs/generalized-workflows-roadmap.md), la [generación vigente del Router SPA](./docs/future-professional-spa-router.md), el [plan auditado de Nroutes v3](./docs/nroutes-v3-plan.md), su [lifecycle de navegación](./docs/nroutes-navigation-lifecycle.md), la guía de [search params tipados](./docs/nroutes-search.md) y [navigation blockers](./docs/nroutes-blockers.md) para ver contratos, ejemplos y decisiones.
 
 Los asistentes y agentes de IA deben comenzar por [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md), que concentra el objetivo, la arquitectura, las convenciones y las rutas relevantes del proyecto.
 

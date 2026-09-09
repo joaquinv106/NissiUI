@@ -1,6 +1,6 @@
 # Lifecycle de navegación de Nroutes
 
-Esta guía documenta el lifecycle implementado hasta la fase 5 de Nroutes v3. Search codecs, blockers, actions y observabilidad se incorporarán en fases posteriores y no deben asumirse todavía.
+Esta guía documenta el lifecycle implementado hasta la fase 7 de Nroutes v3. Search codecs y navigation blockers ya forman parte del pipeline; actions y observabilidad permanecen pendientes.
 
 ## Pipeline vigente
 
@@ -8,6 +8,7 @@ Esta guía documenta el lifecycle implementado hasta la fase 5 de Nroutes v3. Se
 target por URL o route id tipado
   → location
   → matching y branch diff
+  → navigation blockers
   → permisos de toda la branch
   → route modules lazy requeridos
   → guards requeridos, padre → hijo
@@ -17,6 +18,8 @@ target por URL o route id tipado
   → commit
   → scroll, foco y anuncio
 ```
+
+Antes de permisos, imports lazy o datos, el registro de blockers consulta las condiciones activas. Una navegación bloqueada no inicia trabajo de la siguiente branch. `proceed()` libera exactamente la operación pendiente y `reset()` la descarta. `beforeunload` sólo complementa este flujo cuando la navegación abandona el documento; consulta [Navigation blockers](./nroutes-blockers.md).
 
 ## 1. Matching y trabajo afectado
 

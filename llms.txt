@@ -25,6 +25,7 @@
 - Route modules lazy, pending, retry, SSR y code splitting: ./docs/nroutes-route-modules.md
 - Routing tipado por route id y params anidados: ./docs/nroutes-typed-routing.md
 - Search params tipados, codecs y revalidación selectiva: ./docs/nroutes-search.md
+- Navigation blockers, confirmación personalizada y beforeunload: ./docs/nroutes-blockers.md
 - Personalización, slots y modo unstyled: ./docs/customization.md
 - Empaquetado, tree shaking, subrutas y SSR: ./docs/package-compatibility.md
 

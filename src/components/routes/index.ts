@@ -3,6 +3,7 @@ export { NLink } from "./NLink"
 export { useNroutes, useNTypedNroutes } from "./context"
 export {
   createNRouteSearchHook,
+  useNBlocker,
   useNCreateHref,
   useNLoaderData,
   useNLocation,
@@ -11,6 +12,7 @@ export {
   useNRouteMatches,
   useNRouteParams,
   useNRouteSearch,
+  useNReplace,
   useNSearchParams,
 } from "./hooks"
 export {
@@ -28,6 +30,7 @@ export { defaultNroutesLabels } from "./labels"
 export { changedSearchKeys, createNRouteTransition } from "./core/transition"
 export { createNRouteCacheKey, NRouteCache } from "./data/cache"
 export { NRouteModuleError, NRouteModuleRegistry, resolveNRouteModules } from "./modules"
+export { NRouteBlockerRegistry } from "./navigation/blockers"
 export {
   compileRouteBranches,
   defineNroutes,
@@ -45,6 +48,9 @@ export type {
   NNavigationState,
   NNavigationStatus,
   NRouteDefinition,
+  NRouteBlocker,
+  NRouteBlockerCondition,
+  NRouteBlockerDetails,
   NRouteCacheInvalidation,
   NRouteCacheMode,
   NRouteCachePolicy,
@@ -55,6 +61,7 @@ export type {
   NRouteMatchEntry,
   NRouteModule,
   NRouteNavigateOptions,
+  NRouteNavigationAction,
   NRouteOutletProps,
   NRouteOutletSlot,
   NRouteRedirect,

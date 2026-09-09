@@ -17,7 +17,7 @@ import {
 } from "react"
 
 import { usePermissions } from "../permissions"
-import { NOutletDepthContext, NRouteRenderContext, NroutesContext, useNroutes } from "./context"
+import { NOutletDepthContext, NRouteBlockerContext, NRouteRenderContext, NroutesContext, useNroutes } from "./context"
 import { createNRouteTransition, retainedLoaderData, transitionWorkRouteIds } from "./core/transition"
 import { createNRouteCacheKey, NRouteCache } from "./data/cache"
 import { NRouteLoaderSchedulerError, scheduleNRouteLoaders } from "./data/scheduler"
@@ -34,6 +34,7 @@ import {
   stripBasePath,
 } from "./location"
 import { compileRouteBranches, matchRoutes, resolveNRouteTarget } from "./matcher"
+import { NRouteBlockerRegistry } from "./navigation/blockers"
 import type {
   NNavigationState,
   NRouteCacheInvalidation,
@@ -160,6 +161,11 @@ export function Nroutes<TData = unknown, TContext = unknown>({
   const compiled = useMemo(() => compileRouteBranches(routes), [routes])
   const { can } = usePermissions()
   const [internalLocation, setInternalLocation] = useState(() => readBrowserLocation(strategy, basePath, defaultPath))
+  const blockerRegistry = useRef(new NRouteBlockerRegistry()).current
+  const memoryEntries = useRef<NRouteLocation[]>([internalLocation])
+  const memoryIndex = useRef(0)
+  const bypassBrowserBlock = useRef(false)
+  const lastBrowserEventPath = useRef<string | undefined>(undefined)
   const externalValue = router?.location ?? controlledLocation ?? controlledPath
   const currentLocation = useMemo(() => {
     if (externalValue === undefined) return internalLocation
@@ -191,8 +197,11 @@ export function Nroutes<TData = unknown, TContext = unknown>({
   const matchForLocation = useCallback((nextLocation: NRouteLocation) => matchRoutes(compiled, nextLocation), [compiled])
   const normalizeTarget = useCallback((target: NRouteTarget) => resolveNRouteTarget(routes, target), [routes])
 
-  const updateLocation = useCallback((target: NRouteTarget, options: NRouteNavigateOptions = {}) => {
-    const nextLocation = { ...resolveRouteTarget(normalizeTarget(target), currentLocation), state: options.state }
+  const commitLocation = useCallback((
+    nextLocation: NRouteLocation,
+    options: NRouteNavigateOptions,
+    action: "push" | "replace",
+  ) => {
     const fullPath = locationPath(nextLocation)
     const nextMatch = matchForLocation(nextLocation)
     if (typeof window !== "undefined" && scrollRestoration === "restore") {
@@ -202,15 +211,71 @@ export function Nroutes<TData = unknown, TContext = unknown>({
 
     if (router) router.navigate(fullPath, options)
     else {
-      if (controlledLocation === undefined && controlledPath === undefined) setInternalLocation(nextLocation)
+      if (controlledLocation === undefined && controlledPath === undefined) {
+        if (strategy === "memory") {
+          if (action === "replace") memoryEntries.current[memoryIndex.current] = nextLocation
+          else {
+            memoryEntries.current.splice(memoryIndex.current + 1)
+            memoryEntries.current.push(nextLocation)
+            memoryIndex.current = memoryEntries.current.length - 1
+          }
+        }
+        setInternalLocation(nextLocation)
+      }
       if (typeof window !== "undefined" && strategy !== "memory") {
         const href = routeHref(nextLocation, strategy, basePath)
-        window.history[options.replace ? "replaceState" : "pushState"](options.state, "", href)
+        window.history[action === "replace" ? "replaceState" : "pushState"](options.state, "", href)
       }
     }
     onPathChange?.(nextLocation.pathname, nextMatch)
     onLocationChange?.(nextLocation, nextMatch)
-  }, [basePath, controlledLocation, controlledPath, currentLocation, matchForLocation, normalizeTarget, onLocationChange, onPathChange, router, scrollRestoration, strategy])
+  }, [basePath, controlledLocation, controlledPath, matchForLocation, onLocationChange, onPathChange, router, scrollRestoration, strategy])
+
+  const updateLocation = useCallback((target: NRouteTarget, options: NRouteNavigateOptions = {}) => {
+    const action = options.replace ? "replace" : "push"
+    const nextLocation = { ...resolveRouteTarget(normalizeTarget(target), currentLocation), state: options.state }
+    const commit = () => commitLocation(nextLocation, options, action)
+    if (!blockerRegistry.request({ from: currentLocation, to: nextLocation, action }, commit)) commit()
+  }, [blockerRegistry, commitLocation, currentLocation, normalizeTarget])
+
+  const replaceLocation = useCallback((target: NRouteTarget, options: Omit<NRouteNavigateOptions, "replace"> = {}) => {
+    updateLocation(target, { ...options, replace: true })
+  }, [updateLocation])
+
+  const traverseMemory = useCallback((delta: -1 | 1) => {
+    const nextIndex = memoryIndex.current + delta
+    const nextLocation = memoryEntries.current[nextIndex]
+    if (!nextLocation || controlledLocation !== undefined || controlledPath !== undefined) return
+    const commit = () => {
+      memoryIndex.current = nextIndex
+      navigationOptions.current.set(locationPath(nextLocation), { preventScrollReset: true })
+      setInternalLocation(nextLocation)
+      const nextMatch = matchForLocation(nextLocation)
+      onPathChange?.(nextLocation.pathname, nextMatch)
+      onLocationChange?.(nextLocation, nextMatch)
+    }
+    if (!blockerRegistry.request({ from: currentLocation, to: nextLocation, action: "traverse" }, commit)) commit()
+  }, [blockerRegistry, controlledLocation, controlledPath, currentLocation, matchForLocation, onLocationChange, onPathChange])
+
+  const back = useCallback(() => {
+    if (strategy === "memory") { traverseMemory(-1); return }
+    if (router?.back) {
+      const commit = () => router.back?.()
+      if (!blockerRegistry.request({ from: currentLocation, to: currentLocation, action: "traverse" }, commit)) commit()
+      return
+    }
+    if (typeof window !== "undefined" && !router) window.history.back()
+  }, [blockerRegistry, currentLocation, router, strategy, traverseMemory])
+
+  const forward = useCallback(() => {
+    if (strategy === "memory") { traverseMemory(1); return }
+    if (router?.forward) {
+      const commit = () => router.forward?.()
+      if (!blockerRegistry.request({ from: currentLocation, to: currentLocation, action: "traverse" }, commit)) commit()
+      return
+    }
+    if (typeof window !== "undefined" && !router) window.history.forward()
+  }, [blockerRegistry, currentLocation, router, strategy, traverseMemory])
 
   const loadMatch = useCallback(async (
     match: NRouteMatch<TData, TContext>,
@@ -391,10 +456,34 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     if (typeof window === "undefined" || strategy === "memory" || router) return undefined
     const syncFromBrowser = () => {
       const nextLocation = readBrowserLocation(strategy, basePath, defaultPath)
-      if (controlledLocation === undefined && controlledPath === undefined) setInternalLocation(nextLocation)
-      const nextMatch = matchForLocation(nextLocation)
-      onPathChange?.(nextLocation.pathname, nextMatch)
-      onLocationChange?.(nextLocation, nextMatch)
+      const nextPath = locationPath(nextLocation)
+      if (lastBrowserEventPath.current === nextPath) return
+      lastBrowserEventPath.current = nextPath
+      window.setTimeout(() => {
+        if (lastBrowserEventPath.current === nextPath) lastBrowserEventPath.current = undefined
+      }, 0)
+      const commit = () => {
+        if (controlledLocation === undefined && controlledPath === undefined) setInternalLocation(nextLocation)
+        const nextMatch = matchForLocation(nextLocation)
+        onPathChange?.(nextLocation.pathname, nextMatch)
+        onLocationChange?.(nextLocation, nextMatch)
+      }
+      if (bypassBrowserBlock.current) {
+        bypassBrowserBlock.current = false
+        commit()
+        return
+      }
+      const from = activeLocationRef.current
+      const proceed = () => {
+        bypassBrowserBlock.current = true
+        lastBrowserEventPath.current = undefined
+        window.history.back()
+      }
+      if (blockerRegistry.request({ from, to: nextLocation, action: "traverse" }, proceed)) {
+        window.history.pushState(from.state, "", routeHref(from, strategy, basePath))
+        return
+      }
+      commit()
     }
     window.addEventListener("popstate", syncFromBrowser)
     if (strategy === "hash") window.addEventListener("hashchange", syncFromBrowser)
@@ -402,7 +491,19 @@ export function Nroutes<TData = unknown, TContext = unknown>({
       window.removeEventListener("popstate", syncFromBrowser)
       if (strategy === "hash") window.removeEventListener("hashchange", syncFromBrowser)
     }
-  }, [basePath, controlledLocation, controlledPath, defaultPath, matchForLocation, onLocationChange, onPathChange, router, strategy])
+  }, [basePath, blockerRegistry, controlledLocation, controlledPath, defaultPath, matchForLocation, onLocationChange, onPathChange, router, strategy])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const location = activeLocationRef.current
+      if (!blockerRegistry.shouldBlock({ from: location, to: location, action: "unload" })) return
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+  }, [blockerRegistry])
 
   useEffect(() => {
     if (navigation.status !== "idle" || typeof window === "undefined" || !scrollRestoration) return
@@ -492,6 +593,9 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     navigation,
     labels,
     navigate: updateLocation,
+    replace: replaceLocation,
+    back,
+    forward,
     prefetch,
     href: createHref,
     invalidate,
@@ -500,7 +604,7 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     clearCache,
     retryRouteModule,
     createLinkProps,
-  }), [candidate?.branch, clearCache, createLinkProps, currentLocation, effectiveResolution.match, invalidate, invalidateRoute, labels, navigation, prefetch, retryRouteModule, revalidate, updateLocation])
+  }), [back, candidate?.branch, clearCache, createLinkProps, currentLocation, effectiveResolution.match, forward, invalidate, invalidateRoute, labels, navigation, prefetch, replaceLocation, retryRouteModule, revalidate, updateLocation])
   const renderValue = useMemo(() => ({
     state: effectiveResolution.state,
     pendingFallback,
@@ -513,20 +617,22 @@ export function Nroutes<TData = unknown, TContext = unknown>({
 
   return (
     <NroutesContext.Provider value={value as NroutesContextValue}>
-      <NRouteRenderContext.Provider value={renderValue}>
-        <Box
-          display="contents"
-          colorPalette={colorPalette}
-          onClickCapture={handleLinkCapture}
-          className={classNames?.root}
-          css={styles?.root}
-          data-scope="n-routes"
-          data-part="root"
-        >
-          {progress ? <NRouteProgress delay={progressDelay} unstyled={unstyled} className={classNames?.progress} styles={styles?.progress} /> : null}
-          {children ?? <NRouteOutlet<TData, TContext> />}
-        </Box>
-      </NRouteRenderContext.Provider>
+      <NRouteBlockerContext.Provider value={blockerRegistry}>
+        <NRouteRenderContext.Provider value={renderValue}>
+          <Box
+            display="contents"
+            colorPalette={colorPalette}
+            onClickCapture={handleLinkCapture}
+            className={classNames?.root}
+            css={styles?.root}
+            data-scope="n-routes"
+            data-part="root"
+          >
+            {progress ? <NRouteProgress delay={progressDelay} unstyled={unstyled} className={classNames?.progress} styles={styles?.progress} /> : null}
+            {children ?? <NRouteOutlet<TData, TContext> />}
+          </Box>
+        </NRouteRenderContext.Provider>
+      </NRouteBlockerContext.Provider>
     </NroutesContext.Provider>
   )
 }

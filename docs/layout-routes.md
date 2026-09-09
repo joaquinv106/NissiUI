@@ -204,6 +204,8 @@ Hooks públicos:
 
 - `useNroutes()` conserva el contexto completo compatible.
 - `useNNavigate()` devuelve la función de navegación.
+- `useNReplace()` reemplaza la entrada activa sin crear una nueva entrada de historial.
+- `useNBlocker(condition)` intercepta navegación interna y devuelve `from`, `to`, `action`, `proceed()` y `reset()` para construir una confirmación propia.
 - `useNLocation()` devuelve la location completa.
 - `useNRouteParams()` devuelve los params combinados de la branch.
 - `useNSearchParams()` permite reemplazar, mezclar y eliminar query params.
@@ -213,6 +215,8 @@ Hooks públicos:
 - `useNRouteMatches()` devuelve toda la branch, incluidos datos por nivel.
 
 `defineNroutes()` conserva los literales del árbol. `useNTypedNroutes(routes)` deriva ids y params obligatorios para `navigate`, `href`, `prefetch` y `createLinkProps`; la navegación tradicional por URL permanece disponible. Consulta [Routing tipado por id](./nroutes-typed-routing.md). `defineNlayoutConfig()` conserva literales al compartir la configuración del layout.
+
+Los blockers se componen por instancia y cubren `NLink`, `navigate`, `replace`, `back`, `forward`, traversal del navegador y, cuando es posible, recarga/cierre mediante `beforeunload`. La UI no está acoplada a `window.confirm()` y puede implementarse con `NConfirmDialog`. Consulta [Navigation blockers](./nroutes-blockers.md) para límites de navegador y adapters externos.
 
 ## Estrategias y routers externos
 
