@@ -70,6 +70,7 @@ export default defineConfig({
         "components/document-view/index": resolve(projectRoot, "src/components/document-view/index.ts"),
         "components/receipt/index": resolve(projectRoot, "src/components/receipt/index.ts"),
         "components/thermal-print/index": resolve(projectRoot, "src/components/thermal-print/index.ts"),
+        "components/auth/index": resolve(projectRoot, "src/components/auth/index.ts"),
       },
       name: "NissiUI",
       formats: ["es", "cjs"],

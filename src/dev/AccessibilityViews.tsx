@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 import { ArrowRight, Check, ChevronDown, Eye, Layers3, Palette, ShieldCheck, Sparkles } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 
 import { NDocumentView, NPanel, NReceipt, NThermalPrint, NTheme } from "../index"
 import "./accessibility.css"
@@ -26,6 +26,29 @@ export type PaletteId = "aurora" | "coral" | "cobalt"
 export type CatalogExample = {
   id: string
   label: string
+}
+
+export function EmbeddedVisualPalette({ paletteId, children }: { paletteId: PaletteId; children: ReactNode }) {
+  useEffect(() => {
+    const body = document.body
+    const hadScope = body.classList.contains("visual-system-embed")
+    const previousPalette = body.getAttribute("data-palette")
+
+    body.classList.add("visual-system-embed")
+    body.setAttribute("data-palette", paletteId)
+
+    return () => {
+      if (!hadScope) body.classList.remove("visual-system-embed")
+      if (previousPalette == null) body.removeAttribute("data-palette")
+      else body.setAttribute("data-palette", previousPalette)
+    }
+  }, [paletteId])
+
+  return (
+    <Box className="visual-system-embed" data-palette={paletteId} minH="100dvh" bg="bg" color="fg" p={{ base: "4", md: "6" }}>
+      {children}
+    </Box>
+  )
 }
 
 type CatalogFamily = {

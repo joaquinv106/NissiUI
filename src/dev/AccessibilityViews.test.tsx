@@ -1,8 +1,9 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 
+import { NPanel } from "../components/panel"
 import { NThemeProvider } from "../components/theme"
-import { BeginnerAccessibilityGuideView, VisualSystemView } from "./AccessibilityViews"
+import { BeginnerAccessibilityGuideView, EmbeddedVisualPalette, VisualSystemView } from "./AccessibilityViews"
 
 afterEach(cleanup)
 
@@ -26,6 +27,25 @@ describe("vistas de accesibilidad y personalización", () => {
 
     const dialog = await screen.findByRole("dialog", { name: "Detalle de operación" })
     expect(within(dialog).getByText("38 órdenes requieren confirmación")).toBeInTheDocument()
+  })
+
+  it("extiende la paleta embebida a los paneles renderizados mediante portal", async () => {
+    renderView(
+      <EmbeddedVisualPalette paletteId="coral">
+        <NPanel trigger={<button>Abrir panel embebido</button>} title="Panel con paleta">
+          Contenido
+        </NPanel>
+      </EmbeddedVisualPalette>,
+    )
+
+    expect(document.body).toHaveClass("visual-system-embed")
+    expect(document.body).toHaveAttribute("data-palette", "coral")
+
+    fireEvent.click(screen.getByRole("button", { name: "Abrir panel embebido" }))
+    const dialog = await screen.findByRole("dialog", { name: "Panel con paleta" })
+
+    expect(document.body).toContainElement(dialog)
+    expect(dialog.closest(".visual-system-embed[data-palette='coral']")).toBe(document.body)
   })
 
   it("ejecuta el adaptador simulado de impresión térmica", async () => {

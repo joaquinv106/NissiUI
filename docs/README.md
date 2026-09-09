@@ -52,6 +52,8 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 | Verticales (`NKanban`, `NScheduler`, `NMapView`) | Fase final | [Fase final](./final-components.md) | `src/components/verticals/verticals.test.tsx` |
 | `NFacture` | Proyecto vertical · CFDI México | [Facturación electrónica](./facture.md) | `src/components/facture/NFacture.test.tsx` |
 
+| Nissi Auth (`NAuthLayout`, formularios y primitives) | Autenticación visual | [Nissi Auth](./auth.md) | `src/components/auth/auth.test.tsx` |
+
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 
 El objetivo prioritario actual y su secuencia están definidos en [Flujos operativos generalizables](./generalized-workflows-roadmap.md).

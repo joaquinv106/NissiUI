@@ -50,6 +50,11 @@
       "types": "./dist/src/components/thermal-print/index.d.ts",
       "import": "./dist/components/thermal-print/index.js",
       "require": "./dist/components/thermal-print/index.cjs"
+    },
+    "./auth": {
+      "types": "./dist/src/components/auth/index.d.ts",
+      "import": "./dist/components/auth/index.js",
+      "require": "./dist/components/auth/index.cjs"
     }
   },
   "files": [

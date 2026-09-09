@@ -70,6 +70,8 @@ import { NDocumentView } from "nissi-ui/document-view"
 
 No uses clases internas generadas por Chakra o Emotion. Sólo los slots públicos, `data-scope` y `data-part` forman parte del contrato estable.
 
+El explorador visual extiende la paleta elegida al documento embebido completo. Así, superficies como `NPanel`, menús y diálogos que Chakra monta mediante portales bajo `document.body` conservan los mismos tokens que sus disparadores.
+
 ## 5. Color y contraste
 
 - Usa tokens semánticos como `bg`, `bg.panel`, `fg`, `fg.muted` y `border` para adaptarte a todos los temas.

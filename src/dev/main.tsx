@@ -55,12 +55,13 @@ import { createRoot } from "react-dom/client"
 import { NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NBalanceSession, NCodeCapture, NCtrl, NCtrlProvider, NDataTable, NDocumentView, NForm, NHeader, NItemPicker, NLineItemEditor, NModuleRegistry, NOfflineBoundary, NPermissionGate, NPermissionsProvider, NSidebar, NStepFlow, NSyncStatus, NTable, NTheme, NWorkspaceSwitcher, canUseNFactureView, createNFactureNavigation, useNTheme, type NAdjustmentField, type NAmountAllocation, type NApprovalHistoryEntry, type NApprovalStatus, type NCtrlShortcut, type NDocumentAction, type NFactureRole, type NFactureView, type NFormConfig, type NLineItemField, type NModuleDefinition, type NSidebarItem, type NStepFlowStep, type NSyncState, type NTableConfig, type NWorkspace } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 import { PanelView } from "./PanelView"
+import { AuthView } from "./AuthView"
 import { CartView, CheckoutView, PosExampleView, ReceiptView, ThermalPrintView } from "./Phase7Views"
 import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatternsView, SaasPatternsView, VerticalPatternsView } from "./FinalPhaseViews"
 import { DemoProvider } from "./provider"
 import { FactureProjectView } from "./FactureProjectView"
 import { CtrlView } from "./CtrlView"
-import { BeginnerAccessibilityGuideView, VisualSystemControls, VisualSystemView, defaultCatalogExample, type CatalogExample, type PaletteId } from "./AccessibilityViews"
+import { BeginnerAccessibilityGuideView, EmbeddedVisualPalette, VisualSystemControls, VisualSystemView, defaultCatalogExample, type CatalogExample, type PaletteId } from "./AccessibilityViews"
 
 type Product = {
   id: number
@@ -169,7 +170,7 @@ const employeeFormConfig: NFormConfig<EmployeeFormValues> = {
 }
 
 
-type DemoView = "overview" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "thermal-print" | "pos-example" | "panel" | "ctrl" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions" | "facture" | "accessibility-styles" | "accessibility-guide"
+type DemoView = "overview" | "auth" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "thermal-print" | "pos-example" | "panel" | "ctrl" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions" | "facture" | "accessibility-styles" | "accessibility-guide"
 type DemoNavigationData = { view?: DemoView; factureView?: NFactureView }
 
 function createFactureProjectNavigation(role: NFactureRole): NSidebarItem<DemoNavigationData> {
@@ -208,6 +209,7 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
     icon: <Blocks size={18} />,
     children: [
       { id: "theme", label: "NTheme", icon: <Palette size={17} />, badge: "Nuevo", data: { view: "theme" } },
+      { id: "auth", label: "Nissi Auth", icon: <ShieldCheck size={17} />, badge: "Nuevo", data: { view: "auth" } },
       { id: "item-picker", label: "NItemPicker", icon: <PackageCheck size={17} />, badge: "Nuevo", data: { view: "item-picker" } },
       { id: "line-item-editor", label: "NLineItemEditor", icon: <ListPlus size={17} />, badge: "Nuevo", data: { view: "line-item-editor" } },
       { id: "amount-input", label: "NAmountInput", icon: <CircleDollarSign size={17} />, badge: "Nuevo", data: { view: "amount-input" } },
@@ -296,6 +298,7 @@ const demoWorkspaces: NWorkspace[] = [
 
 const viewTitles: Record<DemoView, string> = {
   overview: "Nissi UI",
+  auth: "Nissi Auth",
   theme: "NTheme",
   "item-picker": "NItemPicker",
   "line-item-editor": "NLineItemEditor",
@@ -2615,6 +2618,8 @@ function DevelopmentApp() {
 
   const content = activeView === "facture"
     ? <FactureProjectView view={activeFactureView} onViewChange={setActiveFactureView} role={activeFactureRole} onRoleChange={(nextRole) => { setActiveFactureRole(nextRole); if (!canUseNFactureView(nextRole, activeFactureView)) setActiveFactureView("dashboard") }} />
+    : activeView === "auth"
+      ? <AuthView />
     : activeView === "theme"
     ? <ThemeView />
     : activeView === "item-picker"
@@ -2691,7 +2696,7 @@ function DevelopmentApp() {
                     ? <WorkspaceSwitcherView />
               : <OverviewView onNavigate={setActiveView} />
 
-  if (embedded) return <NCtrlProvider><Box className="visual-system-embed" data-palette={embeddedPalette} minH="100dvh" bg="bg" color="fg" p={{ base: "4", md: "6" }}>{content}</Box></NCtrlProvider>
+  if (embedded) return <NCtrlProvider><EmbeddedVisualPalette paletteId={embeddedPalette}>{content}</EmbeddedVisualPalette></NCtrlProvider>
 
   return (
     <NCtrlProvider>
