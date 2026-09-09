@@ -177,7 +177,7 @@ No se deben exportar los componentes de `internal/` sin una decisión explícita
 - `reorderableRows` controla el orden de filas. En `NDataTable` es `true` por defecto; permite arrastrar o usar Alt + flecha arriba/abajo y notifica mediante `onDataChange`/`onRowOrderChange`.
 - El orden de columnas debe propagarse a cabeceras, filas, vista stack, columnas pegajosas y exportaciones.
 - Los textos y tooltips pertenecen a `labels`; cualquier nueva etiqueta debe tener default en español.
-- El `ActionBar` flotante (`TableSelectionBar`) usa `bg.muted` con borde (`border`) en vez del `bg.panel` por defecto de Chakra, porque en tema claro `bg.panel` y `bg` son el mismo blanco y el panel se pierde visualmente.
+- El `ActionBar` flotante (`TableSelectionBar`) se monta en portal y declara explícitamente posición fija respecto al viewport, offset inferior con safe area y capa máxima; usa `bg.muted` con borde (`border`) para conservar contraste en todos los temas. El iframe del explorador visual limita su altura al viewport para mantener visible esta superficie fija.
 
 La referencia completa y ejemplos están en `docs/tables.md`.
 

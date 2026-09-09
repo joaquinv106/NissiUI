@@ -166,6 +166,11 @@ describe("API pública de tablas", () => {
     fireEvent.click(screen.getByLabelText("Seleccionar fila 1"))
     expect(await screen.findByRole("toolbar", { name: "Acciones para filas seleccionadas" })).toBeInTheDocument()
     const editAction = screen.getByRole("button", { name: /Editar/ })
+    const actionBar = screen.getByRole("toolbar", { name: "Acciones para filas seleccionadas" })
+    expect(actionBar.parentElement).toHaveStyle({
+      position: "fixed",
+      bottom: "calc(env(safe-area-inset-bottom, 0px) + var(--chakra-spacing-4))",
+    })
     expect(editAction).toBeInTheDocument()
     expect(screen.getByRole("button", { name: /Eliminar/ })).toBeInTheDocument()
     fireEvent.pointerMove(editAction, { pointerType: "mouse" })

@@ -36,7 +36,17 @@ export function TableSelectionBar<T extends NTableRow>({
       closeOnInteractOutside={false}
     >
       <Portal>
-        <ActionBar.Positioner zIndex="max">
+        <ActionBar.Positioner
+          position="fixed"
+          insetInline="0"
+          bottom="calc(env(safe-area-inset-bottom, 0px) + var(--chakra-spacing-4))"
+          width="full"
+          display="flex"
+          justifyContent="center"
+          pointerEvents="none"
+          px={{ base: "2", sm: "4" }}
+          zIndex="max"
+        >
           <ActionBar.Content
             role="toolbar"
             aria-label={labels.selectionActionsAriaLabel}
@@ -45,11 +55,12 @@ export function TableSelectionBar<T extends NTableRow>({
             borderWidth="1px"
             borderColor="border"
             width="auto"
-            maxW="calc(100vw - 2rem)"
+            maxW="calc(100dvw - 1rem)"
             flexDirection="row"
             alignItems="center"
             flexWrap="nowrap"
             overflowX="auto"
+            pointerEvents="auto"
             gap="2"
             zIndex="max"
           >

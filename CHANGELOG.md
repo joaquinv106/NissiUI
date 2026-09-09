@@ -26,6 +26,10 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 - Namespace público `Nauth*` para layouts, formularios y primitivas de autenticación, manteniendo los nombres anteriores como aliases compatibles.
 - `embedded` y `minHeight` en `NauthLayout` para composiciones documentales sin regiones `main` anidadas.
 
+### Corregido
+
+- El ActionBar de `NDataTable` queda fijado al borde inferior del viewport con soporte de safe area; el explorador embebido de Sistema visual ya no lo desplaza hasta el final de una página alta.
+
 ## 0.1.2 — 2026-09-07
 
 ### Añadido

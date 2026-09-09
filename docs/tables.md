@@ -82,7 +82,7 @@ Para móviles, `responsive="scroll"` conserva la tabla con desplazamiento horizo
 
 ## NDataTable
 
-En pantallas angostas, los controles de la barra de herramientas se envuelven sin salir del Card. El ActionBar se monta en un portal sobre la capa máxima de la página y mantiene una fila compacta: en móvil muestra sólo los iconos de las acciones con nombre accesible y tooltip; desde `sm` también muestra sus etiquetas. Si una acción personalizada no proporciona `icon`, se usa un icono neutro de respaldo.
+En pantallas angostas, los controles de la barra de herramientas se envuelven sin salir del Card. El ActionBar se monta en un portal y se fija al borde inferior del viewport, incluyendo el safe area del dispositivo; su posición no depende de la altura de la tabla o de la página. Mantiene una fila compacta: en móvil muestra sólo los iconos de las acciones con nombre accesible y tooltip; desde `sm` también muestra sus etiquetas. Si una acción personalizada no proporciona `icon`, se usa un icono neutro de respaldo.
 
 Activa por defecto TanStack Table, paginación, selección, barra de acciones, búsqueda, filtro por columna, selector de columnas visibles, reordenamiento y exportaciones a PDF, Excel, portapapeles e impresión. La barra de acciones usa `ActionBar` de Chakra UI: aparece flotante en la parte inferior cuando existe al menos una fila seleccionada y desaparece al limpiar la selección.
 
