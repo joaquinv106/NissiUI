@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NissiInvoicingProvider, createNFactureHeaderNavigation, createNFactureNavigation, formatTableValue, nissiSystem, useNTheme } from "./index"
+import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NRouteOutlet, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NauthLayout, NauthLogin, Nlayout, NloginPage, NissiInvoicingProvider, Nroutes, createNFactureHeaderNavigation, createNFactureNavigation, formatTableValue, nissiSystem, useNTheme, useNroutes } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -69,6 +69,19 @@ describe("API pública de tablas", () => {
     expect(NThemeProvider).toBeTypeOf("function")
     expect(useNTheme).toBeTypeOf("function")
     expect(nissiSystem).toBeTruthy()
+  })
+
+  it("exporta el layout integrado y el administrador SPA", () => {
+    expect(Nlayout).toBeTypeOf("function")
+    expect(Nroutes).toBeTypeOf("function")
+    expect(NRouteOutlet).toBeTypeOf("function")
+    expect(useNroutes).toBeTypeOf("function")
+  })
+
+  it("exporta la pantalla de acceso y el namespace Nauth", () => {
+    expect(NloginPage).toBeTypeOf("function")
+    expect(NauthLayout).toBeTypeOf("function")
+    expect(NauthLogin).toBeTypeOf("function")
   })
 
   it("exporta el proyecto de facturación y su integración standalone", () => {

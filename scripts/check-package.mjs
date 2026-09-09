@@ -8,7 +8,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const temporaryRoot = mkdtempSync(join(tmpdir(), "nissi-ui-consumer-"))
 const packageLink = join(temporaryRoot, "node_modules", "nissi-ui")
 
-const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel", "NThermalPrint"]
+const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel", "NThermalPrint", "NloginPage", "NauthLogin", "Nlayout", "Nroutes"]
 
 try {
   mkdirSync(dirname(packageLink), { recursive: true })
@@ -17,13 +17,17 @@ try {
   writeFileSync(join(temporaryRoot, "package.json"), '{"type":"module"}\n')
   writeFileSync(
     join(temporaryRoot, "smoke.ts"),
-    `import { ${publicNames.join(", ")}, type NAmountInputProps } from "nissi-ui"\n` +
+    `import { ${publicNames.join(", ")}, type NAmountInputProps, type NloginPageProps, type NauthLoginProps, type NlayoutProps, type NroutesProps } from "nissi-ui"\n` +
       'import { NThermalPrint as NThermalPrintSubpath, type NThermalPrintProps } from "nissi-ui/thermal-print"\n' +
       'import type { NComponentStyleProps } from "nissi-ui/styling"\n' +
       "const props: NAmountInputProps = { value: 1250.5, onValueChange: () => undefined }\n" +
       "const thermalProps = {} as NThermalPrintProps\n" +
       "const styleProps = {} as NComponentStyleProps<'root'>\n" +
-      `void [${publicNames.join(", ")}, NThermalPrintSubpath, props, thermalProps, styleProps]\n`,
+      "const loginPageProps = {} as NloginPageProps\n" +
+      "const authLoginProps = {} as NauthLoginProps\n" +
+      "const layoutProps = {} as NlayoutProps\n" +
+      "const routesProps = {} as NroutesProps\n" +
+      `void [${publicNames.join(", ")}, NThermalPrintSubpath, props, thermalProps, styleProps, loginPageProps, authLoginProps, layoutProps, routesProps]\n`,
   )
   writeFileSync(
     join(temporaryRoot, "tsconfig.json"),
@@ -69,7 +73,7 @@ try {
   run(process.execPath, ["smoke.cjs"])
   writeFileSync(
     join(temporaryRoot, "subpaths.mjs"),
-    'import { NThermalPrint } from "nissi-ui/thermal-print"\nimport { NPanel } from "nissi-ui/panel"\nvoid [NThermalPrint, NPanel]\n',
+    'import { NThermalPrint } from "nissi-ui/thermal-print"\nimport { NPanel } from "nissi-ui/panel"\nimport { NloginPage, NauthLogin } from "nissi-ui/auth"\nimport { Nlayout } from "nissi-ui/layout"\nimport { Nroutes } from "nissi-ui/routes"\nvoid [NThermalPrint, NPanel, NloginPage, NauthLogin, Nlayout, Nroutes]\n',
   )
   run(process.execPath, ["subpaths.mjs"])
   console.log("TypeScript NodeNext/Bundler OK")

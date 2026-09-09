@@ -3,7 +3,7 @@
 import { Button, Stack, Text } from "@chakra-ui/react"
 import { Apple } from "lucide-react"
 
-import type { NAuthSocialButtonsProps } from "./types"
+import type { NauthSocialButtonsProps } from "./types"
 
 const providerNames: Record<string, string> = { google: "Google", github: "GitHub", apple: "Apple", microsoft: "Microsoft" }
 
@@ -13,7 +13,7 @@ function ProviderIcon({ provider }: { provider: string }) {
 }
 
 /** UI de acceso social desacoplada de cualquier implementación OAuth. */
-export function NAuthSocialButtons({ providers, orientation = "horizontal", loadingProvider, disabled = false, labels, onProviderClick, unstyled = false, classNames, styles }: NAuthSocialButtonsProps) {
+export function NauthSocialButtons({ providers, orientation = "horizontal", loadingProvider, disabled = false, labels, onProviderClick, unstyled = false, classNames, styles }: NauthSocialButtonsProps) {
   return <Stack className={classNames?.root} css={styles?.root} data-scope="n-auth-social-buttons" data-part="root" direction={orientation === "vertical" ? "column" : { base: "column", sm: "row" }} width="full" minW="0" gap="3">
     {providers.map((provider) => {
       const name = labels?.[provider] ?? providerNames[provider] ?? provider
@@ -23,3 +23,6 @@ export function NAuthSocialButtons({ providers, orientation = "horizontal", load
     })}
   </Stack>
 }
+
+/** @deprecated Usa `NauthSocialButtons`. */
+export const NAuthSocialButtons = NauthSocialButtons

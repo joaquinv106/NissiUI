@@ -45,6 +45,8 @@ El adaptador debe transportar secretos exclusivamente por HTTPS, evitar logs de 
 
 `NFacture` no dibuja un segundo menú por defecto. La aplicación anfitriona consume el árbol del módulo y controla `view`; así sus submenús forman parte del sidebar general.
 
+Dentro de `Nlayout`, usa además `showHeader={false}` para que el `NPageHeader` de la ruta sea la única cabecera principal. Fuera de esa composición el encabezado propio permanece activo por defecto.
+
 ```tsx
 import { NSidebar, createNFactureNavigation } from "nissi-ui"
 

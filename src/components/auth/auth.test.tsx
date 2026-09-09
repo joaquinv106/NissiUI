@@ -3,11 +3,51 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NAuthLayout, NAuthSocialButtons, NLogin, NOtpVerification, NPasswordField, NRegister, type NLoginData } from "."
+import {
+  NAuthLayout,
+  NAuthSocialButtons,
+  NLogin,
+  NOtpVerification,
+  NPasswordField,
+  NRegister,
+  NauthLayout,
+  NauthLogin,
+  NauthOtpVerification,
+  NauthPasswordField,
+  NauthSocialButtons,
+  NloginPage,
+  type NLoginData,
+} from "."
 
 function renderAuth(node: ReactNode) { return render(<ChakraProvider value={defaultSystem}>{node}</ChakraProvider>) }
 
 describe("Nissi Auth", () => {
+  it("expone el namespace Nauth sin romper los nombres anteriores", () => {
+    expect(NauthLayout).toBe(NAuthLayout)
+    expect(NauthLogin).toBe(NLogin)
+    expect(NauthOtpVerification).toBe(NOtpVerification)
+    expect(NauthPasswordField).toBe(NPasswordField)
+    expect(NauthSocialButtons).toBe(NAuthSocialButtons)
+  })
+
+  it("compone NloginPage con tema oscuro inicial y selector integrado", async () => {
+    const storageKey = "nissi-login-page-test"
+    localStorage.removeItem(storageKey)
+
+    const view = render(<NloginPage themeProviderProps={{ storageKey }} />)
+
+    expect(view.container.querySelector("[data-scope='n-login-page']")).toBeInTheDocument()
+    expect(screen.getByRole("main")).toHaveAttribute("data-scope", "n-auth-layout")
+    expect(screen.getByRole("img", { name: "Isotipo de Nissi UI" })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Construye productos modulares. Avanza más rápido." })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Bienvenido de nuevo" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /Elegir tema/ })).toBeInTheDocument()
+    await waitFor(() => expect(document.documentElement).toHaveClass("dark"))
+
+    view.unmount()
+    localStorage.removeItem(storageKey)
+  })
+
   it("renderiza el layout split como una región principal responsive", () => {
     renderAuth(<NAuthLayout variant="split" brandName="Nissi" title="Opera mejor"><NLogin /></NAuthLayout>)
     expect(screen.getByRole("main")).toHaveAttribute("data-scope", "n-auth-layout")

@@ -15,6 +15,8 @@ import { NPanel } from "nissi-ui/panel"
 import { NDocumentView } from "nissi-ui/document-view"
 import { NReceipt } from "nissi-ui/receipt"
 import { NThermalPrint } from "nissi-ui/thermal-print"
+import { Nlayout } from "nissi-ui/layout"
+import { Nroutes } from "nissi-ui/routes"
 ```
 
 ## Tree shaking

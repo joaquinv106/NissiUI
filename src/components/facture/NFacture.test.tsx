@@ -52,6 +52,12 @@ describe("NFacture", () => {
     expect(screen.getByRole("navigation", { name: "Navegación de facturación" })).toBeInTheDocument()
   })
 
+  it("permite delegar el encabezado de página al layout anfitrión", () => {
+    renderFacture({ showHeader: false })
+    expect(screen.queryByRole("heading", { name: "NFacture" })).not.toBeInTheDocument()
+    expect(screen.getByText("Comprobantes recientes")).toBeInTheDocument()
+  })
+
   it("se integra como submenú de Proyectos en NSidebar", () => {
     render(<ChakraProvider value={defaultSystem}><NSidebar responsive="push" items={[{ id: "projects", label: "Proyectos", children: createNFactureNavigation({ role: "admin" }) }]} /></ChakraProvider>)
     fireEvent.click(screen.getByRole("button", { name: "Proyectos" }))

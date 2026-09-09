@@ -2,6 +2,7 @@ import type { BoxProps, InputProps } from "@chakra-ui/react"
 import type { FormEvent, ReactNode } from "react"
 
 import type { NComponentStyleProps } from "../styling"
+import type { NThemeProps, NThemeProviderProps } from "../theme"
 
 export type NAuthState = "default" | "loading" | "success" | "error" | "disabled"
 export type NAuthLayoutVariant = "centered" | "split" | "glass" | "minimal" | "branded"
@@ -86,6 +87,10 @@ export interface NAuthLayoutProps extends NComponentStyleProps<"root" | "visual"
   footer?: ReactNode
   maxWidth?: BoxProps["maxWidth"]
   reverse?: boolean
+  /** Usa una sección en lugar de `main` cuando la composición vive dentro de otra página. */
+  embedded?: boolean
+  /** Altura mínima del layout; `100dvh` conserva el comportamiento de pantalla completa. */
+  minHeight?: BoxProps["minHeight"]
   containerProps?: BoxProps
   panelProps?: BoxProps
 }
@@ -214,3 +219,70 @@ export interface NAuthSocialButtonsProps extends NComponentStyleProps<"root" | "
   labels?: Partial<Record<string, string>>
   onProviderClick?: (provider: NAuthSocialProvider) => void
 }
+
+export interface NloginPageLabels {
+  brandName: string
+  logoAlt: string
+  eyebrow: string
+  heroTitle: string
+  heroDescription: string
+  loginTitle: string
+  loginSubtitle: string
+  responsiveFeature: string
+  accessibleFeature: string
+  themeFeature: string
+  featuresLabel: string
+  footer: string
+}
+
+export type NloginPageSlot = "root" | "themeControl" | "brandMark" | "featureList" | "feature" | "loginSurface"
+
+export interface NloginPageProps extends NComponentStyleProps<NloginPageSlot> {
+  logo?: ReactNode
+  brandName?: ReactNode
+  eyebrow?: ReactNode
+  heroTitle?: ReactNode
+  heroDescription?: ReactNode
+  features?: readonly ReactNode[] | false
+  loginTitle?: ReactNode
+  loginSubtitle?: ReactNode
+  footer?: ReactNode
+  labels?: Partial<NloginPageLabels>
+  loginProps?: NLoginProps
+  themeProps?: NThemeProps
+  /** Configura el proveedor autónomo de la página. El tema inicial es `dark`. */
+  themeProviderProps?: Omit<NThemeProviderProps, "children">
+  /** Desactívalo únicamente cuando ya exista un `NThemeProvider` ancestro. */
+  provideTheme?: boolean
+  layoutProps?: Omit<NAuthLayoutProps, "children" | "logo" | "brandName" | "title" | "subtitle" | "illustration" | "footer">
+}
+
+/** Nombres `Nauth*` preferidos para el contrato público. */
+export type NauthState = NAuthState
+export type NauthLayoutVariant = NAuthLayoutVariant
+export type NauthLoginWith = NAuthLoginWith
+export type NauthSocialProvider = NAuthSocialProvider
+export type NauthLabels = NAuthLabels
+export type NauthSlot = NAuthSlot
+export type NauthBaseProps = NAuthBaseProps
+export type NauthLayoutProps = NAuthLayoutProps
+export type NauthHeaderProps = NAuthHeaderProps
+export type NauthFooterProps = NAuthFooterProps
+export type NauthDividerProps = NAuthDividerProps
+export type NauthAlertProps = NAuthAlertProps
+export type NauthPasswordStrengthProps = NPasswordStrengthProps
+export type NauthPasswordFieldProps = NPasswordFieldProps
+export type NauthLoginData = NLoginData
+export type NauthLoginValidation = NLoginValidation
+export type NauthLoginProps = NLoginProps
+export type NauthRegisterFieldName = NRegisterFieldName
+export type NauthRegisterCustomField = NRegisterCustomField
+export type NauthRegisterData = NRegisterData
+export type NauthRegisterProps = NRegisterProps
+export type NauthForgotPasswordData = NForgotPasswordData
+export type NauthForgotPasswordProps = NForgotPasswordProps
+export type NauthResetPasswordData = NResetPasswordData
+export type NauthResetPasswordProps = NResetPasswordProps
+export type NauthVerifyEmailProps = NVerifyEmailProps
+export type NauthOtpVerificationProps = NOtpVerificationProps
+export type NauthSocialButtonsProps = NAuthSocialButtonsProps

@@ -60,6 +60,7 @@ import { CartView, CheckoutView, PosExampleView, ReceiptView, ThermalPrintView }
 import { ActivityPatternsView, DashboardPatternsView, DataPatternsView, PagePatternsView, SaasPatternsView, VerticalPatternsView } from "./FinalPhaseViews"
 import { DemoProvider } from "./provider"
 import { FactureProjectView } from "./FactureProjectView"
+import { LayoutRoutesView } from "./LayoutRoutesView"
 import { CtrlView } from "./CtrlView"
 import { BeginnerAccessibilityGuideView, EmbeddedVisualPalette, VisualSystemControls, VisualSystemView, defaultCatalogExample, type CatalogExample, type PaletteId } from "./AccessibilityViews"
 
@@ -170,7 +171,7 @@ const employeeFormConfig: NFormConfig<EmployeeFormValues> = {
 }
 
 
-type DemoView = "overview" | "auth" | "theme" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "thermal-print" | "pos-example" | "panel" | "ctrl" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions" | "facture" | "accessibility-styles" | "accessibility-guide"
+type DemoView = "overview" | "auth" | "theme" | "layout" | "item-picker" | "line-item-editor" | "amount-input" | "amount-allocator" | "step-flow" | "approval-flow" | "balance-session" | "adjustment-editor" | "document-view" | "code-capture" | "sync-status" | "offline-boundary" | "cart" | "checkout" | "receipt" | "thermal-print" | "pos-example" | "panel" | "ctrl" | "page-patterns" | "data-patterns" | "activity-patterns" | "dashboard-patterns" | "saas-patterns" | "vertical-patterns" | "app-shell" | "modules" | "workspaces" | "header" | "sidebar" | "table" | "datatable" | "form" | "permissions" | "facture" | "accessibility-styles" | "accessibility-guide"
 type DemoNavigationData = { view?: DemoView; factureView?: NFactureView }
 
 function createFactureProjectNavigation(role: NFactureRole): NSidebarItem<DemoNavigationData> {
@@ -209,7 +210,8 @@ const catalogNavigation: NSidebarItem<DemoNavigationData>[] = [
     icon: <Blocks size={18} />,
     children: [
       { id: "theme", label: "NTheme", icon: <Palette size={17} />, badge: "Nuevo", data: { view: "theme" } },
-      { id: "auth", label: "Nissi Auth", icon: <ShieldCheck size={17} />, badge: "Nuevo", data: { view: "auth" } },
+      { id: "auth", label: "Nauth / Login", icon: <ShieldCheck size={17} />, badge: "Nuevo", data: { view: "auth" } },
+      { id: "layout", label: "Nlayout + Nroutes", icon: <LayoutDashboard size={17} />, badge: "Nuevo", data: { view: "layout" } },
       { id: "item-picker", label: "NItemPicker", icon: <PackageCheck size={17} />, badge: "Nuevo", data: { view: "item-picker" } },
       { id: "line-item-editor", label: "NLineItemEditor", icon: <ListPlus size={17} />, badge: "Nuevo", data: { view: "line-item-editor" } },
       { id: "amount-input", label: "NAmountInput", icon: <CircleDollarSign size={17} />, badge: "Nuevo", data: { view: "amount-input" } },
@@ -298,8 +300,9 @@ const demoWorkspaces: NWorkspace[] = [
 
 const viewTitles: Record<DemoView, string> = {
   overview: "Nissi UI",
-  auth: "Nissi Auth",
+  auth: "Nauth / Login",
   theme: "NTheme",
+  layout: "Nlayout + Nroutes",
   "item-picker": "NItemPicker",
   "line-item-editor": "NLineItemEditor",
   "amount-input": "NAmountInput",
@@ -2577,7 +2580,7 @@ function DevelopmentApp() {
   const embeddedPalette: PaletteId = requestedPalette === "coral" || requestedPalette === "cobalt" ? requestedPalette : "aurora"
   const [activeView, setActiveView] = useState<DemoView>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view")
-    const allowed: DemoView[] = ["overview", "theme", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "thermal-print", "pos-example", "panel", "ctrl", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions", "facture", "accessibility-styles", "accessibility-guide"]
+    const allowed: DemoView[] = ["overview", "auth", "theme", "layout", "item-picker", "line-item-editor", "amount-input", "amount-allocator", "step-flow", "approval-flow", "balance-session", "adjustment-editor", "document-view", "code-capture", "sync-status", "offline-boundary", "cart", "checkout", "receipt", "thermal-print", "pos-example", "panel", "ctrl", "page-patterns", "data-patterns", "activity-patterns", "dashboard-patterns", "saas-patterns", "vertical-patterns", "app-shell", "modules", "workspaces", "header", "sidebar", "table", "datatable", "form", "permissions", "facture", "accessibility-styles", "accessibility-guide"]
     return requestedView && allowed.includes(requestedView as DemoView) ? requestedView as DemoView : "overview"
   })
   const [activeFactureView, setActiveFactureView] = useState<NFactureView>(() => {
@@ -2622,6 +2625,8 @@ function DevelopmentApp() {
       ? <AuthView />
     : activeView === "theme"
     ? <ThemeView />
+    : activeView === "layout"
+      ? <LayoutRoutesView />
     : activeView === "item-picker"
       ? <ItemPickerView />
     : activeView === "line-item-editor"

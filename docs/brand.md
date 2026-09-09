@@ -19,7 +19,7 @@ El slogan anterior, “The React Component Banner-library”, se retiró porque 
 | `/brand/apple-touch-icon.png` | Acceso directo en dispositivos Apple. |
 | `/brand/icon-192.png` y `/brand/icon-512.png` | Manifest y aplicaciones instalables. |
 
-Los recursos completos pertenecen a la web de presentación y no se incluyen en el bundle npm. `docs/assets/nissi-mark.png` es la variante ligera incluida con la documentación publicada.
+Los recursos completos pertenecen a la web de presentación y no se incluyen en el bundle npm. `docs/assets/nissi-mark.png` es la variante ligera incluida con la documentación publicada y la fuente empaquetada por `NloginPage`; el build la convierte en un recurso autocontenido para no depender de una ruta pública del consumidor.
 
 ## Reglas de uso
 

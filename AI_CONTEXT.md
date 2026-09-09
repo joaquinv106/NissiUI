@@ -5,7 +5,7 @@ Este archivo permite que cualquier asistente de IA integre Nissi UI en aplicacio
 ## Identidad del paquete
 
 - Paquete npm: `nissi-ui`
-- Versión estable actual: `0.1.1`
+- Versión estable actual: `0.1.2`
 - Creador y desarrollador: Lic. Informática Joaquin Villegas Chavez
 - Repositorio: <https://github.com/joaquinv106/NissiUI>
 - Stack consumidor: React 18 o 19, TypeScript recomendado, Chakra UI v3 y Emotion.
@@ -41,7 +41,7 @@ import { NAppShell, NDataTable, NForm, NPanel } from "nissi-ui"
 
 No importes rutas `dist/`, `src/` o `internal/`.
 
-Para imports especialmente acotados también existen `nissi-ui/theme`, `nissi-ui/styling`, `nissi-ui/panel`, `nissi-ui/document-view`, `nissi-ui/receipt` y `nissi-ui/thermal-print`. Estas subrutas son públicas; cualquier otra ruta interna sigue fuera del contrato.
+Para imports especialmente acotados también existen `nissi-ui/theme`, `nissi-ui/styling`, `nissi-ui/panel`, `nissi-ui/document-view`, `nissi-ui/receipt`, `nissi-ui/thermal-print`, `nissi-ui/auth`, `nissi-ui/layout` y `nissi-ui/routes`. Estas subrutas son públicas; cualquier otra ruta interna sigue fuera del contrato.
 
 `NPanel`, `NDocumentView`, `NReceipt` y `NThermalPrint` aceptan opcionalmente `unstyled`, `classNames` y `styles`. Sin esas props conservan exactamente la apariencia predeterminada. `NThemeProvider.system` permite entregar un sistema Chakra v3 propio y usa `nissiSystem` por defecto.
 
@@ -80,8 +80,9 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 
 ## Familias disponibles
 
-- Plataforma: `NAppShell`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`.
+- Plataforma: `NAppShell`, `Nlayout`, `Nroutes`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`. `Nlayout` integra el shell completo y `Nroutes` mantiene History API, hash o memoria sin recargas.
 - Acceso: `NPermissionsProvider`, `NPermissionGate`, `useCanAccess`, `NSubscriptionGate`.
+- Autenticación visual: `NloginPage` como pantalla autónoma con tema oscuro inicial y selector, además de `NauthLogin`, `NauthRegister`, recuperación, OTP y primitivas. La aplicación conserva sesión, OAuth y validación definitiva.
 - Formularios y selección: `NForm`, `NItemPicker`, `NAmountInput`, `NCodeCapture`, `NDateRangePicker`, `NFileUpload`.
 - `NCodeCapture` integra lectores HID, cámaras y handhelds mediante `scannerAdapter`; la decodificación y los permisos permanecen en el SDK consumidor, mientras el componente aporta sesiones, cola, estados y `parse` tipado.
 - Datos: `NTable`, `NDataTable`, `NFilterBar`, `NDescriptionList`, `NDetailPanel`.

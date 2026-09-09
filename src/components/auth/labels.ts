@@ -20,3 +20,7 @@ export const defaultNAuthLabels: NAuthLabels = {
 export function resolveNAuthLabels(labels?: Partial<NAuthLabels>): NAuthLabels {
   return { ...defaultNAuthLabels, ...labels, passwordRequirements: { ...defaultNAuthLabels.passwordRequirements, ...labels?.passwordRequirements } }
 }
+
+/** Nombre preferido; los aliases `NAuth*` se conservan por compatibilidad. */
+export const defaultNauthLabels = defaultNAuthLabels
+export const resolveNauthLabels = resolveNAuthLabels

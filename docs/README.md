@@ -22,6 +22,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 | `NForm` | Inicial | [Formularios](./forms.md) | `src/components/form/NForm.test.tsx` |
 | `NPermissionGate` | Inicial | [Permisos](./permissions.md) | `src/components/permissions/NPermissionGate.test.tsx` |
 | `NAppShell` | Plataforma | [Shell de aplicación](./app-shell.md) | `src/components/app-shell/NAppShell.test.tsx` |
+| `Nlayout` / `Nroutes` | Plataforma SPA | [Layout y rutas](./layout-routes.md) | `src/components/layout/Nlayout.test.tsx`, `src/components/routes/Nroutes.test.tsx` |
 | `NModuleRegistry` | Plataforma | [Registro de módulos](./module-registry.md) | `src/components/module-registry/NModuleRegistry.test.tsx` |
 | `NWorkspaceSwitcher` | Plataforma | [Selector de workspace](./workspace-switcher.md) | `src/components/workspace-switcher/NWorkspaceSwitcher.test.tsx` |
 | `NTheme` / `NThemeProvider` | Fundación visual | [Temas](./theme.md) | `src/components/theme/NTheme.test.tsx` |
@@ -52,7 +53,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 | Verticales (`NKanban`, `NScheduler`, `NMapView`) | Fase final | [Fase final](./final-components.md) | `src/components/verticals/verticals.test.tsx` |
 | `NFacture` | Proyecto vertical · CFDI México | [Facturación electrónica](./facture.md) | `src/components/facture/NFacture.test.tsx` |
 
-| Nissi Auth (`NAuthLayout`, formularios y primitives) | Autenticación visual | [Nissi Auth](./auth.md) | `src/components/auth/auth.test.tsx` |
+| `NloginPage` / Nauth (`NauthLayout`, formularios y primitivas) | Autenticación visual | [Nauth](./auth.md) | `src/components/auth/auth.test.tsx` |
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 

@@ -2,6 +2,8 @@
 
 `NAppShell` es la estructura raíz para aplicaciones y dashboards. Compone `NHeader`, `NSidebar`, contenido y footer sin duplicar el estado responsive de esos componentes.
 
+Cuando una aplicación necesita además tema, encabezados de ruta, breadcrumbs y navegación SPA coordinada, usa la composición [`Nlayout`](./layout-routes.md). `NAppShell` permanece como la primitiva de geometría desacoplada.
+
 ```tsx
 <NAppShell
   header={<NHeader variant="app" sticky />}

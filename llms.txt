@@ -3,7 +3,7 @@
 > Librería accesible de componentes React sobre Chakra UI v3 para productos modulares, SaaS y flujos operativos de cualquier sector.
 
 - Paquete npm: nissi-ui
-- Versión: 0.1.1
+- Versión: 0.1.2
 - Creador: Lic. Informática Joaquin Villegas Chavez
 - Repositorio: https://github.com/joaquinv106/NissiUI
 - Contexto principal para IA: ./AI_CONTEXT.md
@@ -15,6 +15,8 @@
 - Facturación electrónica mexicana: ./docs/facture.md
 - Atajos contextuales y operación rápida: ./docs/ctrl.md
 - Impresión térmica y adaptadores locales: ./docs/thermal-print.md
+- Pantalla de acceso y componentes Nauth: ./docs/auth.md
+- Layout de aplicación y navegación SPA: ./docs/layout-routes.md
 - Personalización, slots y modo unstyled: ./docs/customization.md
 - Empaquetado, tree shaking, subrutas y SSR: ./docs/package-compatibility.md
 

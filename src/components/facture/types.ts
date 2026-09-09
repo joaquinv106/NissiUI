@@ -333,6 +333,8 @@ export interface NFactureProps extends NComponentStyleProps<NFactureSlot> {
   defaultView?: NFactureView
   onViewChange?: (view: NFactureView) => void
   showNavigation?: boolean
+  /** Oculta el encabezado propio cuando el host ya usa `NPageHeader`, por ejemplo dentro de `Nlayout`. */
+  showHeader?: boolean
   navigation?: NSidebarItem<NFactureNavigationData>[]
   /** Limita el alto de la vista y mantiene el desplazamiento dentro del módulo. */
   contentMaxHeight?: string

@@ -47,7 +47,9 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/index.ts`: API pública del paquete.
 - `src/index.test.tsx`: pruebas de integración y contrato.
 - `src/dev/`: catálogo Vite de página completa; `main.tsx` usa `NAppShell` con `NSidebar` y `NHeader` reales y contiene vistas interactivas para cada componente. No forma parte de la API pública.
-- `src/dev/AuthView.tsx`: laboratorio funcional de login, registro, recuperación, reset, OTP y verificación de correo; sólo simula callbacks locales.
+- `src/dev/AuthView.tsx`: laboratorio funcional de `NloginPage`, login, registro, recuperación, reset, OTP y verificación de correo; sólo simula callbacks locales.
+- `src/dev/LayoutRoutesView.tsx`: documentación interactiva de `Nlayout` y `Nroutes`; enlaza la muestra de aplicación completa.
+- `src/dev/NFactureLayoutPage.tsx` y `nfacture.html`: entrada independiente de catálogo que muestra NFacture dentro de `Nlayout`, con rutas hash sin recarga.
 - `src/dev/ComponentDocs.tsx`: panel de documentación reutilizado en cada vista del catálogo (propósito, pasos, variantes, pestañas/pills con vista previa + código por variante, y ejemplos adicionales de props). Todo nuevo componente debe agregar su propio `<ComponentDocs>` con `variantExamples` reales (no solo texto) al añadirse al catálogo.
 - `src/components/internal/NTooltip.tsx`: tooltip interno accesible.
 - `src/components/table/NTable.tsx`: estado y orquestación de TanStack Table.
@@ -80,6 +82,8 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/permissions/labels.ts`: textos predeterminados (tooltip de acceso denegado).
 - `src/components/permissions/utils.ts`: coincidencia de capacidades con comodines (`canAccess`, `matchesCapability`).
 - `src/components/app-shell/`: implementación, tipos, labels y pruebas de `NAppShell`.
+- `src/components/layout/`: composición pública `Nlayout` sobre shell, sidebar, header, encabezados de página, breadcrumbs, tema y rutas.
+- `src/components/routes/`: administrador SPA `Nroutes`, outlet animado, contexto, matching de parámetros, History API/hash/memoria, labels y pruebas.
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
@@ -103,7 +107,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/panel/`: `NPanel`, señales controladas/no controladas, contenido dinámico, accesibilidad modal y pruebas.
 - `src/components/ctrl/`: `NCtrl`, provider, hooks, normalización de combinaciones, ejecución contextual y pruebas.
 - `src/components/facture/`: proyecto vertical `NFacture`, contratos CFDI, navegación, permisos y adaptadores de integración; las reglas fiscales definitivas permanecen en backend/PAC.
-- `src/components/auth/`: sistema visual Nissi Auth; layouts, formularios, OTP, contraseña, social UI, labels, contratos y pruebas sin lógica de autenticación o persistencia.
+- `src/components/auth/`: sistema visual Nauth y `NloginPage`; tema oscuro inicial, selector `NTheme`, layouts, formularios, OTP, contraseña, social UI, labels, contratos y pruebas sin lógica de autenticación o persistencia.
 - `src/components/page/`, `data-patterns/`, `activity/`, `dashboard/`, `saas/` y `verticals/`: entrega final consolidada; contratos, implementación y pruebas de los patrones restantes.
 - `src/dev/FinalPhaseViews.tsx`: seis vistas de catálogo con documentación y ejemplos reactivos de la entrega final.
 - `src/dev/Phase7Views.tsx`: vistas del catálogo y ejemplo POS integrado; no pertenece a la API pública.
@@ -133,7 +137,8 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/panel.md`: contrato, responsive, foco, posición y composición dinámica de `NPanel`.
 - `docs/ctrl.md`: contrato de atajos por vista, registro, ejecución, conflictos y accesibilidad de `NCtrl`.
 - `docs/facture.md`: alcance, contratos, seguridad, navegación y referencias oficiales de `NFacture`.
-- `docs/auth.md`: arquitectura, importación, componentes, estados, accesibilidad, seguridad, personalización y empaquetado de Nissi Auth.
+- `docs/auth.md`: arquitectura, importación, componentes, tema, estados, accesibilidad, seguridad, personalización y empaquetado de Nauth y `NloginPage`.
+- `docs/layout-routes.md`: contrato, estrategias, accesibilidad, personalización e integración de `Nlayout` y `Nroutes`.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
@@ -224,6 +229,16 @@ La referencia completa y ejemplos están en `docs/permissions.md`.
 - `NPermissionGate` y `NModuleRegistry` sólo controlan presentación. El backend siempre revalida identidad, tenant, permisos y suscripciones.
 
 Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.md` y `docs/workspace-switcher.md`; el orden de trabajo pendiente vive en `docs/roadmap.md`.
+
+## Contrato actual de Nlayout y Nroutes
+
+- `Nlayout` compone `NAppShell`, `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider`; `provideTheme={false}` permite usar un provider existente.
+- Cada `NlayoutRoute` declara `path`, `title`, `element` y opcionalmente `navigationId` y `pageHeader`. `navigationId` sincroniza la ruta con el elemento activo del sidebar y del header.
+- `Nroutes` admite `history`, `hash` y `memory`, estado controlado/no controlado, `basePath`, enlaces internos interceptados, navegación atrás/adelante, parámetros `:param` y comodín final `*`.
+- `NRouteOutlet` resuelve nodos o funciones de render, admite Suspense, fallback de ruta inexistente, foco tras navegación, anuncio `aria-live` y una transición de 180 ms que se elimina con `prefers-reduced-motion`.
+- `Nroutes` no obtiene datos, no autentica ni aplica permisos. El servidor debe configurar fallback para rutas `history`; `hash` funciona en hosting estático y `memory` en previews/tests.
+- En móvil `Nlayout` reserva el borde del header ocupado por el trigger overlay de `NSidebar`; respeta `sidebarPosition`, `responsive` y `showMobileTrigger`.
+- La muestra independiente `nfacture.html` usa rutas hash, Nissi Dark inicial, navegación de `createNFactureNavigation` y `NFacture` sin sidebar duplicado. La referencia completa está en `docs/layout-routes.md`.
 
 ## Contrato actual de NTheme
 
@@ -358,6 +373,7 @@ La referencia completa está en `docs/theme.md`.
 - `NissiInvoicingProvider` inyecta datos y `NFactureDataAdapter` delega carga, tickets, CSD, Constancia Fiscal, PAC, webhooks y timbrado al consumidor.
 - `createNFactureNavigation` produce el árbol para `NSidebar`; `createNFactureHeaderNavigation` genera su equivalente filtrado para `NHeader`. Ambos incluyen `docs`.
 - La navegación embebida está desactivada por defecto para evitar un segundo sidebar. El alta de receptores, visor y administración usan `NPanel` para conservar una pantalla operativa compacta.
+- `showHeader={false}` permite delegar la cabecera principal a `Nlayout`; el encabezado propio permanece activo por defecto para usos standalone.
 - `role="admin" | "operator" | "pos"` ofrece presets; `permissions` permite RBAC explícito. El backend siempre revalida identidad, tenant y autorización.
 - Los catálogos SAT se inyectan desde el host para evitar congelar reglas temporales. La referencia completa está en `docs/facture.md`.
 
@@ -365,15 +381,17 @@ La referencia completa está en `docs/theme.md`.
 
 Todo artefacto, API pública, ruta, subruta de paquete, componente, hook, utilidad, token, variante, demo, prueba, documento o decisión arquitectónica que se cree o cambie debe registrarse en este archivo durante el mismo cambio. `PROJECT_CONTEXT.md` debe describir únicamente comportamiento comprobable en el repositorio; no se documentan como terminadas capacidades pendientes o conceptuales.
 
-## Contrato actual de Nissi Auth
+## Contrato actual de Nauth y NloginPage
 
-- La entrada pública `nissi-ui/auth` y el barrel principal exportan `NAuthLayout`, `NLogin`, `NRegister`, `NForgotPassword`, `NResetPassword`, `NVerifyEmail`, `NOtpVerification`, `NAuthSocialButtons`, `NPasswordField`, `NPasswordStrength`, `NAuthDivider`, `NAuthHeader`, `NAuthFooter` y `NAuthAlert`, junto con sus tipos y labels.
-- `NAuthLayout` ofrece `centered`, `split`, `glass`, `minimal` y `branded`; las variantes divididas colapsan verticalmente en móvil. Branding, fondos, ilustraciones y superficies son inyectables.
-- Login soporta correo, usuario, ambos o teléfono; registro admite campos declarativos y personalizados. Recuperación, reset, verificación de correo y OTP exponen callbacks asíncronos y estados externos sin acoplar backend.
-- OTP admite 4, 6 u 8 dígitos, pegado completo, navegación con flechas, Backspace, autofoco, finalización y reenvío temporizado. Contraseña incorpora visibilidad, autocomplete y medidor informativo.
-- Todos los textos compartidos pertenecen a `NAuthLabels`, el español es el default y los componentes principales admiten slots `unstyled`/`classNames`/`styles`.
-- `NAuthSocialButtons` apila proveedores en móvil y, desde `sm`, reparte el ancho disponible con `flex: 1 1 0` y `min-width: 0`; ningún botón puede conservar `width: 100%` dentro de la fila porque provocaría desbordamiento horizontal.
-- Nissi Auth no ejecuta OAuth, no realiza requests, no guarda credenciales, tokens o sesiones y no escribe almacenamiento local. La aplicación y su backend conservan identidad, políticas, rate limits, sesión y validación definitiva.
+- La entrada pública `nissi-ui/auth` y el barrel principal usan como nombres preferidos `NauthLayout`, `NauthLogin`, `NauthRegister`, `NauthForgotPassword`, `NauthResetPassword`, `NauthVerifyEmail`, `NauthOtpVerification`, `NauthSocialButtons`, `NauthPasswordField`, `NauthPasswordStrength`, `NauthDivider`, `NauthHeader`, `NauthFooter` y `NauthAlert`, junto con sus tipos y labels. Los nombres originales `NAuth*`, `NLogin`, `NRegister` y equivalentes permanecen como aliases compatibles.
+- `NloginPage` es la composición de entrada completa: monta `NThemeProvider` por defecto, usa `dark` como preferencia inicial, muestra `NTheme` dentro de la página, integra `NauthLogin` y presenta el isotipo ligero oficial incluido desde `docs/assets/nissi-mark.png`. `provideTheme={false}` evita providers anidados cuando la aplicación ya dispone de uno.
+- En móvil el isotipo se reduce y los beneficios secundarios se ocultan para priorizar el formulario; desde `md` recupera la composición dividida completa. `logo` permite sustituir la marca sin fijar recursos externos en el consumidor.
+- `NauthLayout` ofrece `centered`, `split`, `glass`, `minimal` y `branded`; las variantes divididas colapsan verticalmente en móvil. `embedded` cambia la región raíz a `section` y `minHeight` permite previews o composiciones contenidas.
+- `NauthLogin` soporta correo, usuario, ambos o teléfono; `NauthRegister` admite campos declarativos y personalizados. Recuperación, reset, verificación de correo y OTP exponen callbacks asíncronos y estados externos sin acoplar backend.
+- `NauthOtpVerification` admite 4, 6 u 8 dígitos, pegado completo, navegación con flechas, Backspace, autofoco, finalización y reenvío temporizado. Contraseña incorpora visibilidad, autocomplete y medidor informativo.
+- Todos los textos compartidos pertenecen a `NauthLabels`; la página agrega `NloginPageLabels`. El español es el default y los componentes principales admiten slots `unstyled`/`classNames`/`styles`.
+- `NauthSocialButtons` apila proveedores en móvil y, desde `sm`, reparte el ancho disponible con `flex: 1 1 0` y `min-width: 0`; ningún botón puede conservar `width: 100%` dentro de la fila porque provocaría desbordamiento horizontal.
+- Nauth no ejecuta OAuth, no realiza requests, no guarda credenciales, tokens o sesiones y no escribe almacenamiento local. `NThemeProvider` sólo persiste la preferencia visual. La aplicación y su backend conservan identidad, políticas, rate limits, sesión y validación definitiva.
 - La referencia completa está en `docs/auth.md`; las pruebas viven en `src/components/auth/auth.test.tsx`.
 
 ## Flujo recomendado para agentes

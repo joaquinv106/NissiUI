@@ -101,6 +101,8 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - `NDataTable` (`Ndatatable` como alias): búsqueda, filtros, ordenamiento, selección, acciones, edición y exportación.
 - `NSidebar`: navegación lateral responsive con grupos, búsqueda, badges y estado colapsado.
 - `NAppShell`: composición responsive de header, sidebar, contenido y footer.
+- `Nlayout`: layout de aplicación con `NSidebar`, `NHeader`, encabezado de página, breadcrumbs y selector de tema integrados.
+- `Nroutes`: administrador ligero de rutas `history`, `hash` o `memory`, con transiciones accesibles y navegación SPA.
 - `NModuleRegistry`: catálogo de microsistemas contratados y autorizados.
 - `NWorkspaceSwitcher`: selector de organización, tenant, sucursal o proyecto.
 - `NItemPicker<T>`: selección buscable y agrupable de productos, servicios, personas, archivos o activos.
@@ -121,6 +123,8 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - `NPanel`: superficie lateral modal, reactiva y capaz de alternar cualquier componente.
 - `NCtrl`: panel flotante responsive y registro contextual de atajos para navegación y operación rápida con teclado.
 - `NFacture`: módulo componible de facturación electrónica mexicana con CFDI 4.0, roles, navegación y adaptadores externos.
+- `NloginPage`: pantalla de acceso responsive con tema oscuro inicial, selector de tema integrado y formulario `NauthLogin`.
+- Nauth: `NauthLayout`, `NauthLogin`, registro, recuperación, OTP y primitivas visuales desacopladas del backend.
 - Patrones de página: `NPageHeader`, `NBreadcrumbs`, `NAsyncState`, `NEmptyState` y `NConfirmDialog`.
 - Datos escalables: `NDataTable` server-side, `NFilterBar`, `NDateRangePicker`, `NDescriptionList` y `NDetailPanel`.
 - Actividad y dashboards: `NFileUpload`, `NActivityTimeline`, `NNotificationCenter`, `NStatCard`, `NDashboardGrid` y `NChartFrame`.

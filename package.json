@@ -55,6 +55,16 @@
       "types": "./dist/src/components/auth/index.d.ts",
       "import": "./dist/components/auth/index.js",
       "require": "./dist/components/auth/index.cjs"
+    },
+    "./routes": {
+      "types": "./dist/src/components/routes/index.d.ts",
+      "import": "./dist/components/routes/index.js",
+      "require": "./dist/components/routes/index.cjs"
+    },
+    "./layout": {
+      "types": "./dist/src/components/layout/index.d.ts",
+      "import": "./dist/components/layout/index.js",
+      "require": "./dist/components/layout/index.cjs"
     }
   },
   "files": [

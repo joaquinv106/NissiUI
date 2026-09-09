@@ -3,7 +3,7 @@ import { Badge, Box, Button, Card, Field, NativeSelect, Stack, Text } from "@cha
 import { NFacture, NPanel, NissiInvoicingProvider, type CSDConfig, type NFactureData, type NFactureDataAdapter, type NFactureRole, type NFactureView } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 
-const demoData: NFactureData = {
+export const demoFactureData: NFactureData = {
   customers: [
     { id: "client-1", rfc: "EKU9003173C9", name: "ESCUELA KEMPER URGATE", postalCode: "26015", taxRegime: "601", email: "facturas@kemper.example" },
     { id: "client-2", rfc: "GODE561231GR8", name: "MARÍA GUADALUPE GÓMEZ DEL CAMPO", postalCode: "64000", taxRegime: "612", email: "maria@example.com" },
@@ -36,8 +36,8 @@ const demoData: NFactureData = {
   ],
 }
 
-const demoAdapter: NFactureDataAdapter = {
-  findTicket: async (folio) => demoData.tickets.find((ticket) => ticket.folio.toLocaleLowerCase() === folio.trim().toLocaleLowerCase()),
+export const demoFactureAdapter: NFactureDataAdapter = {
+  findTicket: async (folio) => demoFactureData.tickets.find((ticket) => ticket.folio.toLocaleLowerCase() === folio.trim().toLocaleLowerCase()),
   stampInvoice: async (draft) => ({ success: true, message: `CFDI demo timbrado por ${draft.totals.total.toLocaleString("es-MX", { style: "currency", currency: "MXN" })}.` }),
   inspectCertificate: async (certificate): Promise<CSDConfig> => ({ certificateFileName: certificate.name, certificateNumber: "30001000000500003416", rfc: "EKU9003173C9", validFrom: "2024-03-18", validUntil: "2028-03-17", status: "valid" }),
   inspectTaxStatus: async () => ({ rfc: "EKU9003173C9", name: "ESCUELA KEMPER URGATE", postalCode: "26015", taxRegime: "601" }),
@@ -52,14 +52,14 @@ export function FactureProjectView({ view, onViewChange, role, onRoleChange }: {
   return (
     <Stack gap="8">
       <Card.Root variant="outline" bg="bg.panel"><Card.Body gap="4"><Stack direction={{ base: "column", md: "row" }} align={{ md: "end" }} justify="space-between" gap="4"><Box><Badge colorPalette="purple" mb="2">Proyecto vertical</Badge><Text color="fg.muted">Demo operativa con clientes, productos, tickets, comprobantes y configuración ficticios. Ningún archivo ni secreto sale del navegador.</Text></Box><Field.Root maxW="14rem"><Field.Label>Probar nivel de acceso</Field.Label><NativeSelect.Root><NativeSelect.Field value={role} onChange={(event) => onRoleChange(event.target.value as NFactureRole)}><option value="admin">Administrador</option><option value="operator">Operador</option><option value="pos">Punto de venta</option></NativeSelect.Field><NativeSelect.Indicator /></NativeSelect.Root></Field.Root></Stack></Card.Body></Card.Root>
-      <NissiInvoicingProvider data={demoData} adapter={demoAdapter}><NFacture role={role} view={view} onViewChange={onViewChange} showNavigation={false} contentMaxHeight="calc(100dvh - 22rem)" /></NissiInvoicingProvider>
+      <NissiInvoicingProvider data={demoFactureData} adapter={demoFactureAdapter}><NFacture role={role} view={view} onViewChange={onViewChange} showNavigation={false} contentMaxHeight="calc(100dvh - 22rem)" /></NissiInvoicingProvider>
       {view === "docs" ? <NPanel title="Referencia completa de NFacture" desktopWidth="min(56rem, calc(100vw - 4rem))" trigger={<Button alignSelf="start" variant="outline">Abrir referencia completa</Button>}><ComponentDocs
         purpose="NFacture compone las primitivas de Nissi UI para operar CFDI 4.0 sin convertir la librería en autoridad fiscal: el host inyecta datos y un adaptador seguro que valida, genera XML, firma y timbra mediante un PAC autorizado."
         steps={["Inyecta clientes, conceptos ya mapeados y catálogos vigentes mediante NissiInvoicingProvider.", "Implementa NFactureDataAdapter en tu backend/BFF para receptores, CSD, tickets y timbrado.", "Entrega createNFactureNavigation() a NSidebar o createNFactureHeaderNavigation() a NHeader.", "Controla view/onViewChange desde el host y asigna role o permissions; el backend debe repetir toda autorización y validación fiscal."]}
         variants={[{ name: "role=admin", description: "Operación, métricas, CSD, PAC, catálogos e integraciones." }, { name: "role=operator", description: "Emisión, tickets e historial sin secretos administrativos." }, { name: "role=pos", description: "Emisión rápida y conversión de tickets." }, { name: "showNavigation", description: "Activa un menú propio sólo para un widget standalone; por defecto usa la navegación del host." }]}
         variantExamples={[
-          { id: "operator", label: "Operador", summary: "role=\"operator\"", preview: <NissiInvoicingProvider data={demoData} adapter={demoAdapter}><NFacture role="operator" defaultView="dashboard" showNavigation /></NissiInvoicingProvider>, code: `<NissiInvoicingProvider data={data} adapter={adapter}>\n  <NFacture role="operator" showNavigation />\n</NissiInvoicingProvider>` },
-          { id: "embedded", label: "Embebido", summary: "showNavigation={false}", preview: <NissiInvoicingProvider data={demoData} adapter={demoAdapter}><NFacture role="pos" defaultView="ticket" showNavigation={false} /></NissiInvoicingProvider>, code: `<NFacture role="pos" view="ticket" showNavigation={false} />` },
+          { id: "operator", label: "Operador", summary: "role=\"operator\"", preview: <NissiInvoicingProvider data={demoFactureData} adapter={demoFactureAdapter}><NFacture role="operator" defaultView="dashboard" showNavigation /></NissiInvoicingProvider>, code: `<NissiInvoicingProvider data={data} adapter={adapter}>\n  <NFacture role="operator" showNavigation />\n</NissiInvoicingProvider>` },
+          { id: "embedded", label: "Embebido", summary: "showNavigation={false}", preview: <NissiInvoicingProvider data={demoFactureData} adapter={demoFactureAdapter}><NFacture role="pos" defaultView="ticket" showNavigation={false} /></NissiInvoicingProvider>, code: `<NFacture role="pos" view="ticket" showNavigation={false} />` },
         ]}
         propExamples={[{ label: "Navegación compartida con NSidebar", code: `const items = createNFactureNavigation({\n  basePath: "/facturacion",\n  role: "admin",\n})\n\n<NSidebar items={[...appItems, ...items]} />` }, { label: "Menú desplegable en NHeader", code: `const items = createNFactureHeaderNavigation({ role: "admin" })\n\n<NHeader items={[...appItems, ...items]} />` }, { label: "Adaptador externo", code: `const adapter: NFactureDataAdapter = {\n  load: () => api.getBillingData(),\n  createCustomer: (customer) => api.createCustomer(customer),\n  findTicket: (folio) => api.getTicket(folio),\n  stampInvoice: (draft) => api.stampCfdi(draft),\n}` }]}
         code={`import { NFacture, NissiInvoicingProvider } from "nissi-ui"\n\n<NissiInvoicingProvider data={billingData} adapter={pacAdapter}>\n  <NFacture role="admin" />\n</NissiInvoicingProvider>`}

@@ -304,7 +304,7 @@ export function NFactureDocumentation({ labels, unstyled = false, classNames, st
   )
 }
 
-export function NFacture({ role = "operator", permissions, data: dataProp, adapter: adapterProp, view, defaultView = "dashboard", onViewChange, showNavigation = false, navigation: navigationProp, contentMaxHeight = "calc(100dvh - 10rem)", colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles }: NFactureProps) {
+export function NFacture({ role = "operator", permissions, data: dataProp, adapter: adapterProp, view, defaultView = "dashboard", onViewChange, showNavigation = false, showHeader = true, navigation: navigationProp, contentMaxHeight = "calc(100dvh - 10rem)", colorPalette = "blue", labels: labelsProp, unstyled = false, classNames, styles }: NFactureProps) {
   const context = useNFacture()
   const labels = useMemo(() => resolveNFactureLabels(labelsProp), [labelsProp])
   const adapter = adapterProp ?? context.adapter
@@ -343,7 +343,7 @@ export function NFacture({ role = "operator", permissions, data: dataProp, adapt
   return (
     <NPermissionsProvider permissions={granted}>
       <Stack as="section" aria-label={labels.moduleName} gap={unstyled ? undefined : "5"} minW="0" colorPalette={colorPalette} className={classNames?.root} css={styles?.root} data-scope="n-facture" data-part="root">
-        <NPageHeader title={labels.moduleName} subtitle={labels.moduleDescription} metadata={<Badge colorPalette={role === "admin" ? "purple" : role === "operator" ? "blue" : "green"}>{role === "admin" ? labels.adminRole : role === "operator" ? labels.operatorRole : labels.posRole}</Badge>} />
+        {showHeader ? <NPageHeader title={labels.moduleName} subtitle={labels.moduleDescription} metadata={<Badge colorPalette={role === "admin" ? "purple" : role === "operator" ? "blue" : "green"}>{role === "admin" ? labels.adminRole : role === "operator" ? labels.operatorRole : labels.posRole}</Badge>} /> : null}
         {loading ? <Box role="status" className={classNames?.loading} css={styles?.loading} data-part="loading">{labels.loading}</Box> : null}
         {loadError ? <HStack role="alert" className={classNames?.error} css={styles?.error} data-part="error"><Text color="fg.error">{labels.loadError}</Text><Button size="sm" onClick={() => void load()}>{labels.retry}</Button></HStack> : null}
         <Flex align="stretch" direction={{ base: "column", lg: "row" }} gap="6" minW="0">
