@@ -6,6 +6,12 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 
 ### Añadido
 
+- Auditoría y plan canónico de Nroutes v3 con arquitectura encontrada, deuda comprobada, decisiones progresivas de API, 21 fases, gates, riesgos y benchmark reproducible de 10/100/1,000 rutas. Las capacidades v3 permanecen marcadas como pendientes hasta su implementación.
+- Fase 1 de Nroutes v3: branch diff puro, params por nivel, segmentos retenidos/entrantes/salientes, revalidación configurable y preservación del loader data de padres compartidos.
+- Fase 2 de Nroutes v3: guards completos antes de datos, loaders independientes en paralelo, dependencias explícitas con `dependsOn`, validación de ciclos y errores deterministas por branch.
+- Fase 3 de Nroutes v3: `NRouteCache` independiente, deduplicación, claves selectivas, cache-first/network-first/SWR, stale time, garbage collection, prefetch e invalidación pública por tags o rutas.
+- Fase 4 de Nroutes v3: route modules lazy first-class, imports paralelos/deduplicados, pending por ruta, retry de chunks, prefetch explícito de código antes de datos y comportamiento SSR-safe.
+- Fase 5 de Nroutes v3: targets por route id, inferencia TypeScript de ids y params anidados mediante `useNTypedNroutes`, `href` público, resolución runtime y compatibilidad completa con URLs libres.
 - Evolución profesional de `Nroutes`: location completa, search params, árbol jerárquico, ranking, branches, `NOutlet`, permisos, guards, redirects, loaders cancelables, error boundaries y protección frente a respuestas obsoletas.
 - `NLink`, prefetch por intención, hooks especializados (`useNLocation`, `useNNavigate`, `useNRouteParams`, `useNSearchParams`, `useNNavigation`, `useNLoaderData`, `useNRouteMatches`) y helpers `defineNroutes`/`defineNlayoutConfig`.
 - Adaptador `NRouterAdapter` para delegar URL, navegación y prefetch a Next.js u otro router externo.

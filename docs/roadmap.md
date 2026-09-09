@@ -21,14 +21,20 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 2026-09-06 | Estados y navegación · Plus | Completada | `NPanel` lateral, modal, responsive, reactivo y dinámico, integrado con la posición de `NSidebar` mediante `NAppShell`. |
 | 2026-09-06 | Fases 2–7 · Entrega final consolidada | Completada | Estados de página, datos server-side, actividad, dashboards, administración SaaS y patrones verticales; 22 componentes/patrones públicos y evolución de `NDataTable`. |
 | 2026-09-09 | Nissi Router SPA profesional · Fases 1–5 | Completada | Location completa, routing jerárquico, ranking, outlets, permisos, guards, loaders cancelables, boundaries, NLink, hooks, prefetch, breadcrumbs, progreso, scroll y adaptadores externos. |
+| 2026-09-09 | Nroutes v3 · Fase 0 | Completada | Auditoría del runtime vigente, deuda técnica, decisiones de arquitectura, línea base de validación y benchmark reproducible. |
+| 2026-09-09 | Nroutes v3 · Fase 1 | Completada | Branch diff, params por nivel, revalidación selectiva y preservación de loader data en padres retenidos. |
+| 2026-09-09 | Nroutes v3 · Fase 2 | Completada | Guards antes de datos, loaders paralelos por ondas, `dependsOn`, validación del grafo y errores deterministas. |
+| 2026-09-09 | Nroutes v3 · Fase 3 | Completada | Caché de loaders con deduplicación, modos fresh/stale, SWR, GC, prefetch e invalidación pública. |
+| 2026-09-09 | Nroutes v3 · Fase 4 | Completada | Route modules lazy con imports deduplicados, pending, retry, boundaries y prefetch explícito de código antes de datos. |
+| 2026-09-09 | Nroutes v3 · Fase 5 | Completada | Routing por id opt-in con inferencia de params anidados, href/prefetch/navigate tipados y validación runtime. |
 
 ## Fases pendientes
 
-No quedan fases pendientes en el alcance original ni en la evolución del [router SPA profesional](./future-professional-spa-router.md). El siguiente trabajo debe concentrarse en estabilización y retroalimentación de consumidores reales, sin ampliar el núcleo con caché de queries, file-based routing o responsabilidades de framework SSR.
+No quedan fases pendientes del alcance original ni de la primera evolución del [router SPA profesional](./future-professional-spa-router.md). La evolución [Nroutes v3](./nroutes-v3-plan.md) completó auditoría y fases 1–5; mantiene pendientes las fases 6–22, desde search codecs hasta la documentación web integral y actualización final de GitHub.
 
-## Prioridad inmediata: estabilización
+## Prioridad inmediata: Nroutes v3 P0
 
-La secuencia de [Flujos operativos generalizables](./generalized-workflows-roadmap.md) y las seis fases posteriores quedaron completadas. El contrato de la entrega consolidada está en [Fase final](./final-components.md).
+La secuencia de [Flujos operativos generalizables](./generalized-workflows-roadmap.md) y las seis fases posteriores quedó completada. Nroutes v3 queda pausado tras la Fase 5; la siguiente entrega es search codecs selectivos, sin introducir caché de queries, file-based routing ni responsabilidades de framework SSR.
 
 ## Regla de seguridad
 

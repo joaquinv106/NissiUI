@@ -8,4 +8,4 @@ export {
   routeHref,
   stripBasePath,
 } from "./location"
-export { compileRouteBranches, defineNroutes, matchRoute, matchRoutes } from "./matcher"
+export { compileRouteBranches, defineNroutes, matchRoute, matchRoutes, resolveNRouteTarget } from "./matcher"

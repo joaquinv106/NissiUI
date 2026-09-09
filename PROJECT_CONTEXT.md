@@ -27,6 +27,8 @@ La prioridad del proyecto es desarrollar componentes genéricos capaces de compo
 
 La auditoría, fases, compatibilidad, pruebas y Definition of Done viven en [docs/future-professional-spa-router.md](./docs/future-professional-spa-router.md). El router reutiliza el motor de capacidades de `usePermissions()` y permite delegar navegación a Next.js u otro framework mediante `NRouterAdapter`.
 
+La siguiente evolución es Nroutes v3. Su auditoría comprobada, decisiones, 21 fases funcionales, benchmark base y cierre documental viven en [docs/nroutes-v3-plan.md](./docs/nroutes-v3-plan.md). Las fases 0–5 están completas: ya existen branch diff, scheduler paralelo, caché de rutas, route modules lazy y routing tipado por id/params. Search codecs, blockers y las fases posteriores no deben presentarse aún como capacidades disponibles.
+
 ## Principios de diseño
 
 - API declarativa y tipada: la configuración principal usa JSON con `headers` y `data`.
@@ -89,7 +91,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/permissions/utils.ts`: coincidencia de capacidades con comodines (`canAccess`, `matchesCapability`).
 - `src/components/app-shell/`: implementación, tipos, labels y pruebas de `NAppShell`.
 - `src/components/layout/`: composición pública `Nlayout` sobre shell, sidebar, header, encabezados de página, breadcrumbs, tema y rutas.
-- `src/components/routes/`: router SPA jerárquico; location, matcher/ranking, branches, outlets, permisos, guards, loaders, boundaries, enlaces, hooks, History API/hash/memoria, adaptadores externos, labels y pruebas.
+- `src/components/routes/`: router SPA jerárquico; location, matcher/ranking, branch diff, route modules lazy, guards, scheduler paralelo y caché de loaders, outlets, permisos, boundaries, enlaces, hooks, History API/hash/memoria, adaptadores externos, labels y pruebas.
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
@@ -146,6 +148,13 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/auth.md`: arquitectura, importación, componentes, tema, estados, accesibilidad, seguridad, personalización y empaquetado de Nauth y `NloginPage`.
 - `docs/layout-routes.md`: contrato, estrategias, accesibilidad, personalización e integración de `Nlayout` y `Nroutes`.
 - `docs/future-professional-spa-router.md`: especificación, auditoría y registro de las cinco fases entregadas de `Nroutes`/`Nlayout`.
+- `docs/nroutes-v3-plan.md`: fuente canónica de la evolución v3 por fases, deuda comprobada, decisiones de API, riesgos, benchmarks y estrategia de documentación web.
+- `docs/nroutes-architecture.md`: runtime vigente, branch diff, revalidación incremental, seguridad, concurrencia y compatibilidad.
+- `docs/nroutes-navigation-lifecycle.md`: pipeline de navegación, autorización previa a datos, ondas paralelas, `dependsOn`, errores, abort y carreras.
+- `docs/nroutes-cache.md`: políticas cache-first/network-first/SWR, claves, deduplicación, GC, prefetch e invalidación.
+- `docs/nroutes-route-modules.md`: manifest eager, contrato lazy, orden código/datos, retry, SSR y tree shaking.
+- `docs/nroutes-typed-routing.md`: inferencia de ids y params anidados, targets tipados, compatibilidad y validación runtime.
+- `benchmarks/nroutes-baseline.mjs`: línea base reproducible de compilación y matching para 10, 100 y 1,000 rutas.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
@@ -243,8 +252,11 @@ Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.m
 - `Nlayout` compone `NAppShell`, `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider`; `provideTheme={false}` permite usar un provider existente.
 - Cada `NlayoutRoute` declara `path`, `title`, `element` y opcionalmente `children`, `navigationId`, `pageHeader`, permisos, guard, loader, breadcrumb y boundary. `navigationId` sincroniza rutas planas o anidadas con sidebar y header.
 - `Nroutes` admite `history`, `hash`, `memory` y `NRouterAdapter`; estado controlado/no controlado, `basePath`, location completa, search params, back/forward, params, wildcard, árbol compilado y ranking independiente del orden.
+- El branch diff incremental conserva padres compartidos, identifica segmentos retenidos/entrantes/salientes, compara params por nivel y evita reejecutar guards/loaders no afectados. `revalidate` y `reloadOnSearch` hacen explícita la política; cambios exclusivos de hash no recargan por defecto.
+- `NRouteCache` deduplica loaders por route id, params del nivel y search declarado. Cada ruta puede configurar `cache-first`, `network-first`, SWR, `staleTime`, `gcTime` y tags; `useNroutes()` permite invalidar por tag/ruta, revalidar la branch o vaciar el caché.
+- `defineNroutes()` más `useNTypedNroutes(routes)` validan ids y params anidados en `navigate`, `href`, `prefetch` y enlaces. Strings y targets por pathname siguen disponibles para adopción gradual.
 - `NRouteOutlet` es el outlet principal y `NOutlet` renderiza hijos multinivel. Ambos conservan el shell durante pending/error; el foco y `aria-live` se actualizan cuando termina la navegación y reduced motion elimina transiciones.
-- Permisos declarativos protegen deep links reutilizando `usePermissions()`. Guards y loaders se ejecutan padre→hijo con `AbortSignal`, redirects, loader data y descarte de respuestas obsoletas; la autorización y validación definitivas siguen en backend.
+- Permisos declarativos protegen deep links reutilizando `usePermissions()`. Todos los guards requeridos se resuelven padre→hijo antes de iniciar datos; después, loaders independientes corren en paralelo y `dependsOn` declara el orden necesario. Guards y loaders conservan `AbortSignal`, redirects, loader data, boundaries deterministas y descarte de respuestas obsoletas; la autorización y validación definitivas siguen en backend.
 - `NLink` conserva semántica nativa y ofrece prefetch por intención. Los hooks especializados exponen location, params, query, navegación, loaders y branch; `useNroutes()`/`createLinkProps()` permanecen compatibles.
 - `Nlayout` deriva breadcrumbs, permite progreso y restauración de scroll, aplica permisos también en `NHeader` y configura la reserva móvil mediante `mobileSidebarTriggerInset`.
 - La muestra independiente `nfacture.html` usa rutas hash, Nissi Dark inicial, navegación de `createNFactureNavigation` y `NFacture` sin sidebar duplicado. La referencia completa está en `docs/layout-routes.md`.

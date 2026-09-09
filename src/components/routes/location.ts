@@ -99,6 +99,7 @@ export function parseRouteLocation(
 
 export function resolveRouteTarget(target: NRouteTarget, current: NRouteLocation): NRouteLocation {
   if (typeof target === "string") return parseRouteLocation(target, current.pathname)
+  if ("route" in target) throw new Error("Un target por route id debe resolverse con el manifest de Nroutes.")
   const search = target.search === undefined ? current.search : serializeSearch(target.search)
   const hash = target.hash === undefined ? current.hash : normalizeHash(target.hash)
   return parseRouteLocation(`${target.pathname ?? current.pathname}${search}${hash}`, current.pathname)

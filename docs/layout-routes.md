@@ -125,11 +125,59 @@ const routes: NRouteDefinition<unknown, AppContext>[] = [{
 
 Los guards se ejecutan de padre a hijo y pueden permitir, denegar o redirigir. Los loaders reciben `AbortSignal`; al comenzar una navegación nueva se cancela la anterior y una respuesta obsoleta nunca reemplaza la pantalla vigente. `route.data` continúa siendo metadata estática y `useNLoaderData()` entrega el resultado remoto.
 
+Todos los guards requeridos terminan antes de iniciar datos. Después, los loaders independientes se ejecutan en paralelo; `dependsOn` declara únicamente los casos que necesitan resultados previos. Cada loader recibe en `loaderData` un snapshot de sus dependencias ya resueltas.
+
+```tsx
+{
+  id: "invoice",
+  dependsOn: ["tenant"],
+  loader: ({ params, loaderData, signal }) =>
+    api.getInvoice(loaderData.tenant, params.folio, { signal }),
+}
+```
+
+Dependencias ausentes, sin loader, autorreferentes o cíclicas producen un error determinista y usan el boundary más cercano. Consulta el [lifecycle de navegación](./nroutes-navigation-lifecycle.md).
+
+### Caché de loaders
+
+Cada ruta puede declarar `cache` con modo `cache-first`, `network-first` o `stale-while-revalidate`, además de `staleTime`, `gcTime` y `tags`. El default reutiliza resultados fresh durante 30 segundos y los recolecta tras 5 minutos sin uso; `cache={false}` fuerza consulta en cada ejecución.
+
+```tsx
+{
+  cache: {
+    mode: "stale-while-revalidate",
+    staleTime: 30_000,
+    gcTime: 300_000,
+    tags: ["invoices"],
+  },
+}
+```
+
+`useNroutes()` expone `invalidate`, `invalidateRoute`, `revalidate` y `clearCache`. La referencia y límites están en [Caché de rutas](./nroutes-cache.md).
+
 Los errores de loader o render usan el `errorElement` más cercano de la branch. Si no existe, `errorFallback` resuelve el estado global sin desmontar el shell.
+
+### Ejecución incremental
+
+Nroutes compara la branch activa con la siguiente. Los segmentos compartidos se retienen y conservan su `loaderData`; sólo las rutas entrantes o afectadas vuelven a ejecutar guard/loader. Los params se evalúan por nivel, de modo que cambiar `:folio` no reprocesa padres que dependen únicamente de `:tenant`.
+
+```tsx
+{
+  id: "invoice-list",
+  path: "invoices",
+  revalidate: "params",
+  reloadOnSearch: ["page", "status"],
+  loader: loadInvoices,
+}
+```
+
+`revalidate` admite `"always"`, `"params"`, `"search"`, `"never"` o una función. Sin declaración, revalida por params propios y por las claves explícitas de `reloadOnSearch`; un cambio exclusivo de hash no ejecuta loaders. `createNRouteTransition(current, next)` permite inspeccionar `retained`, `entering`, `leaving` y los cambios detectados. Consulta [Arquitectura de Nroutes](./nroutes-architecture.md).
 
 ## NLink, hooks y prefetch
 
 `NLink` es un `<a>` real: conserva clic medio, modificadores, `target`, `download`, enlaces externos y atributos accesibles. `prefetch="intent"` prepara `preload` y loaders al recibir foco o pointer, deduplicando la operación sin navegar.
+
+Las rutas con `lazy: () => import(...)` cargan su módulo antes de `preload` y datos. El módulo puede aportar `Component`, loader, guard, boundary, pending, metadata y breadcrumb; matching y permisos permanecen eager. Consulta [Route modules y code splitting](./nroutes-route-modules.md).
 
 ```tsx
 import { NLink } from "nissi-ui/routes"
@@ -146,11 +194,11 @@ Hooks públicos:
 - `useNLocation()` devuelve la location completa.
 - `useNRouteParams()` devuelve los params combinados de la branch.
 - `useNSearchParams()` permite reemplazar, mezclar y eliminar query params.
-- `useNNavigation()` devuelve `idle` o `loading`, con locations de origen y destino.
+- `useNNavigation()` devuelve `idle` o `loading`, locations de origen/destino y el branch diff durante trabajo asíncrono.
 - `useNLoaderData(routeId?)` devuelve datos del loader activo.
 - `useNRouteMatches()` devuelve toda la branch, incluidos datos por nivel.
 
-`defineNroutes()` y `defineNlayoutConfig()` conservan literales al compartir configuraciones TypeScript.
+`defineNroutes()` conserva los literales del árbol. `useNTypedNroutes(routes)` deriva ids y params obligatorios para `navigate`, `href`, `prefetch` y `createLinkProps`; la navegación tradicional por URL permanece disponible. Consulta [Routing tipado por id](./nroutes-typed-routing.md). `defineNlayoutConfig()` conserva literales al compartir la configuración del layout.
 
 ## Estrategias y routers externos
 

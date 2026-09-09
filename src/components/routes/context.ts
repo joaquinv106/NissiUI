@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react"
 import type { ReactNode } from "react"
 
-import type { NroutesContextValue } from "./types"
+import type { NRouteDefinition, NroutesContextValue, NTypedNroutesContextValue } from "./types"
 
 export const NroutesContext = createContext<NroutesContextValue | null>(null)
 
@@ -22,4 +22,13 @@ export function useNroutes<TData = unknown, TContext = unknown>(): NroutesContex
   const context = useContext(NroutesContext)
   if (!context) throw new Error("useNroutes debe usarse dentro de Nroutes.")
   return context as NroutesContextValue<TData, TContext>
+}
+
+/** Vincula el contexto actual con los literales preservados por `defineNroutes()`. */
+export function useNTypedNroutes<
+  const TRoutes extends readonly NRouteDefinition[],
+  TData = unknown,
+  TContext = unknown,
+>(_routes: TRoutes): NTypedNroutesContextValue<TRoutes, TData, TContext> {
+  return useNroutes<TData, TContext>() as NTypedNroutesContextValue<TRoutes, TData, TContext>
 }

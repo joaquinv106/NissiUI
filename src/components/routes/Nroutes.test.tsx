@@ -263,6 +263,125 @@ describe("Nroutes", () => {
     expect(screen.queryByText("Resultado A")).not.toBeInTheDocument()
   })
 
+  it("conserva guards, loaders y loader data de padres retenidos entre siblings", async () => {
+    const parentGuard = vi.fn(() => true)
+    const parentLoader = vi.fn(async () => "tenant-acme")
+    const paymentsLoader = vi.fn(async () => "payments")
+    const accountsLoader = vi.fn(async () => "accounts")
+
+    function TreasuryNavigation() {
+      const { navigate } = useNroutes()
+      return <><button onClick={() => navigate("/tenant/acme/accounts")}>Abrir cuentas</button><NRouteOutlet /></>
+    }
+
+    function ChildView({ routeId }: { routeId: string }) {
+      return <Text>{`${useNLoaderData<string>("tenant")}|${useNLoaderData<string>(routeId)}`}</Text>
+    }
+
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          defaultPath="/tenant/acme/payments"
+          routes={[{
+            id: "tenant",
+            path: "/tenant/:tenant",
+            title: "Tenant",
+            beforeEnter: parentGuard,
+            loader: parentLoader,
+            element: <NOutlet />,
+            children: [
+              { id: "payments", path: "payments", title: "Pagos", loader: paymentsLoader, element: <ChildView routeId="payments" /> },
+              { id: "accounts", path: "accounts", title: "Cuentas", loader: accountsLoader, element: <ChildView routeId="accounts" /> },
+            ],
+          }]}
+        >
+          <TreasuryNavigation />
+        </Nroutes>
+      </ChakraProvider>,
+    )
+
+    expect(await screen.findByText("tenant-acme|payments")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Abrir cuentas" }))
+    expect(await screen.findByText("tenant-acme|accounts")).toBeInTheDocument()
+    expect(parentGuard).toHaveBeenCalledTimes(1)
+    expect(parentLoader).toHaveBeenCalledTimes(1)
+    expect(paymentsLoader).toHaveBeenCalledTimes(1)
+    expect(accountsLoader).toHaveBeenCalledTimes(1)
+  })
+
+  it("ejecuta loaders independientes en paralelo dentro del router", async () => {
+    let resolveWorkspace!: (value: string) => void
+    let resolveInvoice!: (value: string) => void
+    const starts: string[] = []
+    const workspace = new Promise<string>((resolve) => { resolveWorkspace = resolve })
+    const invoice = new Promise<string>((resolve) => { resolveInvoice = resolve })
+
+    function ParallelResult() {
+      return <Text>{`${useNLoaderData<string>("workspace")}|${useNLoaderData<string>("invoice")}`}</Text>
+    }
+
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          defaultPath="/workspace/invoices/A-1"
+          routes={[{
+            id: "workspace",
+            path: "/workspace",
+            title: "Workspace",
+            element: <NOutlet />,
+            loader: () => { starts.push("workspace"); return workspace },
+            children: [{
+              id: "invoice",
+              path: "invoices/:folio",
+              title: "Factura",
+              element: <ParallelResult />,
+              loader: () => { starts.push("invoice"); return invoice },
+            }],
+          }]}
+        />
+      </ChakraProvider>,
+    )
+
+    await waitFor(() => expect(starts).toEqual(["workspace", "invoice"]))
+    await act(async () => {
+      resolveInvoice("A-1")
+      resolveWorkspace("acme")
+    })
+    expect(await screen.findByText("acme|A-1")).toBeInTheDocument()
+  })
+
+  it("resuelve todos los guards antes de iniciar loaders sensibles", async () => {
+    const parentLoader = vi.fn(async () => "sensitive")
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          defaultPath="/protected/child"
+          routes={[{
+            id: "protected",
+            path: "/protected",
+            title: "Protegida",
+            element: <NOutlet />,
+            loader: parentLoader,
+            children: [{
+              id: "child",
+              path: "child",
+              title: "Hija",
+              element: <Text>No visible</Text>,
+              beforeEnter: () => false,
+            }],
+          }]}
+        />
+      </ChakraProvider>,
+    )
+
+    expect(await screen.findByText("Acceso restringido")).toBeInTheDocument()
+    expect(parentLoader).not.toHaveBeenCalled()
+    expect(screen.queryByText("No visible")).not.toBeInTheDocument()
+  })
+
   it("usa el boundary más cercano para errores de loader", async () => {
     render(
       <ChakraProvider value={defaultSystem}>
@@ -282,6 +401,121 @@ describe("Nroutes", () => {
     )
     expect(await screen.findByText(/Error controlado: Error: falló loader/)).toBeInTheDocument()
     expect(screen.queryByText("No visible")).not.toBeInTheDocument()
+  })
+
+  it("sirve cache hits y expone invalidación y revalidación de la branch activa", async () => {
+    const loader = vi.fn(async () => `result-${loader.mock.calls.length}`)
+    function CacheActions() {
+      const { navigate, invalidateRoute, revalidate, clearCache } = useNroutes()
+      return <Stack>
+        <button onClick={() => navigate("/")}>Inicio</button>
+        <button onClick={() => navigate("/invoice/A1")}>Factura</button>
+        <button onClick={() => invalidateRoute("invoice")}>Invalidar factura</button>
+        <button onClick={revalidate}>Revalidar</button>
+        <button onClick={clearCache}>Vaciar caché</button>
+        <NRouteOutlet />
+      </Stack>
+    }
+    function InvoiceData() {
+      return <Text>{useNLoaderData<string>("invoice")}</Text>
+    }
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          defaultPath="/invoice/A1"
+          routes={[
+            { id: "home", path: "/", title: "Inicio", element: <Text>Página inicial</Text> },
+            { id: "invoice", path: "/invoice/:folio", title: "Factura", element: <InvoiceData />, loader, cache: { staleTime: 60_000, tags: ["invoices"] } },
+          ]}
+        >
+          <CacheActions />
+        </Nroutes>
+      </ChakraProvider>,
+    )
+
+    expect(await screen.findByText("result-1")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Inicio" }))
+    fireEvent.click(screen.getByRole("button", { name: "Factura" }))
+    expect(await screen.findByText("result-1")).toBeInTheDocument()
+    expect(loader).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByRole("button", { name: "Invalidar factura" }))
+    fireEvent.click(screen.getByRole("button", { name: "Inicio" }))
+    fireEvent.click(screen.getByRole("button", { name: "Factura" }))
+    expect(await screen.findByText("result-2")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "Revalidar" }))
+    expect(await screen.findByText("result-3")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Vaciar caché" }))
+  })
+
+  it("reutiliza al navegar los datos preparados por prefetch", async () => {
+    const loader = vi.fn(async () => "Reporte preparado")
+    const lazy = vi.fn(async () => ({ Component: () => <Text>Reportes listos</Text>, loader }))
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          routes={[
+            { id: "home", path: "/", title: "Inicio", element: <NLink to="/reports" prefetch="intent">Preparar reportes</NLink> },
+            { id: "reports", path: "/reports", title: "Reportes", lazy },
+          ]}
+        />
+      </ChakraProvider>,
+    )
+    const link = screen.getByRole("link", { name: "Preparar reportes" })
+    fireEvent.focus(link)
+    await waitFor(() => expect(lazy).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(loader).toHaveBeenCalledTimes(1))
+    fireEvent.click(link)
+    expect(await screen.findByText("Reportes listos")).toBeInTheDocument()
+    expect(loader).toHaveBeenCalledTimes(1)
+    expect(lazy).toHaveBeenCalledTimes(1)
+  })
+
+  it("resuelve route modules, usa su pendingElement y permite reintentar chunks", async () => {
+    let resolveLoader!: (value: string) => void
+    const loaderPromise = new Promise<string>((resolve) => { resolveLoader = resolve })
+    function LazyData() {
+      return <Text>{useNLoaderData<string>("lazy")}</Text>
+    }
+    const lazy = vi.fn(async () => ({
+      Component: LazyData,
+      pendingElement: <Text>Preparando datos lazy</Text>,
+      loader: () => loaderPromise,
+    }))
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes strategy="memory" defaultPath="/lazy" routes={[{ id: "lazy", path: "/lazy", title: "Lazy", lazy }]} />
+      </ChakraProvider>,
+    )
+    expect(await screen.findByText("Preparando datos lazy")).toBeInTheDocument()
+    await act(async () => resolveLoader("Módulo y datos listos"))
+    expect(await screen.findByText("Módulo y datos listos")).toBeInTheDocument()
+    expect(lazy).toHaveBeenCalledTimes(1)
+  })
+
+  it("reintenta un import fallido desde el boundary de ruta", async () => {
+    function RetryChunk() {
+      const { retryRouteModule } = useNroutes()
+      return <button onClick={() => retryRouteModule("retry")}>Reintentar módulo</button>
+    }
+    const lazy = vi.fn()
+      .mockRejectedValueOnce(new Error("chunk offline"))
+      .mockResolvedValueOnce({ Component: () => <Text>Chunk recuperado</Text> })
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nroutes
+          strategy="memory"
+          defaultPath="/retry"
+          routes={[{ id: "retry", path: "/retry", title: "Retry", lazy, errorElement: <RetryChunk /> }]}
+        />
+      </ChakraProvider>,
+    )
+    fireEvent.click(await screen.findByRole("button", { name: "Reintentar módulo" }))
+    expect(await screen.findByText("Chunk recuperado")).toBeInTheDocument()
+    expect(lazy).toHaveBeenCalledTimes(2)
   })
 
   it("ofrece NLink con prefetch por intención y adaptador de router externo", async () => {

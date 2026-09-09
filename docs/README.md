@@ -22,7 +22,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 | `NForm` | Inicial | [Formularios](./forms.md) | `src/components/form/NForm.test.tsx` |
 | `NPermissionGate` | Inicial | [Permisos](./permissions.md) | `src/components/permissions/NPermissionGate.test.tsx` |
 | `NAppShell` | Plataforma | [Shell de aplicación](./app-shell.md) | `src/components/app-shell/NAppShell.test.tsx` |
-| `Nlayout` / `Nroutes` | Plataforma SPA | [Layout y rutas](./layout-routes.md) | `src/components/layout/Nlayout.test.tsx`, `src/components/routes/Nroutes.test.tsx` |
+| `Nlayout` / `Nroutes` | Plataforma SPA · v3 Fases 1–5 | [Layout y rutas](./layout-routes.md), [arquitectura](./nroutes-architecture.md), [lifecycle](./nroutes-navigation-lifecycle.md), [caché](./nroutes-cache.md), [módulos lazy](./nroutes-route-modules.md), [routing tipado](./nroutes-typed-routing.md) | `src/components/layout/Nlayout.test.tsx`, `src/components/routes/Nroutes.test.tsx` |
 | `NModuleRegistry` | Plataforma | [Registro de módulos](./module-registry.md) | `src/components/module-registry/NModuleRegistry.test.tsx` |
 | `NWorkspaceSwitcher` | Plataforma | [Selector de workspace](./workspace-switcher.md) | `src/components/workspace-switcher/NWorkspaceSwitcher.test.tsx` |
 | `NTheme` / `NThemeProvider` | Fundación visual | [Temas](./theme.md) | `src/components/theme/NTheme.test.tsx` |
@@ -57,7 +57,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 
-La auditoría y entrega de las cinco fases de [Nissi Router SPA profesional](./future-professional-spa-router.md) documentan location completa, rutas anidadas, guards, loaders, permisos y compatibilidad con routers externos.
+La auditoría y entrega de las cinco fases de [Nissi Router SPA profesional](./future-professional-spa-router.md) documentan la generación vigente. La evolución incremental, cacheable, tipada y observable se gobierna desde el [plan canónico de Nroutes v3](./nroutes-v3-plan.md); la [arquitectura](./nroutes-architecture.md) y el [lifecycle de navegación](./nroutes-navigation-lifecycle.md) describen las fases ya disponibles, mientras las posteriores continúan pendientes hasta contar con implementación y pruebas.
 
 El objetivo prioritario actual y su secuencia están definidos en [Flujos operativos generalizables](./generalized-workflows-roadmap.md).
 

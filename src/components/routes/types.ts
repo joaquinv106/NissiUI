@@ -1,4 +1,4 @@
-import type { MouseEventHandler, ReactNode } from "react"
+import type { ComponentType, MouseEventHandler, ReactNode } from "react"
 
 import type { NPermissionCapability, NPermissionMode } from "../permissions/types"
 import type { NComponentStyleProps } from "../styling"
@@ -17,11 +17,54 @@ export interface NRouteLocation {
   key: string
 }
 
-export type NRouteTarget = string | {
+export interface NRoutePathTarget {
   pathname?: string
   search?: string | URLSearchParams | Readonly<Record<string, string | number | boolean | null | undefined>>
   hash?: string
 }
+
+export interface NRouteIdTarget {
+  route: string
+  params?: Readonly<Record<string, string | number>>
+  search?: NRoutePathTarget["search"]
+  hash?: string
+}
+
+export type NRouteTarget = string | NRoutePathTarget | NRouteIdTarget
+
+type NJoinRoutePath<TParent extends string, TPath extends string> = TPath extends `/${string}`
+  ? TPath
+  : TParent extends "" | "/" ? `/${TPath}` : `${TParent}/${TPath}`
+
+type NPathParamKeys<TPath extends string> =
+  TPath extends `${string}:${infer TParam}/${infer TRest}` ? TParam | NPathParamKeys<`/${TRest}`>
+    : TPath extends `${string}:${infer TParam}` ? TParam
+      : TPath extends `${string}*${string}` ? "*"
+        : never
+
+type NTypedRouteById<TId extends string, TPath extends string> = {
+  route: TId
+  search?: NRoutePathTarget["search"]
+  hash?: string
+} & ([NPathParamKeys<TPath>] extends [never]
+  ? { params?: never }
+  : { params: { readonly [TKey in NPathParamKeys<TPath>]: string | number } })
+
+type NRouteTargetsFromTree<TRoutes, TParent extends string = ""> = TRoutes extends readonly unknown[]
+  ? TRoutes[number] extends infer TRoute
+    ? TRoute extends { id: infer TId extends string; path: infer TPath extends string }
+      ? NTypedRouteById<TId, NJoinRoutePath<TParent, TPath>>
+        | (TRoute extends { children: infer TChildren }
+          ? NRouteTargetsFromTree<TChildren, NJoinRoutePath<TParent, TPath>>
+          : never)
+      : never
+    : never
+  : never
+
+export type NTypedRouteTarget<TRoutes extends readonly NRouteDefinition[]> =
+  | string
+  | NRoutePathTarget
+  | NRouteTargetsFromTree<TRoutes>
 
 export interface NRouteRedirect {
   readonly type: "redirect"
@@ -36,9 +79,55 @@ export interface NRouteTransitionContext<TContext = unknown, TData = unknown> {
   context: TContext
   signal: AbortSignal
   route: NRouteDefinition<TData, TContext>
+  /** Resultados ya resueltos. Sólo las dependencias declaradas están garantizadas para un loader. */
+  loaderData: Readonly<Record<string, unknown>>
+}
+
+export interface NRouteShouldReloadDetails<TData = unknown, TContext = unknown> {
+  current: NRouteMatchEntry<TData, TContext>
+  next: NRouteMatchEntry<TData, TContext>
+  currentLocation: NRouteLocation
+  nextLocation: NRouteLocation
+  changedParams: readonly string[]
+  changedSearch: readonly string[]
+  hashChanged: boolean
+}
+
+export type NRouteRevalidationPolicy<TData = unknown, TContext = unknown> =
+  | "always"
+  | "params"
+  | "search"
+  | "never"
+  | ((details: NRouteShouldReloadDetails<TData, TContext>) => boolean)
+
+export type NRouteCacheMode = "cache-first" | "network-first" | "stale-while-revalidate"
+
+export interface NRouteCachePolicy {
+  mode?: NRouteCacheMode
+  /** Tiempo en milisegundos durante el que un resultado se considera fresh. */
+  staleTime?: number
+  /** Tiempo en milisegundos sin uso tras el que el resultado puede recolectarse. */
+  gcTime?: number
+  tags?: readonly string[]
+}
+
+export interface NRouteCacheInvalidation {
+  routeIds?: readonly string[]
+  tags?: readonly string[]
 }
 
 export type NRouteGuardResult = void | boolean | NRouteRedirect
+
+export interface NRouteModule<TData = unknown, TContext = unknown> {
+  Component?: ComponentType
+  loader?: (details: NRouteTransitionContext<TContext, TData>) => unknown | Promise<unknown>
+  beforeEnter?: (details: NRouteTransitionContext<TContext, TData>) => NRouteGuardResult | Promise<NRouteGuardResult>
+  ErrorBoundary?: ComponentType<{ error: unknown; match: NRouteMatch<TData, TContext> }>
+  pendingElement?: ReactNode
+  data?: TData
+  breadcrumb?: string | ((match: NRouteMatch<TData, TContext>) => string)
+  preload?: () => void | Promise<unknown>
+}
 
 export interface NRouteDefinition<TData = unknown, TContext = unknown> {
   /** Identidad estable y única de la ruta. */
@@ -47,7 +136,11 @@ export interface NRouteDefinition<TData = unknown, TContext = unknown> {
   path: string
   /** Título legible usado para anunciar el cambio de vista y derivar breadcrumbs. */
   title: string | ((match: NRouteMatch<TData, TContext>) => string)
-  element: ReactNode | ((match: NRouteMatch<TData, TContext>) => ReactNode)
+  element?: ReactNode | ((match: NRouteMatch<TData, TContext>) => ReactNode)
+  /** Import explícito y deduplicado del módulo de ruta; `id`, `path`, permisos y `title` permanecen eager. */
+  lazy?: () => Promise<NRouteModule<TData, TContext>>
+  /** Fallback disponible antes de que el módulo lazy haya terminado de importar. */
+  pendingElement?: ReactNode
   navigationId?: string
   /** Metadata estática; los resultados remotos pertenecen a `loaderData`. */
   data?: TData
@@ -56,6 +149,14 @@ export interface NRouteDefinition<TData = unknown, TContext = unknown> {
   permissionMode?: NPermissionMode
   beforeEnter?: (details: NRouteTransitionContext<TContext, TData>) => NRouteGuardResult | Promise<NRouteGuardResult>
   loader?: (details: NRouteTransitionContext<TContext, TData>) => unknown | Promise<unknown>
+  /** Ids de loaders de la misma branch que deben terminar antes de ejecutar este loader. */
+  dependsOn?: readonly string[]
+  /** Controla si guards/loaders de un segmento retenido vuelven a ejecutarse. El default responde a sus params. */
+  revalidate?: NRouteRevalidationPolicy<TData, TContext>
+  /** Search params que afectan a esta ruta cuando `revalidate` no se declara. */
+  reloadOnSearch?: readonly string[]
+  /** Caché acotado al loader de esta ruta. `false` fuerza red en cada ejecución. */
+  cache?: false | NRouteCachePolicy
   preload?: () => void | Promise<unknown>
   errorElement?: ReactNode | ((error: unknown, match: NRouteMatch<TData, TContext>) => ReactNode)
   breadcrumb?: string | ((match: NRouteMatch<TData, TContext>) => string)
@@ -81,6 +182,29 @@ export interface NRouteMatch<TData = unknown, TContext = unknown> {
   errorRouteId?: string
 }
 
+export interface NRouteRetainedEntry<TData = unknown, TContext = unknown> {
+  current: NRouteMatchEntry<TData, TContext>
+  next: NRouteMatchEntry<TData, TContext>
+  changedParams: readonly string[]
+  shouldReload: boolean
+}
+
+export interface NRouteTransition<TData = unknown, TContext = unknown> {
+  from?: NRouteMatch<TData, TContext>
+  to: NRouteMatch<TData, TContext>
+  /** Orden padre → hijo. */
+  retained: readonly NRouteRetainedEntry<TData, TContext>[]
+  /** Orden padre → hijo. */
+  entering: readonly NRouteMatchEntry<TData, TContext>[]
+  /** Orden hijo → padre para facilitar cleanup. */
+  leaving: readonly NRouteMatchEntry<TData, TContext>[]
+  changes: {
+    pathname: boolean
+    search: readonly string[]
+    hash: boolean
+  }
+}
+
 export interface NRouteNavigateOptions {
   replace?: boolean
   state?: unknown
@@ -88,10 +212,11 @@ export interface NRouteNavigateOptions {
   preventScrollReset?: boolean
 }
 
-export interface NNavigationState {
+export interface NNavigationState<TData = unknown, TContext = unknown> {
   status: NNavigationStatus
   from?: NRouteLocation
   to?: NRouteLocation
+  transition?: NRouteTransition<TData, TContext>
 }
 
 export interface NRouterAdapter {
@@ -108,11 +233,33 @@ export interface NroutesContextValue<TData = unknown, TContext = unknown> {
   location: NRouteLocation
   match?: NRouteMatch<TData, TContext>
   matches: readonly NRouteMatchEntry<TData, TContext>[]
-  navigation: NNavigationState
+  navigation: NNavigationState<TData, TContext>
   labels: NroutesLabels
   navigate: (to: NRouteTarget, options?: NRouteNavigateOptions) => void
   prefetch: (to: NRouteTarget) => Promise<void>
+  href: (to: NRouteTarget) => string
+  invalidate: (filter: NRouteCacheInvalidation) => void
+  invalidateRoute: (routeId: string) => void
+  /** Invalida y vuelve a resolver la branch activa. */
+  revalidate: () => void
+  clearCache: () => void
+  /** Descarta un módulo importado y reintenta la branch activa. */
+  retryRouteModule: (routeId?: string) => void
   createLinkProps: (to: NRouteTarget, options?: NRouteNavigateOptions) => {
+    href: string
+    onClick: MouseEventHandler<HTMLAnchorElement>
+  }
+}
+
+export type NTypedNroutesContextValue<
+  TRoutes extends readonly NRouteDefinition[],
+  TData = unknown,
+  TContext = unknown,
+> = Omit<NroutesContextValue<TData, TContext>, "navigate" | "prefetch" | "href" | "createLinkProps"> & {
+  navigate: (to: NTypedRouteTarget<TRoutes>, options?: NRouteNavigateOptions) => void
+  prefetch: (to: NTypedRouteTarget<TRoutes>) => Promise<void>
+  href: (to: NTypedRouteTarget<TRoutes>) => string
+  createLinkProps: (to: NTypedRouteTarget<TRoutes>, options?: NRouteNavigateOptions) => {
     href: string
     onClick: MouseEventHandler<HTMLAnchorElement>
   }

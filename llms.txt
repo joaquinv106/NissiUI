@@ -18,6 +18,12 @@
 - Pantalla de acceso y componentes Nauth: ./docs/auth.md
 - Layout de aplicación y navegación SPA: ./docs/layout-routes.md
 - Auditoría y fases entregadas de Nissi Router SPA profesional: ./docs/future-professional-spa-router.md
+- Plan canónico y estado por fases de Nroutes v3: ./docs/nroutes-v3-plan.md
+- Arquitectura, branch diff y revalidación incremental: ./docs/nroutes-architecture.md
+- Lifecycle, guards y scheduler paralelo de loaders: ./docs/nroutes-navigation-lifecycle.md
+- Caché de loaders, SWR, GC, prefetch e invalidación: ./docs/nroutes-cache.md
+- Route modules lazy, pending, retry, SSR y code splitting: ./docs/nroutes-route-modules.md
+- Routing tipado por route id y params anidados: ./docs/nroutes-typed-routing.md
 - Personalización, slots y modo unstyled: ./docs/customization.md
 - Empaquetado, tree shaking, subrutas y SSR: ./docs/package-compatibility.md
 

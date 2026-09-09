@@ -1,5 +1,5 @@
 import { normalizeRoutePath } from "./location"
-import type { NRouteDefinition, NRouteLocation, NRouteMatch, NRouteMatchEntry } from "./types"
+import type { NRouteDefinition, NRouteLocation, NRouteMatch, NRouteMatchEntry, NRoutePathTarget, NRouteTarget } from "./types"
 
 interface CompiledBranch<TData, TContext> {
   routes: readonly NRouteDefinition<TData, TContext>[]
@@ -12,6 +12,36 @@ interface CompiledBranch<TData, TContext> {
 /** Conserva literales de ids y paths al declarar rutas sin exigir anotaciones manuales. */
 export function defineNroutes<const TRoutes extends readonly NRouteDefinition[]>(routes: TRoutes): TRoutes {
   return routes
+}
+
+/** Convierte un target por id en pathname usando el mismo árbol declarado. */
+export function resolveNRouteTarget<TData, TContext>(
+  routes: readonly NRouteDefinition<TData, TContext>[],
+  target: NRouteTarget,
+): string | NRoutePathTarget {
+  if (typeof target === "string" || !("route" in target)) return target
+  let found: string | undefined
+  const visit = (nodes: readonly NRouteDefinition<TData, TContext>[], parent: string): void => {
+    for (const route of nodes) {
+      const pattern = joinRoutePath(parent, route.path)
+      if (route.id === target.route) { found = pattern; return }
+      if (route.children) visit(route.children, pattern)
+      if (found) return
+    }
+  }
+  visit(routes, "/")
+  if (!found) throw new Error(`Nroutes no encontró la ruta con id "${target.route}".`)
+  const params = target.params ?? {}
+  const pathname = found.replace(/:([^/]+)/g, (_, key: string) => {
+    const value = params[key]
+    if (value === undefined) throw new Error(`Falta el parámetro "${key}" para la ruta "${target.route}".`)
+    return encodeURIComponent(String(value))
+  }).replace(/\*$/, () => {
+    const value = params["*"]
+    if (value === undefined) throw new Error(`Falta el parámetro "*" para la ruta "${target.route}".`)
+    return String(value).split("/").map(encodeURIComponent).join("/")
+  })
+  return { pathname, search: target.search, hash: target.hash }
 }
 
 function joinRoutePath(parent: string, child: string): string {
@@ -92,6 +122,13 @@ function matchPattern(pattern: string, pathname: string): Record<string, string>
   return patternSegments.length === pathSegments.length ? params : undefined
 }
 
+function paramsForPattern(pattern: string, params: Readonly<Record<string, string>>): Record<string, string> {
+  const names = normalizeRoutePath(pattern).split("/").filter((segment) => segment.startsWith(":"))
+    .map((segment) => segment.slice(1))
+  if (normalizeRoutePath(pattern).split("/").includes("*")) names.push("*")
+  return Object.fromEntries(names.flatMap((name) => params[name] === undefined ? [] : [[name, params[name]!]]))
+}
+
 export function matchRoutes<TData, TContext>(
   branches: readonly CompiledBranch<TData, TContext>[],
   location: NRouteLocation,
@@ -102,7 +139,7 @@ export function matchRoutes<TData, TContext>(
     const branch: NRouteMatchEntry<TData, TContext>[] = compiled.routes.map((route, index) => ({
       route,
       pathname: compiled.patterns[index]!,
-      params,
+      params: paramsForPattern(compiled.patterns[index]!, params),
     }))
     return {
       route: compiled.routes.at(-1)!,

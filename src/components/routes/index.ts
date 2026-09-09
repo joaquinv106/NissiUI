@@ -1,6 +1,6 @@
 export { NOutlet, NRouteOutlet, Nroutes, redirect } from "./Nroutes"
 export { NLink } from "./NLink"
-export { useNroutes } from "./context"
+export { useNroutes, useNTypedNroutes } from "./context"
 export {
   useNCreateHref,
   useNLoaderData,
@@ -12,6 +12,9 @@ export {
   useNSearchParams,
 } from "./hooks"
 export { defaultNroutesLabels } from "./labels"
+export { changedSearchKeys, createNRouteTransition } from "./core/transition"
+export { createNRouteCacheKey, NRouteCache } from "./data/cache"
+export { NRouteModuleError, NRouteModuleRegistry, resolveNRouteModules } from "./modules"
 export {
   compileRouteBranches,
   defineNroutes,
@@ -21,6 +24,7 @@ export {
   matchRoutes,
   normalizeRoutePath,
   parseRouteLocation,
+  resolveNRouteTarget,
   routeHref,
 } from "./utils"
 export type {
@@ -28,21 +32,33 @@ export type {
   NNavigationState,
   NNavigationStatus,
   NRouteDefinition,
+  NRouteCacheInvalidation,
+  NRouteCacheMode,
+  NRouteCachePolicy,
   NRouteGuardResult,
   NRouteLocation,
+  NRouteIdTarget,
   NRouteMatch,
   NRouteMatchEntry,
+  NRouteModule,
   NRouteNavigateOptions,
   NRouteOutletProps,
   NRouteOutletSlot,
   NRouteRedirect,
+  NRouteRetainedEntry,
+  NRouteRevalidationPolicy,
+  NRouteShouldReloadDetails,
   NRouteStrategy,
   NRouteTarget,
+  NRoutePathTarget,
+  NRouteTransition,
   NRouteTransitionContext,
   NRouterAdapter,
   NSearchParamsUpdate,
   NSetSearchParamsOptions,
   NroutesContextValue,
+  NTypedNroutesContextValue,
+  NTypedRouteTarget,
   NroutesLabels,
   NroutesProps,
   NroutesSlot,

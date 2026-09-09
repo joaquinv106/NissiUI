@@ -102,7 +102,7 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - `NSidebar`: navegación lateral responsive con grupos, búsqueda, badges y estado colapsado.
 - `NAppShell`: composición responsive de header, sidebar, contenido y footer.
 - `Nlayout`: layout de aplicación con `NSidebar`, `NHeader`, encabezado de página, breadcrumbs y selector de tema integrados.
-- `Nroutes`: router SPA progresivo con location completa, rutas anidadas, ranking, permisos, guards, loaders cancelables, boundaries, `NLink`, prefetch y adaptadores externos.
+- `Nroutes`: router SPA progresivo con location completa, rutas anidadas, branch diff, loaders paralelos, caché SWR/GC, módulos lazy, routing tipado opt-in por id/params, boundaries, `NLink`, prefetch y adaptadores externos.
 - `NModuleRegistry`: catálogo de microsistemas contratados y autorizados.
 - `NWorkspaceSwitcher`: selector de organización, tenant, sucursal o proyecto.
 - `NItemPicker<T>`: selección buscable y agrupable de productos, servicios, personas, archivos o activos.
@@ -130,7 +130,7 @@ Cada componente público deberá exportarse desde `src/index.ts` y acompañarse 
 - Actividad y dashboards: `NFileUpload`, `NActivityTimeline`, `NNotificationCenter`, `NStatCard`, `NDashboardGrid` y `NChartFrame`.
 - Administración y verticales: `NSubscriptionGate`, `NPlanComparison`, `NAuditLog`, `NImpersonationBanner`, `NKanban`, `NScheduler` y `NMapView`.
 
-Consulta [el catálogo técnico](./docs/README.md), [la guía de accesibilidad desde cero](./docs/accessibility.md), [personalización compatible](./docs/customization.md), [empaquetado y SSR](./docs/package-compatibility.md), [la identidad visual](./docs/brand.md), [la guía completa de tablas](./docs/tables.md), el [roadmap por fases](./docs/roadmap.md), el [proyecto prioritario de flujos generalizables](./docs/generalized-workflows-roadmap.md) y la [auditoría del Router SPA profesional](./docs/future-professional-spa-router.md) para ver contratos, ejemplos y decisiones.
+Consulta [el catálogo técnico](./docs/README.md), [la guía de accesibilidad desde cero](./docs/accessibility.md), [personalización compatible](./docs/customization.md), [empaquetado y SSR](./docs/package-compatibility.md), [la identidad visual](./docs/brand.md), [la guía completa de tablas](./docs/tables.md), el [roadmap por fases](./docs/roadmap.md), el [proyecto prioritario de flujos generalizables](./docs/generalized-workflows-roadmap.md), la [generación vigente del Router SPA](./docs/future-professional-spa-router.md), el [plan auditado de Nroutes v3](./docs/nroutes-v3-plan.md) y su [lifecycle de navegación](./docs/nroutes-navigation-lifecycle.md) para ver contratos, ejemplos y decisiones.
 
 Los asistentes y agentes de IA deben comenzar por [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md), que concentra el objetivo, la arquitectura, las convenciones y las rutas relevantes del proyecto.
 

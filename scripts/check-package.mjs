@@ -8,7 +8,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const temporaryRoot = mkdtempSync(join(tmpdir(), "nissi-ui-consumer-"))
 const packageLink = join(temporaryRoot, "node_modules", "nissi-ui")
 
-const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel", "NThermalPrint", "NloginPage", "NauthLogin", "Nlayout", "Nroutes", "NRouteOutlet", "NOutlet", "NLink", "useNLocation", "useNNavigate"]
+const publicNames = ["NThemeProvider", "NAmountInput", "NCheckout", "NPanel", "NThermalPrint", "NloginPage", "NauthLogin", "Nlayout", "Nroutes", "NRouteOutlet", "NOutlet", "NLink", "useNLocation", "useNNavigate", "useNTypedNroutes", "createNRouteTransition", "createNRouteCacheKey", "resolveNRouteTarget", "NRouteCache", "NRouteModuleRegistry"]
 
 try {
   mkdirSync(dirname(packageLink), { recursive: true })
@@ -73,7 +73,7 @@ try {
   run(process.execPath, ["smoke.cjs"])
   writeFileSync(
     join(temporaryRoot, "subpaths.mjs"),
-    'import { NThermalPrint } from "nissi-ui/thermal-print"\nimport { NPanel } from "nissi-ui/panel"\nimport { NloginPage, NauthLogin } from "nissi-ui/auth"\nimport { Nlayout } from "nissi-ui/layout"\nimport { Nroutes, NLink, NOutlet } from "nissi-ui/routes"\nvoid [NThermalPrint, NPanel, NloginPage, NauthLogin, Nlayout, Nroutes, NLink, NOutlet]\n',
+    'import { NThermalPrint } from "nissi-ui/thermal-print"\nimport { NPanel } from "nissi-ui/panel"\nimport { NloginPage, NauthLogin } from "nissi-ui/auth"\nimport { Nlayout } from "nissi-ui/layout"\nimport { Nroutes, NLink, NOutlet, useNTypedNroutes, createNRouteTransition, createNRouteCacheKey, resolveNRouteTarget, NRouteCache, NRouteModuleRegistry } from "nissi-ui/routes"\nvoid [NThermalPrint, NPanel, NloginPage, NauthLogin, Nlayout, Nroutes, NLink, NOutlet, useNTypedNroutes, createNRouteTransition, createNRouteCacheKey, resolveNRouteTarget, NRouteCache, NRouteModuleRegistry]\n',
   )
   run(process.execPath, ["subpaths.mjs"])
   console.log("TypeScript NodeNext/Bundler OK")

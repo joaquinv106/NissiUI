@@ -1,6 +1,10 @@
 # Nissi Router SPA profesional
 
 > Estado: **implementado en el repositorio para la siguiente publicación**. Este documento conserva la especificación, auditoría y decisiones de la entrega.
+>
+> La siguiente generación no se documenta como terminada aquí. Su auditoría y fases viven en [Nroutes v3](./nroutes-v3-plan.md).
+>
+> La siguiente generación no se documenta como terminada aquí. Su auditoría y fases pendientes viven en [Nroutes v3](./nroutes-v3-plan.md).
 
 ## Auditoría ejecutada
 

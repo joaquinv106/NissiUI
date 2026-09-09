@@ -18,6 +18,10 @@ import {
 
 import { usePermissions } from "../permissions"
 import { NOutletDepthContext, NRouteRenderContext, NroutesContext, useNroutes } from "./context"
+import { createNRouteTransition, retainedLoaderData, transitionWorkRouteIds } from "./core/transition"
+import { createNRouteCacheKey, NRouteCache } from "./data/cache"
+import { NRouteLoaderSchedulerError, scheduleNRouteLoaders } from "./data/scheduler"
+import { NRouteModuleError, NRouteModuleRegistry, resolveNRouteModules } from "./modules"
 import { resolveNroutesLabels } from "./labels"
 import {
   locationPath,
@@ -29,15 +33,17 @@ import {
   routeHref,
   stripBasePath,
 } from "./location"
-import { compileRouteBranches, matchRoutes } from "./matcher"
+import { compileRouteBranches, matchRoutes, resolveNRouteTarget } from "./matcher"
 import type {
   NNavigationState,
+  NRouteCacheInvalidation,
   NRouteDefinition,
   NRouteLocation,
   NRouteMatch,
   NRouteNavigateOptions,
   NRouteOutletProps,
   NRouteTarget,
+  NRouteTransition,
   NroutesContextValue,
   NroutesProps,
 } from "./types"
@@ -87,8 +93,29 @@ function isPlainPrimaryClick(event: ReactMouseEvent): boolean {
   return event.button === 0 && !event.defaultPrevented && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
 }
 
-function hasTransitionWork<TData, TContext>(match: NRouteMatch<TData, TContext>): boolean {
-  return match.branch.some(({ route }) => Boolean(route.beforeEnter || route.loader))
+function hasTransitionWork<TData, TContext>(transition: NRouteTransition<TData, TContext>): boolean {
+  const routeIds = transitionWorkRouteIds(transition)
+  return transition.to.branch.some(({ route }) => routeIds.has(route.id) && Boolean(route.lazy || route.beforeEnter || route.loader))
+}
+
+function withLoaderData<TData, TContext>(
+  match: NRouteMatch<TData, TContext>,
+  loaderData: Readonly<Record<string, unknown>>,
+): NRouteMatch<TData, TContext> {
+  return {
+    ...match,
+    loaderData,
+    branch: match.branch.map((entry) => ({ ...entry, loaderData: loaderData[entry.route.id] })),
+  }
+}
+
+function withRetainedModules<TData, TContext>(
+  match: NRouteMatch<TData, TContext>,
+  transition: NRouteTransition<TData, TContext>,
+): NRouteMatch<TData, TContext> {
+  const retained = new Map(transition.retained.map((entry) => [entry.next.route.id, entry.current.route]))
+  const branch = match.branch.map((entry) => retained.has(entry.route.id) ? { ...entry, route: retained.get(entry.route.id)! } : entry)
+  return { ...match, route: branch.at(-1)!.route, branch }
 }
 
 function routeTitle<TData, TContext>(match: NRouteMatch<TData, TContext>): string {
@@ -141,25 +168,31 @@ export function Nroutes<TData = unknown, TContext = unknown>({
   }, [defaultPath, externalValue, internalLocation])
   const candidate = useMemo(() => matchRoutes(compiled, currentLocation), [compiled, currentLocation])
   const candidateAllowed = candidate?.branch.every(({ route }) => !route.requiredPermission || can(route.requiredPermission, route.permissionMode)) ?? true
-  const immediateState: RenderState = !candidate ? "not-found" : !candidateAllowed ? "forbidden" : hasTransitionWork(candidate) ? "pending" : "ready"
+  const immediateState: RenderState = !candidate ? "not-found" : !candidateAllowed
+    ? "forbidden"
+    : candidate.branch.some(({ route }) => Boolean(route.lazy || route.beforeEnter || route.loader)) ? "pending" : "ready"
   const [resolution, setResolution] = useState<RouteResolution<TData, TContext>>(() => ({
     key: currentLocation.key,
     state: immediateState,
     match: immediateState === "ready" ? candidate : undefined,
   }))
-  const [navigation, setNavigation] = useState<NNavigationState>({ status: immediateState === "pending" ? "loading" : "idle" })
+  const [navigation, setNavigation] = useState<NNavigationState<TData, TContext>>({ status: immediateState === "pending" ? "loading" : "idle" })
   const abortRef = useRef<AbortController | undefined>(undefined)
   const generationRef = useRef(0)
   const activeLocationRef = useRef(currentLocation)
-  const loaderCache = useRef(new Map<string, Promise<unknown> | unknown>())
+  const activeMatchRef = useRef<NRouteMatch<TData, TContext> | undefined>(resolution.match)
+  const routeCache = useRef(new NRouteCache())
+  const moduleRegistry = useRef(new NRouteModuleRegistry<TData, TContext>())
   const prefetchCache = useRef(new Map<string, Promise<void>>())
+  const [cacheRevision, setCacheRevision] = useState(0)
   const scrollPositions = useRef(new Map<string, { x: number; y: number }>())
   const navigationOptions = useRef(new Map<string, NRouteNavigateOptions>())
 
   const matchForLocation = useCallback((nextLocation: NRouteLocation) => matchRoutes(compiled, nextLocation), [compiled])
+  const normalizeTarget = useCallback((target: NRouteTarget) => resolveNRouteTarget(routes, target), [routes])
 
   const updateLocation = useCallback((target: NRouteTarget, options: NRouteNavigateOptions = {}) => {
-    const nextLocation = { ...resolveRouteTarget(target, currentLocation), state: options.state }
+    const nextLocation = { ...resolveRouteTarget(normalizeTarget(target), currentLocation), state: options.state }
     const fullPath = locationPath(nextLocation)
     const nextMatch = matchForLocation(nextLocation)
     if (typeof window !== "undefined" && scrollRestoration === "restore") {
@@ -177,74 +210,106 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     }
     onPathChange?.(nextLocation.pathname, nextMatch)
     onLocationChange?.(nextLocation, nextMatch)
-  }, [basePath, controlledLocation, controlledPath, currentLocation, matchForLocation, onLocationChange, onPathChange, router, scrollRestoration, strategy])
+  }, [basePath, controlledLocation, controlledPath, currentLocation, matchForLocation, normalizeTarget, onLocationChange, onPathChange, router, scrollRestoration, strategy])
 
   const loadMatch = useCallback(async (
     match: NRouteMatch<TData, TContext>,
+    transition: NRouteTransition<TData, TContext>,
     signal: AbortSignal,
-    useCache: boolean,
-    retainCache = false,
+    onModulesResolved?: (match: NRouteMatch<TData, TContext>) => void,
   ): Promise<{ state: RenderState; match: NRouteMatch<TData, TContext>; redirect?: { to: NRouteTarget; options: NRouteNavigateOptions } }> => {
-    const loaderData: Record<string, unknown> = {}
-    for (let index = 0; index < match.branch.length; index += 1) {
-      const route = match.branch[index]!.route
-      const details = { params: match.params, location: match.location, context: context as TContext, signal, route }
+    let resolvedMatch: NRouteMatch<TData, TContext>
+    try {
+      resolvedMatch = await resolveNRouteModules(match, moduleRegistry.current, signal)
+      onModulesResolved?.(resolvedMatch)
+    } catch (error) {
+      if (signal.aborted) throw error
+      const failedIndex = error instanceof NRouteModuleError ? error.routeIndex : 0
+      const cause = error instanceof NRouteModuleError ? error.cause : error
+      return {
+        state: "error",
+        match: {
+          ...withLoaderData(match, retainedLoaderData(transition)),
+          error: cause,
+          errorRouteId: closestErrorRouteId(match, failedIndex),
+        },
+      }
+    }
+    const initialLoaderData = retainedLoaderData(transition)
+    const workRouteIds = transitionWorkRouteIds(transition)
+    for (let index = 0; index < resolvedMatch.branch.length; index += 1) {
+      const route = resolvedMatch.branch[index]!.route
+      if (!workRouteIds.has(route.id)) continue
+      const details = { params: resolvedMatch.params, location: resolvedMatch.location, context: context as TContext, signal, route, loaderData: initialLoaderData }
       try {
         const guardResult = await route.beforeEnter?.(details)
         if (signal.aborted) throw new DOMException("Navigation aborted", "AbortError")
         if (isNRouteRedirect(guardResult)) {
-          return { state: "pending", match, redirect: { to: guardResult.to, options: { replace: guardResult.replace ?? true, state: guardResult.state } } }
+          return { state: "pending", match: resolvedMatch, redirect: { to: guardResult.to, options: { replace: guardResult.replace ?? true, state: guardResult.state } } }
         }
-        if (guardResult === false) return { state: "forbidden", match }
-        if (route.loader) {
-          const cacheKey = `${route.id}:${locationPath(match.location)}`
-          let pending = useCache ? loaderCache.current.get(cacheKey) : undefined
-          if (pending === undefined) {
-            pending = Promise.resolve(route.loader(details))
-            loaderCache.current.set(cacheKey, pending)
-          }
-          const clearAbortedCache = () => loaderCache.current.delete(cacheKey)
-          signal.addEventListener("abort", clearAbortedCache, { once: true })
-          let data: unknown
-          try {
-            data = await pending
-          } catch (error) {
-            loaderCache.current.delete(cacheKey)
-            throw error
-          } finally {
-            signal.removeEventListener("abort", clearAbortedCache)
-          }
-          if (signal.aborted) throw new DOMException("Navigation aborted", "AbortError")
-          if (retainCache) loaderCache.current.set(cacheKey, data)
-          else loaderCache.current.delete(cacheKey)
-          loaderData[route.id] = data
-        }
+        if (guardResult === false) return { state: "forbidden", match: resolvedMatch }
       } catch (error) {
         if (signal.aborted) throw error
         return {
           state: "error",
           match: {
-            ...match,
-            branch: match.branch.map((entry) => ({ ...entry, loaderData: loaderData[entry.route.id] })),
-            loaderData,
+            ...withLoaderData(resolvedMatch, initialLoaderData),
             error,
-            errorRouteId: closestErrorRouteId(match, index),
+            errorRouteId: closestErrorRouteId(resolvedMatch, index),
           },
         }
       }
     }
-    return {
-      state: "ready",
-      match: {
-        ...match,
-        branch: match.branch.map((entry) => ({ ...entry, loaderData: loaderData[entry.route.id] })),
-        loaderData,
-      },
+
+    try {
+      const loaderData = await scheduleNRouteLoaders({
+        match: resolvedMatch,
+        routeIds: workRouteIds,
+        initialLoaderData,
+        context: context as TContext,
+        signal,
+        execute: async (entry, details) => {
+          const { route } = entry
+          if (route.cache === false) return route.loader!(details)
+          const cacheKey = createNRouteCacheKey(entry, resolvedMatch.location)
+          return routeCache.current.load({
+            key: cacheKey,
+            routeId: route.id,
+            policy: route.cache,
+            signal,
+            load: (cacheSignal) => route.loader!({ ...details, signal: cacheSignal }),
+            onBackgroundUpdate: (data) => {
+              setResolution((current) => {
+                if (current.state !== "ready" || !current.match) return current
+                const currentEntry = current.match.branch.find(({ route: activeRoute }) => activeRoute.id === route.id)
+                if (!currentEntry || createNRouteCacheKey(currentEntry, current.match.location) !== cacheKey) return current
+                const nextMatch = withLoaderData(current.match, { ...current.match.loaderData, [route.id]: data })
+                activeMatchRef.current = nextMatch
+                return { ...current, match: nextMatch }
+              })
+            },
+          })
+        },
+      })
+      return { state: "ready", match: withLoaderData(resolvedMatch, loaderData) }
+    } catch (error) {
+      if (signal.aborted) throw error
+      const failedIndex = error instanceof NRouteLoaderSchedulerError ? error.routeIndex : 0
+      const cause = error instanceof NRouteLoaderSchedulerError && error.cause !== undefined ? error.cause : error
+      const loaderData = error instanceof NRouteLoaderSchedulerError ? error.loaderData : initialLoaderData
+      return {
+        state: "error",
+        match: {
+          ...withLoaderData(resolvedMatch, loaderData),
+          error: cause,
+          errorRouteId: closestErrorRouteId(resolvedMatch, failedIndex),
+        },
+      }
     }
   }, [context])
 
   const prefetch = useCallback(async (target: NRouteTarget) => {
-    const nextLocation = resolveRouteTarget(target, currentLocation)
+    const nextLocation = resolveRouteTarget(normalizeTarget(target), currentLocation)
     const targetPath = locationPath(nextLocation)
     const existing = prefetchCache.current.get(targetPath)
     if (existing) return existing
@@ -252,9 +317,11 @@ export function Nroutes<TData = unknown, TContext = unknown>({
       await router?.prefetch?.(targetPath)
       const nextMatch = matchForLocation(nextLocation)
       if (!nextMatch || !nextMatch.branch.every(({ route }) => !route.requiredPermission || can(route.requiredPermission, route.permissionMode))) return
-      await Promise.all(nextMatch.branch.map(({ route }) => route.preload?.()))
       const controller = new AbortController()
-      await loadMatch(nextMatch, controller.signal, true, true)
+      const resolvedMatch = await resolveNRouteModules(nextMatch, moduleRegistry.current, controller.signal)
+      await Promise.all(resolvedMatch.branch.map(({ route }) => route.preload?.()))
+      const transition = createNRouteTransition(activeMatchRef.current, resolvedMatch)
+      await loadMatch(resolvedMatch, transition, controller.signal)
     })()
     prefetchCache.current.set(targetPath, task)
     try {
@@ -263,7 +330,7 @@ export function Nroutes<TData = unknown, TContext = unknown>({
       prefetchCache.current.delete(targetPath)
       throw error
     }
-  }, [can, currentLocation, loadMatch, matchForLocation, router])
+  }, [can, currentLocation, loadMatch, matchForLocation, normalizeTarget, router])
 
   useEffect(() => {
     generationRef.current += 1
@@ -276,24 +343,33 @@ export function Nroutes<TData = unknown, TContext = unknown>({
       setResolution({ key: currentLocation.key, state: "not-found" })
       setNavigation({ status: "idle" })
       activeLocationRef.current = currentLocation
+      activeMatchRef.current = undefined
       return () => controller.abort()
     }
     if (!candidateAllowed) {
       setResolution({ key: currentLocation.key, state: "forbidden", match: candidate })
       setNavigation({ status: "idle" })
       activeLocationRef.current = currentLocation
+      activeMatchRef.current = undefined
       return () => controller.abort()
     }
-    if (!hasTransitionWork(candidate)) {
-      setResolution({ key: currentLocation.key, state: "ready", match: candidate })
+    const transition = createNRouteTransition(activeMatchRef.current, candidate)
+    if (!hasTransitionWork(transition)) {
+      const readyMatch = withLoaderData(withRetainedModules(candidate, transition), retainedLoaderData(transition))
+      setResolution({ key: currentLocation.key, state: "ready", match: readyMatch })
       setNavigation({ status: "idle" })
       activeLocationRef.current = currentLocation
+      activeMatchRef.current = readyMatch
       return () => controller.abort()
     }
 
-    setResolution({ key: currentLocation.key, state: "pending" })
-    setNavigation({ status: "loading", from: activeLocationRef.current, to: currentLocation })
-    void loadMatch(candidate, controller.signal, true).then((result) => {
+    setResolution({ key: currentLocation.key, state: "pending", match: candidate })
+    setNavigation({ status: "loading", from: activeLocationRef.current, to: currentLocation, transition })
+    void loadMatch(candidate, transition, controller.signal, (resolvedMatch) => {
+      if (!controller.signal.aborted && generation === generationRef.current) {
+        setResolution({ key: currentLocation.key, state: "pending", match: resolvedMatch })
+      }
+    }).then((result) => {
       if (controller.signal.aborted || generation !== generationRef.current) return
       if (result.redirect) {
         updateLocation(result.redirect.to, result.redirect.options)
@@ -302,13 +378,14 @@ export function Nroutes<TData = unknown, TContext = unknown>({
       setResolution({ key: currentLocation.key, state: result.state, match: result.match })
       setNavigation({ status: "idle" })
       activeLocationRef.current = currentLocation
+      activeMatchRef.current = result.state === "ready" || result.state === "error" ? result.match : undefined
     }).catch((error: unknown) => {
       if (controller.signal.aborted || generation !== generationRef.current) return
       setResolution({ key: currentLocation.key, state: "error", match: { ...candidate, error } })
       setNavigation({ status: "idle" })
     })
     return () => controller.abort()
-  }, [candidate, candidateAllowed, currentLocation, loadMatch, updateLocation])
+  }, [cacheRevision, candidate, candidateAllowed, currentLocation, loadMatch, updateLocation])
 
   useEffect(() => {
     if (typeof window === "undefined" || strategy === "memory" || router) return undefined
@@ -340,9 +417,9 @@ export function Nroutes<TData = unknown, TContext = unknown>({
 
   const createHref = useCallback((target: NRouteTarget) => {
     if (isExternalRouteTarget(target)) return target as string
-    const next = resolveRouteTarget(target, currentLocation)
+    const next = resolveRouteTarget(normalizeTarget(target), currentLocation)
     return router?.createHref?.(locationPath(next)) ?? routeHref(next, strategy, basePath)
-  }, [basePath, currentLocation, router, strategy])
+  }, [basePath, currentLocation, normalizeTarget, router, strategy])
 
   const createLinkProps = useCallback((target: NRouteTarget, options?: NRouteNavigateOptions) => ({
     href: createHref(target),
@@ -373,9 +450,40 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     updateLocation(candidatePath)
   }, [basePath, matchForLocation, strategy, updateLocation])
 
+  const invalidate = useCallback((filter: NRouteCacheInvalidation) => {
+    routeCache.current.invalidate(filter)
+    prefetchCache.current.clear()
+  }, [])
+  const invalidateRoute = useCallback((routeId: string) => {
+    routeCache.current.invalidateRoute(routeId)
+    prefetchCache.current.clear()
+  }, [])
+  const clearCache = useCallback(() => {
+    routeCache.current.clear()
+    prefetchCache.current.clear()
+  }, [])
+  const retryRouteModule = useCallback((routeId?: string) => {
+    moduleRegistry.current.invalidate(routeId)
+    activeMatchRef.current = undefined
+    setCacheRevision((revision) => revision + 1)
+  }, [])
+  const revalidate = useCallback(() => {
+    const routeIds = activeMatchRef.current?.branch.map(({ route }) => route.id) ?? []
+    if (routeIds.length > 0) routeCache.current.invalidate({ routeIds })
+    activeMatchRef.current = undefined
+    setCacheRevision((revision) => revision + 1)
+  }, [])
+
+  const previewTransition = candidate ? createNRouteTransition(activeMatchRef.current, candidate) : undefined
+  const previewState: RenderState = !candidate ? "not-found" : !candidateAllowed
+    ? "forbidden"
+    : previewTransition && hasTransitionWork(previewTransition) ? "pending" : "ready"
+  const previewMatch = candidate && previewTransition && previewState === "ready"
+    ? withLoaderData(candidate, retainedLoaderData(previewTransition))
+    : undefined
   const effectiveResolution = resolution.key === currentLocation.key
     ? resolution
-    : { key: currentLocation.key, state: immediateState, match: immediateState === "ready" ? candidate : undefined }
+    : { key: currentLocation.key, state: previewState, match: previewMatch }
   const value = useMemo<NroutesContextValue<TData, TContext>>(() => ({
     path: currentLocation.pathname,
     location: currentLocation,
@@ -385,8 +493,14 @@ export function Nroutes<TData = unknown, TContext = unknown>({
     labels,
     navigate: updateLocation,
     prefetch,
+    href: createHref,
+    invalidate,
+    invalidateRoute,
+    revalidate,
+    clearCache,
+    retryRouteModule,
     createLinkProps,
-  }), [candidate?.branch, createLinkProps, currentLocation, effectiveResolution.match, labels, navigation, prefetch, updateLocation])
+  }), [candidate?.branch, clearCache, createLinkProps, currentLocation, effectiveResolution.match, invalidate, invalidateRoute, labels, navigation, prefetch, retryRouteModule, revalidate, updateLocation])
   const renderValue = useMemo(() => ({
     state: effectiveResolution.state,
     pendingFallback,
@@ -513,7 +627,10 @@ export function NRouteOutlet<TData = unknown, TContext = unknown>({
       {content}
     </Box>
   )
-  if (state === "pending") return stateBox("pending", pendingFallback ?? providerRender.pendingFallback ?? <DefaultPending labels={labels} />)
+  if (state === "pending") {
+    const routePending = match ? [...match.branch].reverse().find(({ route }) => route.pendingElement !== undefined)?.route.pendingElement : undefined
+    return stateBox("pending", pendingFallback ?? routePending ?? providerRender.pendingFallback ?? <DefaultPending labels={labels} />)
+  }
   if (state === "not-found") return stateBox("notFound", notFoundFallback ?? providerRender.notFoundFallback ?? <DefaultMessage title={labels.notFoundTitle} description={labels.notFoundDescription} />)
   if (state === "forbidden") return stateBox("forbidden", forbiddenFallback ?? providerRender.forbiddenFallback ?? <DefaultMessage title={labels.forbiddenTitle} description={labels.forbiddenDescription} />)
   if (state === "error" && !match?.errorRouteId) {

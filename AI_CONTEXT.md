@@ -80,7 +80,7 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 
 ## Familias disponibles
 
-- Plataforma: `NAppShell`, `Nlayout`, `Nroutes`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`. `Nlayout` integra el shell completo y `Nroutes` ofrece rutas planas o anidadas, guards, loaders, permisos, History API, hash, memoria y adaptadores para routers externos.
+- Plataforma: `NAppShell`, `Nlayout`, `Nroutes`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`. `Nlayout` integra el shell completo y `Nroutes` ofrece rutas planas o anidadas, guards, loaders paralelos con dependencias explícitas, permisos, History API, hash, memoria y adaptadores para routers externos.
 - Acceso: `NPermissionsProvider`, `NPermissionGate`, `useCanAccess`, `NSubscriptionGate`.
 - Autenticación visual: `NloginPage` como pantalla autónoma con tema oscuro inicial y selector, además de `NauthLogin`, `NauthRegister`, recuperación, OTP y primitivas. La aplicación conserva sesión, OAuth y validación definitiva.
 - Formularios y selección: `NForm`, `NItemPicker`, `NAmountInput`, `NCodeCapture`, `NDateRangePicker`, `NFileUpload`.
@@ -99,7 +99,9 @@ La documentación detallada vive en `docs/README.md` dentro del paquete y del re
 
 ## Router SPA profesional
 
-`Nroutes` y `Nlayout` ofrecen navegación SPA jerárquica con location completa, rutas anidadas, ranking, guards, loaders cancelables, permisos, error boundaries, `NLink`, hooks y prefetch. Las rutas planas, `useNroutes()` y `createLinkProps()` permanecen compatibles. `NRouterAdapter` permite que Next.js u otro framework conserve el control de la URL; no deben operar dos routers sobre History API al mismo tiempo. La referencia completa está en `docs/layout-routes.md`.
+`Nroutes` y `Nlayout` ofrecen navegación SPA jerárquica con location completa, rutas anidadas, ranking, branch diff, guards, loaders cancelables paralelos, permisos, error boundaries, `NLink`, hooks y prefetch. Las rutas planas, `useNroutes()` y `createLinkProps()` permanecen compatibles. `NRouterAdapter` permite que Next.js u otro framework conserve el control de la URL; no deben operar dos routers sobre History API al mismo tiempo. La referencia completa está en `docs/layout-routes.md` y el orden de ejecución en `docs/nroutes-navigation-lifecycle.md`.
+
+`docs/nroutes-v3-plan.md` gobierna la evolución futura por fases. Branch diff, scheduling paralelo, route cache, módulos lazy y routing tipado ya están implementados. `defineNroutes()` y `useNTypedNroutes(routes)` validan ids/params para navigate, href y prefetch sin retirar strings. El manifest eager conserva rutas y permisos; el módulo lazy aporta UI y lifecycle. `useNroutes()` permite invalidar datos, revalidar y reintentar chunks. No asumas que search codecs, blockers, actions, outlets nombrados o DevTools ya forman parte de la API publicada: el plan registra esas capacidades como pendientes hasta que existan implementación y pruebas.
 
 ## Reglas para generar código con IA
 

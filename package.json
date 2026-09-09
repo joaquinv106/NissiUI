@@ -84,6 +84,7 @@
     "docs:dev": "vite --config vite.docs.config.ts",
     "docs:build": "vite build --config vite.docs.config.ts",
     "docs:preview": "vite preview --config vite.docs.config.ts",
+    "bench:nroutes": "node benchmarks/nroutes-baseline.mjs",
     "build": "tsc --noEmit && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
