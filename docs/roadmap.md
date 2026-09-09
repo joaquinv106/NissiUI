@@ -27,14 +27,15 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 2026-09-09 | Nroutes v3 · Fase 3 | Completada | Caché de loaders con deduplicación, modos fresh/stale, SWR, GC, prefetch e invalidación pública. |
 | 2026-09-09 | Nroutes v3 · Fase 4 | Completada | Route modules lazy con imports deduplicados, pending, retry, boundaries y prefetch explícito de código antes de datos. |
 | 2026-09-09 | Nroutes v3 · Fase 5 | Completada | Routing por id opt-in con inferencia de params anidados, href/prefetch/navigate tipados y validación runtime. |
+| 2026-09-09 | Nroutes v3 · Fase 6 | Completada | Search codecs opcionales, hooks ligados con inferencia, serialización tipada y revalidación limitada por `reloadOnSearch`. |
 
 ## Fases pendientes
 
-No quedan fases pendientes del alcance original ni de la primera evolución del [router SPA profesional](./future-professional-spa-router.md). La evolución [Nroutes v3](./nroutes-v3-plan.md) completó auditoría y fases 1–5; mantiene pendientes las fases 6–22, desde search codecs hasta la documentación web integral y actualización final de GitHub.
+No quedan fases pendientes del alcance original ni de la primera evolución del [router SPA profesional](./future-professional-spa-router.md). La evolución [Nroutes v3](./nroutes-v3-plan.md) completó auditoría y fases 1–6; mantiene pendientes las fases 7–22, desde navigation blockers hasta la documentación web integral y actualización final de GitHub.
 
 ## Prioridad inmediata: Nroutes v3 P0
 
-La secuencia de [Flujos operativos generalizables](./generalized-workflows-roadmap.md) y las seis fases posteriores quedó completada. Nroutes v3 queda pausado tras la Fase 5; la siguiente entrega es search codecs selectivos, sin introducir caché de queries, file-based routing ni responsabilidades de framework SSR.
+La secuencia de [Flujos operativos generalizables](./generalized-workflows-roadmap.md) y las seis fases posteriores quedó completada. Nroutes v3 queda pausado tras la Fase 6; la siguiente entrega pendiente son navigation blockers, sin introducir caché de queries, file-based routing ni responsabilidades de framework SSR.
 
 ## Regla de seguridad
 

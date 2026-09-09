@@ -22,7 +22,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 | `NForm` | Inicial | [Formularios](./forms.md) | `src/components/form/NForm.test.tsx` |
 | `NPermissionGate` | Inicial | [Permisos](./permissions.md) | `src/components/permissions/NPermissionGate.test.tsx` |
 | `NAppShell` | Plataforma | [Shell de aplicación](./app-shell.md) | `src/components/app-shell/NAppShell.test.tsx` |
-| `Nlayout` / `Nroutes` | Plataforma SPA · v3 Fases 1–5 | [Layout y rutas](./layout-routes.md), [arquitectura](./nroutes-architecture.md), [lifecycle](./nroutes-navigation-lifecycle.md), [caché](./nroutes-cache.md), [módulos lazy](./nroutes-route-modules.md), [routing tipado](./nroutes-typed-routing.md) | `src/components/layout/Nlayout.test.tsx`, `src/components/routes/Nroutes.test.tsx` |
+| `Nlayout` / `Nroutes` | Plataforma SPA · v3 Fases 1–6 | [Layout y rutas](./layout-routes.md), [arquitectura](./nroutes-architecture.md), [lifecycle](./nroutes-navigation-lifecycle.md), [caché](./nroutes-cache.md), [módulos lazy](./nroutes-route-modules.md), [routing tipado](./nroutes-typed-routing.md), [search tipado](./nroutes-search.md) | `src/components/layout/Nlayout.test.tsx`, `src/components/routes/Nroutes.test.tsx`, `src/components/routes/search.test.tsx` |
 | `NModuleRegistry` | Plataforma | [Registro de módulos](./module-registry.md) | `src/components/module-registry/NModuleRegistry.test.tsx` |
 | `NWorkspaceSwitcher` | Plataforma | [Selector de workspace](./workspace-switcher.md) | `src/components/workspace-switcher/NWorkspaceSwitcher.test.tsx` |
 | `NTheme` / `NThemeProvider` | Fundación visual | [Temas](./theme.md) | `src/components/theme/NTheme.test.tsx` |

@@ -6,7 +6,8 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 
 ### Añadido
 
-- Auditoría y plan canónico de Nroutes v3 con arquitectura encontrada, deuda comprobada, decisiones progresivas de API, 21 fases, gates, riesgos y benchmark reproducible de 10/100/1,000 rutas. Las capacidades v3 permanecen marcadas como pendientes hasta su implementación.
+- Nroutes v3 Fase 6: search codecs opcionales y extensibles, defaults, hooks tipados, serialización por route id y dependencias selectivas mediante `reloadOnSearch`, conservando `URLSearchParams`.
+- Auditoría y plan canónico de Nroutes v3 con arquitectura encontrada, deuda comprobada, decisiones progresivas de API, 21 fases, gates, riesgos y benchmark reproducible de 10/100/1,000 rutas.
 - Fase 1 de Nroutes v3: branch diff puro, params por nivel, segmentos retenidos/entrantes/salientes, revalidación configurable y preservación del loader data de padres compartidos.
 - Fase 2 de Nroutes v3: guards completos antes de datos, loaders independientes en paralelo, dependencias explícitas con `dependsOn`, validación de ciclos y errores deterministas por branch.
 - Fase 3 de Nroutes v3: `NRouteCache` independiente, deduplicación, claves selectivas, cache-first/network-first/SWR, stale time, garbage collection, prefetch e invalidación pública por tags o rutas.

@@ -94,6 +94,19 @@ function InvoiceFilters() {
 
 `mode="replace"` sustituye el query completo; `mode="merge"` conserva los demás parámetros. Un valor `null` o `undefined` elimina la clave.
 
+Una ruta puede agregar un schema opcional con `stringParam()`, `numberParam()`, `booleanParam()`, `enumParam()` o un codec propio. `createNRouteSearchHook(schema)` produce un hook sin argumentos con inferencia exacta; `useNRouteSearch()` también lee el schema de la ruta hoja activa. Los targets por route id serializan los valores tipados, mientras `URLSearchParams` continúa disponible.
+
+```tsx
+const invoiceSearch = defineNRouteSearch({
+  page: numberParam().default(1),
+  status: enumParam(["all", "pending"] as const).default("all"),
+})
+
+const useInvoiceSearch = createNRouteSearchHook(invoiceSearch)
+```
+
+Consulta [Search params tipados](./nroutes-search.md) para codecs propios, navegación y dependencias selectivas.
+
 ## Permisos, guards y loaders
 
 Las rutas reutilizan las capacidades de `NPermissionsProvider`. Esto protege enlaces directos además de ocultar navegación en `NSidebar` y `NHeader`; la autorización definitiva sigue perteneciendo al backend.
@@ -194,6 +207,7 @@ Hooks públicos:
 - `useNLocation()` devuelve la location completa.
 - `useNRouteParams()` devuelve los params combinados de la branch.
 - `useNSearchParams()` permite reemplazar, mezclar y eliminar query params.
+- `useNRouteSearch()` decodifica el schema opcional de la ruta; un hook creado con `createNRouteSearchHook()` conserva sus tipos exactos.
 - `useNNavigation()` devuelve `idle` o `loading`, locations de origen/destino y el branch diff durante trabajo asíncrono.
 - `useNLoaderData(routeId?)` devuelve datos del loader activo.
 - `useNRouteMatches()` devuelve toda la branch, incluidos datos por nivel.

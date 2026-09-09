@@ -1,9 +1,17 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 
 import { useNroutes } from "./context"
-import type { NRouteNavigateOptions, NRouteTarget, NSearchParamsUpdate, NSetSearchParamsOptions } from "./types"
+import { parseNRouteSearch, rawNRouteSearch } from "./search"
+import type {
+  NRouteNavigateOptions,
+  NRouteSearchSchema,
+  NRouteSearchValues,
+  NRouteTarget,
+  NSearchParamsUpdate,
+  NSetSearchParamsOptions,
+} from "./types"
 
 export function useNNavigate() {
   return useNroutes().navigate
@@ -59,6 +67,24 @@ export function useNSearchParams(): [URLSearchParams, (update: NSearchParamsUpda
     navigate({ search: next }, options)
   }, [location.searchParams, navigate])
   return [new URLSearchParams(location.searchParams), setSearchParams]
+}
+
+export function useNRouteSearch(): Readonly<Record<string, string | readonly string[]>>
+export function useNRouteSearch<const TSchema extends NRouteSearchSchema>(schema: TSchema): NRouteSearchValues<TSchema>
+export function useNRouteSearch<const TSchema extends NRouteSearchSchema>(schema?: TSchema) {
+  const { location, match } = useNroutes()
+  const activeSchema = schema ?? match?.route.search
+  return useMemo(
+    () => activeSchema ? parseNRouteSearch(activeSchema, location.searchParams) : rawNRouteSearch(location.searchParams),
+    [activeSchema, location.search],
+  )
+}
+
+/** Crea un hook sin argumentos vinculado a un schema y conserva inferencia completa. */
+export function createNRouteSearchHook<const TSchema extends NRouteSearchSchema>(schema: TSchema) {
+  return function useBoundNRouteSearch(): NRouteSearchValues<TSchema> {
+    return useNRouteSearch(schema)
+  }
 }
 
 export function useNCreateHref() {

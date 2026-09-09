@@ -88,6 +88,8 @@ Cuando un segmento retenido no necesita revalidarse, su `loaderData` se copia al
 
 La preservación inmediata se complementa con `NRouteCache`: sus claves usan route id, params por nivel y search declarado, nunca hash. Las políticas `staleTime`, SWR, GC e invalidación están documentadas en [Caché de rutas](./nroutes-cache.md).
 
+El schema `search` es opt-in e independiente de la política de datos: sus codecs transforman valores de URL para hooks y targets tipados; `reloadOnSearch` declara por separado qué claves revalidan la ruta. Esta separación evita que un filtro puramente visual ejecute loaders. Consulta [Search params tipados](./nroutes-search.md).
+
 ## Scheduler de loaders
 
 `data/scheduler.ts` recibe exclusivamente los loaders afectados por el branch diff. Ejecuta en paralelo los que no tienen dependencias pendientes y avanza por ondas según `dependsOn`. El grafo se valida antes de ejecutar; una dependencia inexistente o circular falla explícitamente. La guía completa está en [Lifecycle de navegación](./nroutes-navigation-lifecycle.md).

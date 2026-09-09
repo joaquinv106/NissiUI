@@ -1,4 +1,5 @@
 import { normalizeRoutePath } from "./location"
+import { serializeNRouteSearch } from "./search"
 import type { NRouteDefinition, NRouteLocation, NRouteMatch, NRouteMatchEntry, NRoutePathTarget, NRouteTarget } from "./types"
 
 interface CompiledBranch<TData, TContext> {
@@ -9,8 +10,22 @@ interface CompiledBranch<TData, TContext> {
   order: number
 }
 
+type ValidatedRouteSearch<TRoute> = TRoute extends { search: infer TSearch }
+  ? { reloadOnSearch?: readonly (keyof TSearch & string)[] }
+  : unknown
+
+type ValidatedRouteTree<TRoutes extends readonly unknown[]> = {
+  readonly [TIndex in keyof TRoutes]: TRoutes[TIndex] extends infer TRoute
+    ? ValidatedRouteSearch<TRoute> & (TRoute extends { children: infer TChildren extends readonly unknown[] }
+      ? { children: ValidatedRouteTree<TChildren> }
+      : unknown)
+    : never
+}
+
 /** Conserva literales de ids y paths al declarar rutas sin exigir anotaciones manuales. */
-export function defineNroutes<const TRoutes extends readonly NRouteDefinition[]>(routes: TRoutes): TRoutes {
+export function defineNroutes<const TRoutes extends readonly NRouteDefinition[]>(
+  routes: TRoutes & ValidatedRouteTree<TRoutes>,
+): TRoutes {
   return routes
 }
 
@@ -21,16 +36,18 @@ export function resolveNRouteTarget<TData, TContext>(
 ): string | NRoutePathTarget {
   if (typeof target === "string" || !("route" in target)) return target
   let found: string | undefined
+  let foundRoute: NRouteDefinition<TData, TContext> | undefined
   const visit = (nodes: readonly NRouteDefinition<TData, TContext>[], parent: string): void => {
     for (const route of nodes) {
       const pattern = joinRoutePath(parent, route.path)
-      if (route.id === target.route) { found = pattern; return }
+      if (route.id === target.route) { found = pattern; foundRoute = route; return }
       if (route.children) visit(route.children, pattern)
       if (found) return
     }
   }
   visit(routes, "/")
   if (!found) throw new Error(`Nroutes no encontró la ruta con id "${target.route}".`)
+  const resolvedRoute = foundRoute
   const params = target.params ?? {}
   const pathname = found.replace(/:([^/]+)/g, (_, key: string) => {
     const value = params[key]
@@ -41,7 +58,11 @@ export function resolveNRouteTarget<TData, TContext>(
     if (value === undefined) throw new Error(`Falta el parámetro "*" para la ruta "${target.route}".`)
     return String(value).split("/").map(encodeURIComponent).join("/")
   })
-  return { pathname, search: target.search, hash: target.hash }
+  const targetSearch = target.search
+  const search = resolvedRoute?.search && targetSearch && typeof targetSearch === "object" && !(targetSearch instanceof URLSearchParams)
+    ? serializeNRouteSearch(resolvedRoute.search, targetSearch)
+    : targetSearch
+  return { pathname, search, hash: target.hash }
 }
 
 function joinRoutePath(parent: string, child: string): string {
@@ -75,6 +96,11 @@ export function compileRouteBranches<TData, TContext>(
       const fullPattern = joinRoutePath(parentPattern, route.path)
       if (development && ids.has(route.id)) console.warn(`[NissiUI] Nroutes recibió el id duplicado "${route.id}".`)
       ids.add(route.id)
+      if (development && route.search && route.reloadOnSearch) {
+        route.reloadOnSearch.forEach((key) => {
+          if (!(key in route.search!)) console.warn(`[NissiUI] La ruta "${route.id}" depende del search param no declarado "${key}".`)
+        })
+      }
       const signature = fullPattern.replace(/:[^/]+/g, ":param")
       const parentId = parents.at(-1)?.id
       const prior = patterns.get(signature)

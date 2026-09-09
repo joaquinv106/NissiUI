@@ -23,6 +23,29 @@ export interface NRoutePathTarget {
   hash?: string
 }
 
+export type NRouteSearchSerialized = string | readonly string[] | undefined
+
+/** Codec pequeño y extensible para un search param; no depende de un validador externo. */
+export interface NRouteSearchCodec<TValue> {
+  parse(values: readonly string[]): TValue
+  serialize(value: TValue): NRouteSearchSerialized
+}
+
+/** Codec creado por los helpers incluidos, con soporte encadenable para valores predeterminados. */
+export interface NRouteSearchParam<TValue> extends NRouteSearchCodec<TValue> {
+  default<TDefault extends Exclude<TValue, undefined>>(value: TDefault): NRouteSearchParam<Exclude<TValue, undefined>>
+}
+
+export type NRouteSearchSchema = Readonly<Record<string, NRouteSearchCodec<unknown>>>
+
+export type NRouteSearchValues<TSchema extends NRouteSearchSchema> = Readonly<{
+  [TKey in keyof TSchema]: TSchema[TKey] extends NRouteSearchCodec<infer TValue> ? TValue : never
+}>
+
+export type NRouteSearchInput<TSchema extends NRouteSearchSchema> = Readonly<{
+  [TKey in keyof TSchema]?: (TSchema[TKey] extends NRouteSearchCodec<infer TValue> ? TValue : never) | null
+}>
+
 export interface NRouteIdTarget {
   route: string
   params?: Readonly<Record<string, string | number>>
@@ -42,9 +65,13 @@ type NPathParamKeys<TPath extends string> =
       : TPath extends `${string}*${string}` ? "*"
         : never
 
-type NTypedRouteById<TId extends string, TPath extends string> = {
+type NTypedRouteSearch<TSearch> = TSearch extends NRouteSearchSchema
+  ? string | URLSearchParams | NRouteSearchInput<TSearch>
+  : NRoutePathTarget["search"]
+
+type NTypedRouteById<TId extends string, TPath extends string, TSearch> = {
   route: TId
-  search?: NRoutePathTarget["search"]
+  search?: NTypedRouteSearch<TSearch>
   hash?: string
 } & ([NPathParamKeys<TPath>] extends [never]
   ? { params?: never }
@@ -53,7 +80,7 @@ type NTypedRouteById<TId extends string, TPath extends string> = {
 type NRouteTargetsFromTree<TRoutes, TParent extends string = ""> = TRoutes extends readonly unknown[]
   ? TRoutes[number] extends infer TRoute
     ? TRoute extends { id: infer TId extends string; path: infer TPath extends string }
-      ? NTypedRouteById<TId, NJoinRoutePath<TParent, TPath>>
+      ? NTypedRouteById<TId, NJoinRoutePath<TParent, TPath>, TRoute extends { search: infer TSearch } ? TSearch : never>
         | (TRoute extends { children: infer TChildren }
           ? NRouteTargetsFromTree<TChildren, NJoinRoutePath<TParent, TPath>>
           : never)
@@ -63,7 +90,7 @@ type NRouteTargetsFromTree<TRoutes, TParent extends string = ""> = TRoutes exten
 
 export type NTypedRouteTarget<TRoutes extends readonly NRouteDefinition[]> =
   | string
-  | NRoutePathTarget
+  | (NRoutePathTarget & { route?: never })
   | NRouteTargetsFromTree<TRoutes>
 
 export interface NRouteRedirect {
@@ -155,6 +182,8 @@ export interface NRouteDefinition<TData = unknown, TContext = unknown> {
   revalidate?: NRouteRevalidationPolicy<TData, TContext>
   /** Search params que afectan a esta ruta cuando `revalidate` no se declara. */
   reloadOnSearch?: readonly string[]
+  /** Schema opcional para leer y serializar search params con tipos sin retirar URLSearchParams. */
+  search?: NRouteSearchSchema
   /** Caché acotado al loader de esta ruta. `false` fuerza red en cada ejecución. */
   cache?: false | NRouteCachePolicy
   preload?: () => void | Promise<unknown>

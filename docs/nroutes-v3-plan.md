@@ -1,6 +1,6 @@
 # Nroutes v3 — auditoría y plan de implementación
 
-> Estado: **auditoría completada; implementación funcional pendiente por fases**.
+> Estado: **auditoría y fases 1–6 completadas; fases 7–22 pendientes**.
 >
 > Este documento es la fuente canónica de Nroutes v3. Describe exclusivamente el estado comprobado del repositorio y separa las capacidades vigentes de las propuestas.
 
@@ -263,7 +263,7 @@ Cada fase actualiza implementación, tipos públicos, pruebas, documentación Ma
 | 3 | P0 | Route cache, SWR, GC e invalidación | Completada |
 | 4 | P0 | Route modules lazy, retry y prefetch de código | Completada |
 | 5 | P0 | Route ids, params y href tipados | Completada |
-| 6 | P0 | Search codecs opcionales y dependencias selectivas | Pendiente |
+| 6 | P0 | Search codecs opcionales y dependencias selectivas | Completada |
 | 7 | P0 | Navigation blockers y `beforeunload` | Pendiente |
 | 8 | P1 | Navigation intent enriquecido | Pendiente |
 | 9 | P1 | Route actions e invalidación automática | Pendiente |

@@ -2,6 +2,7 @@ export { NOutlet, NRouteOutlet, Nroutes, redirect } from "./Nroutes"
 export { NLink } from "./NLink"
 export { useNroutes, useNTypedNroutes } from "./context"
 export {
+  createNRouteSearchHook,
   useNCreateHref,
   useNLoaderData,
   useNLocation,
@@ -9,8 +10,20 @@ export {
   useNNavigation,
   useNRouteMatches,
   useNRouteParams,
+  useNRouteSearch,
   useNSearchParams,
 } from "./hooks"
+export {
+  booleanParam,
+  createNRouteSearchCodec,
+  defaultNRouteSearchParam,
+  defineNRouteSearch,
+  enumParam,
+  numberParam,
+  parseNRouteSearch,
+  serializeNRouteSearch,
+  stringParam,
+} from "./search"
 export { defaultNroutesLabels } from "./labels"
 export { changedSearchKeys, createNRouteTransition } from "./core/transition"
 export { createNRouteCacheKey, NRouteCache } from "./data/cache"
@@ -47,6 +60,12 @@ export type {
   NRouteRedirect,
   NRouteRetainedEntry,
   NRouteRevalidationPolicy,
+  NRouteSearchCodec,
+  NRouteSearchInput,
+  NRouteSearchParam,
+  NRouteSearchSchema,
+  NRouteSearchSerialized,
+  NRouteSearchValues,
   NRouteShouldReloadDetails,
   NRouteStrategy,
   NRouteTarget,

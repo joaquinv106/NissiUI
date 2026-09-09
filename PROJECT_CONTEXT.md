@@ -27,7 +27,7 @@ La prioridad del proyecto es desarrollar componentes genéricos capaces de compo
 
 La auditoría, fases, compatibilidad, pruebas y Definition of Done viven en [docs/future-professional-spa-router.md](./docs/future-professional-spa-router.md). El router reutiliza el motor de capacidades de `usePermissions()` y permite delegar navegación a Next.js u otro framework mediante `NRouterAdapter`.
 
-La siguiente evolución es Nroutes v3. Su auditoría comprobada, decisiones, 21 fases funcionales, benchmark base y cierre documental viven en [docs/nroutes-v3-plan.md](./docs/nroutes-v3-plan.md). Las fases 0–5 están completas: ya existen branch diff, scheduler paralelo, caché de rutas, route modules lazy y routing tipado por id/params. Search codecs, blockers y las fases posteriores no deben presentarse aún como capacidades disponibles.
+La siguiente evolución es Nroutes v3. Su auditoría comprobada, decisiones, 21 fases funcionales, benchmark base y cierre documental viven en [docs/nroutes-v3-plan.md](./docs/nroutes-v3-plan.md). Las fases 0–6 están completas: ya existen branch diff, scheduler paralelo, caché de rutas, route modules lazy, routing tipado por id/params y search codecs opcionales con revalidación selectiva. Blockers y las fases posteriores no deben presentarse aún como capacidades disponibles.
 
 ## Principios de diseño
 
@@ -154,6 +154,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/nroutes-cache.md`: políticas cache-first/network-first/SWR, claves, deduplicación, GC, prefetch e invalidación.
 - `docs/nroutes-route-modules.md`: manifest eager, contrato lazy, orden código/datos, retry, SSR y tree shaking.
 - `docs/nroutes-typed-routing.md`: inferencia de ids y params anidados, targets tipados, compatibilidad y validación runtime.
+- `docs/nroutes-search.md`: codecs extensibles, defaults, hooks tipados, serialización y dependencias selectivas de search.
 - `benchmarks/nroutes-baseline.mjs`: línea base reproducible de compilación y matching para 10, 100 y 1,000 rutas.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
@@ -255,6 +256,7 @@ Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.m
 - El branch diff incremental conserva padres compartidos, identifica segmentos retenidos/entrantes/salientes, compara params por nivel y evita reejecutar guards/loaders no afectados. `revalidate` y `reloadOnSearch` hacen explícita la política; cambios exclusivos de hash no recargan por defecto.
 - `NRouteCache` deduplica loaders por route id, params del nivel y search declarado. Cada ruta puede configurar `cache-first`, `network-first`, SWR, `staleTime`, `gcTime` y tags; `useNroutes()` permite invalidar por tag/ruta, revalidar la branch o vaciar el caché.
 - `defineNroutes()` más `useNTypedNroutes(routes)` validan ids y params anidados en `navigate`, `href`, `prefetch` y enlaces. Strings y targets por pathname siguen disponibles para adopción gradual.
+- Cada ruta puede declarar un schema `search` sin dependencias externas. `stringParam`, `numberParam`, `booleanParam`, `enumParam`, codecs propios, `useNRouteSearch` y hooks ligados decodifican/serializan valores tipados; `URLSearchParams` permanece compatible y `reloadOnSearch` limita qué cambios revalidan loaders.
 - `NRouteOutlet` es el outlet principal y `NOutlet` renderiza hijos multinivel. Ambos conservan el shell durante pending/error; el foco y `aria-live` se actualizan cuando termina la navegación y reduced motion elimina transiciones.
 - Permisos declarativos protegen deep links reutilizando `usePermissions()`. Todos los guards requeridos se resuelven padre→hijo antes de iniciar datos; después, loaders independientes corren en paralelo y `dependsOn` declara el orden necesario. Guards y loaders conservan `AbortSignal`, redirects, loader data, boundaries deterministas y descarte de respuestas obsoletas; la autorización y validación definitivas siguen en backend.
 - `NLink` conserva semántica nativa y ofrece prefetch por intención. Los hooks especializados exponen location, params, query, navegación, loaders y branch; `useNroutes()`/`createLinkProps()` permanecen compatibles.

@@ -9,9 +9,13 @@ import {
   Nlayout,
   Nroutes,
   compileRouteBranches,
+  createNRouteSearchHook,
   createNRouteTransition,
+  defineNRouteSearch,
   matchRoutes,
+  numberParam,
   parseRouteLocation,
+  stringParam,
   type NlayoutRoute,
 } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
@@ -198,6 +202,39 @@ function TypedRoutesPreview() {
   </Stack>
 }
 
+const catalogSearchSchema = defineNRouteSearch({
+  page: numberParam().default(1),
+  status: stringParam(),
+})
+const useCatalogSearch = createNRouteSearchHook(catalogSearchSchema)
+
+function SearchCodecsContent() {
+  const search = useCatalogSearch()
+  return <Text fontSize="sm" color="fg.muted">Valores activos: page={search.page} · status={search.status ?? "sin filtro"}</Text>
+}
+
+function SearchCodecsPreview() {
+  const data = [
+    { id: "page", param: "page", codec: "numberParam().default(1)", reload: "Sí" },
+    { id: "status", param: "status", codec: "stringParam()", reload: "Sí" },
+    { id: "view", param: "view", codec: "URLSearchParams nativo", reload: "No" },
+  ]
+  return <Stack gap="3">
+    <Nroutes
+      routes={[{ id: "search-preview", path: "/", title: "Search", search: catalogSearchSchema, element: <SearchCodecsContent /> }]}
+      strategy="memory"
+      defaultPath="/?page=2&status=pending"
+    >
+      <NRouteOutlet />
+    </Nroutes>
+    <NTable card={false} responsive="stack" getRowId={(row) => row.id as string} config={{ headers: [
+      { key: "param", header: "Parámetro", presentation: "badge" },
+      { key: "codec", header: "Lectura" },
+      { key: "reload", header: "Recarga loader" },
+    ], data }} />
+  </Stack>
+}
+
 export function LayoutRoutesView() {
   return (
     <Stack gap="8">
@@ -234,6 +271,7 @@ export function LayoutRoutesView() {
           { name: "NRouteCache", description: "Deduplica loaders y aplica fresh/stale, GC, prefetch e invalidación acotada a rutas." },
           { name: "Route modules", description: "Importa UI y lifecycle por ruta con deduplicación, pending, retry y prefetch explícito." },
           { name: "Typed routing", description: "Infiere ids y params anidados para navigate, href y prefetch sin retirar URLs libres." },
+          { name: "Typed search", description: "Decodifica query params de forma opt-in y limita loaders a sus dependencias declaradas." },
           { name: "history | hash | memory", description: "Estrategias para servidor, hosting estático y entornos contenidos." },
         ]}
         variantExamples={[
@@ -383,11 +421,33 @@ router.navigate({
   params: { folio: "A-100" },
 })`,
           },
+          {
+            id: "typed-search",
+            label: "Search tipado",
+            summary: "codecs opt-in + reload selectivo",
+            preview: <SearchCodecsPreview />,
+            code: `const invoiceSearch = defineNRouteSearch({
+  page: numberParam().default(1),
+  status: stringParam(),
+})
+
+const useInvoiceSearch = createNRouteSearchHook(invoiceSearch)
+
+const routes = defineNroutes([{
+  id: "invoices",
+  path: "/invoices",
+  search: invoiceSearch,
+  reloadOnSearch: ["page", "status"],
+}] as const)
+
+const search = useInvoiceSearch()`,
+          },
         ]}
         propExamples={[
           { label: "Ruta con parámetros", code: `{ id: "invoice", path: "/facturas/:folio", title: "Factura", element: ({ params }) => <Invoice folio={params.folio} /> }` },
           { label: "Loader cancelable", code: `loader: ({ params, context, signal }) => context.api.getInvoice(params.folio, { signal })` },
           { label: "Revalidación incremental", code: `{ revalidate: "params", reloadOnSearch: ["page", "status"] }` },
+          { label: "Search tipado opcional", code: `search: { page: numberParam().default(1), status: stringParam() }` },
           { label: "Dependencia explícita", code: `{ id: "invoice", dependsOn: ["tenant"], loader: ({ loaderData }) => loadInvoice(loaderData.tenant) }` },
           { label: "Caché e invalidación", code: `{ cache: { mode: "cache-first", staleTime: 30_000, tags: ["invoices"] } }\nrouter.invalidateRoute("invoice")` },
           { label: "Retry de chunk", code: `router.retryRouteModule("treasury")` },

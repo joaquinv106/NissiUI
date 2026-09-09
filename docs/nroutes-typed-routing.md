@@ -54,7 +54,7 @@ router.navigate({
 })
 ```
 
-Los params de path se codifican con `encodeURIComponent`. Search conserva el mismo contrato de los targets por pathname. El hash no forma parte de la clave de loader/cache.
+Los params de path se codifican con `encodeURIComponent`. Si la ruta declara un schema, Search valida y serializa sus claves/valores; `string` y `URLSearchParams` siguen disponibles. El hash no forma parte de la clave de loader/cache. Consulta [Search params tipados](./nroutes-search.md).
 
 ## Compatibilidad progresiva
 

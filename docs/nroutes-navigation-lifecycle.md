@@ -22,6 +22,8 @@ target por URL o route id tipado
 
 `createNRouteTransition()` compara la branch activa con la siguiente. Una ruta participa cuando entra en la branch o cuando una ruta retenida cumple su política `revalidate`/`reloadOnSearch`.
 
+Los search codecs no amplían ese trabajo: una ruta sólo participa por las claves listadas en `reloadOnSearch` (o por cualquier clave si usa explícitamente `revalidate="search"`). La decodificación tipada y la dependencia del loader son contratos separados.
+
 Esto evita volver a procesar padres por una navegación sibling:
 
 ```text

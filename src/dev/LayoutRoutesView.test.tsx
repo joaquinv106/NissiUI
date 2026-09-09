@@ -18,5 +18,6 @@ describe("LayoutRoutesView", () => {
     expect(screen.getByRole("tab", { name: "Caché de rutas" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Módulos lazy" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Routing tipado" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Search tipado" })).toBeInTheDocument()
   })
 })
