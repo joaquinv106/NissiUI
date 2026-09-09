@@ -1,4 +1,5 @@
 import type { NHeaderNavItem, ResolvedHeaderNavItem } from "./types"
+import type { NPermissionMode } from "../permissions/types"
 
 /** Aplana el árbol de navegación de NHeader asignando ids estables por posición. */
 export function resolveHeaderItems<TData>(
@@ -22,4 +23,19 @@ export function resolveHeaderItems<TData>(
 /** Cuenta las notificaciones marcadas como no leídas. */
 export function countUnreadNotifications(notifications: readonly { unread?: boolean }[]): number {
   return notifications.filter((notification) => notification.unread).length
+}
+
+/** Aplica la misma política de capacidades usada por NSidebar y elimina grupos vacíos. */
+export function filterHeaderItemsByPermission<TData>(
+  items: ResolvedHeaderNavItem<TData>[],
+  can: (required: string | string[], mode?: NPermissionMode) => boolean,
+): ResolvedHeaderNavItem<TData>[] {
+  return items.reduce<ResolvedHeaderNavItem<TData>[]>((visible, resolved) => {
+    const { requiredPermission, permissionMode } = resolved.item
+    if (requiredPermission && !can(requiredPermission, permissionMode)) return visible
+    const children = filterHeaderItemsByPermission(resolved.children, can)
+    if ((resolved.item.children?.length ?? 0) > 0 && children.length === 0) return visible
+    visible.push({ ...resolved, children })
+    return visible
+  }, [])
 }

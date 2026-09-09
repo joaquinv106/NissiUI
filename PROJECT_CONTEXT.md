@@ -21,11 +21,11 @@ La prioridad del proyecto es desarrollar componentes genéricos capaces de compo
 - `NPanel` está completado como plus adelantado de esa siguiente fase: superficie lateral modal, dinámica y opuesta al sidebar.
 - No construir componentes POS monolíticos: cualquier preset futuro debe permanecer sobre primitivas y patrones estabilizados.
 
-## Próximo proyecto: Nissi Router SPA profesional
+## Nissi Router SPA profesional
 
-La siguiente evolución propuesta para la plataforma es convertir `Nroutes` y `Nlayout` en un router SPA jerárquico con location completa, rutas anidadas, ranking, permisos de ruta, guards y loaders cancelables, boundaries, `NLink`, prefetch, breadcrumbs derivados, progreso y restauración de scroll. Es un objetivo **futuro y aún no implementado**; el contrato actual continúa descrito en este archivo y en `docs/layout-routes.md`.
+`Nroutes` y `Nlayout` forman un router SPA jerárquico con location completa, rutas anidadas, ranking, permisos de ruta, guards y loaders cancelables, boundaries, `NLink`, prefetch, breadcrumbs derivados, progreso y restauración de scroll. Las cinco fases están implementadas en el repositorio y conservan las rutas planas originales.
 
-La especificación de traspaso, fases, compatibilidad, pruebas y Definition of Done vive en [docs/future-professional-spa-router.md](./docs/future-professional-spa-router.md). Todo equipo que inicie ese trabajo debe auditar primero la implementación vigente y reutilizar el sistema existente de permisos, en especial el filtrado que `NSidebar` ya realiza mediante `usePermissions()`.
+La auditoría, fases, compatibilidad, pruebas y Definition of Done viven en [docs/future-professional-spa-router.md](./docs/future-professional-spa-router.md). El router reutiliza el motor de capacidades de `usePermissions()` y permite delegar navegación a Next.js u otro framework mediante `NRouterAdapter`.
 
 ## Principios de diseño
 
@@ -89,7 +89,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `src/components/permissions/utils.ts`: coincidencia de capacidades con comodines (`canAccess`, `matchesCapability`).
 - `src/components/app-shell/`: implementación, tipos, labels y pruebas de `NAppShell`.
 - `src/components/layout/`: composición pública `Nlayout` sobre shell, sidebar, header, encabezados de página, breadcrumbs, tema y rutas.
-- `src/components/routes/`: administrador SPA `Nroutes`, outlet animado, contexto, matching de parámetros, History API/hash/memoria, labels y pruebas.
+- `src/components/routes/`: router SPA jerárquico; location, matcher/ranking, branches, outlets, permisos, guards, loaders, boundaries, enlaces, hooks, History API/hash/memoria, adaptadores externos, labels y pruebas.
 - `src/components/module-registry/`: catálogo de módulos, permisos, tipos, labels y pruebas.
 - `src/components/workspace-switcher/`: selector de tenant/workspace, tipos, labels y pruebas.
 - `src/components/theme/`: `NThemeProvider`, selector `NTheme`, contexto, tipos, labels y `nissiSystem` con los tokens de claro, oscuro, azul marino y Nissi Dark.
@@ -145,7 +145,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/facture.md`: alcance, contratos, seguridad, navegación y referencias oficiales de `NFacture`.
 - `docs/auth.md`: arquitectura, importación, componentes, tema, estados, accesibilidad, seguridad, personalización y empaquetado de Nauth y `NloginPage`.
 - `docs/layout-routes.md`: contrato, estrategias, accesibilidad, personalización e integración de `Nlayout` y `Nroutes`.
-- `docs/future-professional-spa-router.md`: especificación futura para evolucionar `Nroutes`/`Nlayout`; no representa funcionalidad disponible actualmente.
+- `docs/future-professional-spa-router.md`: especificación, auditoría y registro de las cinco fases entregadas de `Nroutes`/`Nlayout`.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.
@@ -198,6 +198,7 @@ La referencia completa y ejemplos están en `docs/sidebar.md`.
 - La búsqueda aplica foco al contenedor completo. Menús, Drawer, badges y tooltips usan patrones accesibles y portales cuando corresponde.
 - Tema, superficies, texto, bordes y estados usan tokens semánticos. Dentro de `NThemeProvider`, `showThemeToggle` consume el selector global y `themePresentation="icon" | "button"` define su apariencia; `theme` y `onThemeChange` quedan como compatibilidad binaria deprecada.
 - Todos los textos internos pertenecen a `NHeaderLabels`; español es el default.
+- `NHeaderNavItem.requiredPermission`/`permissionMode` reutilizan `usePermissions()` y ocultan elementos o grupos vacíos en escritorio y móvil, alineados con sidebar y rutas.
 
 La referencia completa y ejemplos están en `docs/header.md`.
 
@@ -240,11 +241,12 @@ Las referencias completas están en `docs/app-shell.md`, `docs/module-registry.m
 ## Contrato actual de Nlayout y Nroutes
 
 - `Nlayout` compone `NAppShell`, `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider`; `provideTheme={false}` permite usar un provider existente.
-- Cada `NlayoutRoute` declara `path`, `title`, `element` y opcionalmente `navigationId` y `pageHeader`. `navigationId` sincroniza la ruta con el elemento activo del sidebar y del header.
-- `Nroutes` admite `history`, `hash` y `memory`, estado controlado/no controlado, `basePath`, enlaces internos interceptados, navegación atrás/adelante, parámetros `:param` y comodín final `*`.
-- `NRouteOutlet` resuelve nodos o funciones de render, admite Suspense, fallback de ruta inexistente, foco tras navegación, anuncio `aria-live` y una transición de 180 ms que se elimina con `prefers-reduced-motion`.
-- `Nroutes` no obtiene datos, no autentica ni aplica permisos. El servidor debe configurar fallback para rutas `history`; `hash` funciona en hosting estático y `memory` en previews/tests.
-- En móvil `Nlayout` reserva el borde del header ocupado por el trigger overlay de `NSidebar`; respeta `sidebarPosition`, `responsive` y `showMobileTrigger`.
+- Cada `NlayoutRoute` declara `path`, `title`, `element` y opcionalmente `children`, `navigationId`, `pageHeader`, permisos, guard, loader, breadcrumb y boundary. `navigationId` sincroniza rutas planas o anidadas con sidebar y header.
+- `Nroutes` admite `history`, `hash`, `memory` y `NRouterAdapter`; estado controlado/no controlado, `basePath`, location completa, search params, back/forward, params, wildcard, árbol compilado y ranking independiente del orden.
+- `NRouteOutlet` es el outlet principal y `NOutlet` renderiza hijos multinivel. Ambos conservan el shell durante pending/error; el foco y `aria-live` se actualizan cuando termina la navegación y reduced motion elimina transiciones.
+- Permisos declarativos protegen deep links reutilizando `usePermissions()`. Guards y loaders se ejecutan padre→hijo con `AbortSignal`, redirects, loader data y descarte de respuestas obsoletas; la autorización y validación definitivas siguen en backend.
+- `NLink` conserva semántica nativa y ofrece prefetch por intención. Los hooks especializados exponen location, params, query, navegación, loaders y branch; `useNroutes()`/`createLinkProps()` permanecen compatibles.
+- `Nlayout` deriva breadcrumbs, permite progreso y restauración de scroll, aplica permisos también en `NHeader` y configura la reserva móvil mediante `mobileSidebarTriggerInset`.
 - La muestra independiente `nfacture.html` usa rutas hash, Nissi Dark inicial, navegación de `createNFactureNavigation` y `NFacture` sin sidebar duplicado. La referencia completa está en `docs/layout-routes.md`.
 
 ## Contrato actual de NTheme

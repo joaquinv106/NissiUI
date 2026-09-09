@@ -57,7 +57,7 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 
-El siguiente proyecto propuesto está documentado en [Nissi Router SPA profesional](./future-professional-spa-router.md). Su estado es **próximamente** y sus APIs objetivo todavía no forman parte del paquete estable.
+La auditoría y entrega de las cinco fases de [Nissi Router SPA profesional](./future-professional-spa-router.md) documentan location completa, rutas anidadas, guards, loaders, permisos y compatibilidad con routers externos.
 
 El objetivo prioritario actual y su secuencia están definidos en [Flujos operativos generalizables](./generalized-workflows-roadmap.md).
 

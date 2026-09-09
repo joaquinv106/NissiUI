@@ -5,6 +5,7 @@ import { Menu, Moon, Sun } from "lucide-react"
 import { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { NTooltip } from "../internal/NTooltip"
+import { usePermissions } from "../permissions"
 import { NTheme } from "../theme/NTheme"
 import { useOptionalNTheme } from "../theme/context"
 import { HeaderActions } from "./internal/HeaderActions"
@@ -16,7 +17,7 @@ import { HeaderSearch } from "./internal/HeaderSearch"
 import { HeaderUserMenu } from "./internal/HeaderUserMenu"
 import { resolveNHeaderLabels } from "./labels"
 import type { NHeaderNavItem, NHeaderProps, NHeaderSearchConfig } from "./types"
-import { resolveHeaderItems } from "./utils"
+import { filterHeaderItemsByPermission, resolveHeaderItems } from "./utils"
 
 /** Distingue si `search` viene como configuración de objeto o como nodo/booleano. */
 function isSearchConfig(value: NHeaderProps["search"]): value is NHeaderSearchConfig {
@@ -56,7 +57,11 @@ export function NHeader<TData = unknown>({
 }: NHeaderProps<TData>) {
   const labels = useMemo(() => resolveNHeaderLabels(customLabels), [customLabels])
   const themeContext = useOptionalNTheme()
-  const resolvedItems = useMemo(() => resolveHeaderItems(items, getItemId), [getItemId, items])
+  const { can } = usePermissions()
+  const resolvedItems = useMemo(
+    () => filterHeaderItemsByPermission(resolveHeaderItems(items, getItemId), can),
+    [can, getItemId, items],
+  )
   const [internalActiveId, setInternalActiveId] = useState(defaultActiveItemId)
   const [internalMobileOpen, setInternalMobileOpen] = useState(defaultMobileOpen)
   const warnedAboutIds = useRef(false)

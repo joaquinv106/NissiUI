@@ -56,6 +56,8 @@ Componente para envolver cualquier UI propia (botones, secciones, tarjetas de un
 ## Integración con los demás componentes
 
 - **`NSidebar`**: cada `NSidebarItem` admite `requiredPermission`/`permissionMode`. Los ítems sin la capacidad se ocultan; un grupo se oculta si todos sus hijos quedan ocultos.
+- **`NHeader`**: cada `NHeaderNavItem` admite `requiredPermission`/`permissionMode` y aplica la misma política al menú de escritorio y móvil.
+- **`Nroutes`**: cada `NRouteDefinition` admite `requiredPermission`/`permissionMode`; una URL directa no renderiza la página protegida y usa `forbiddenFallback`.
 - **`NTable`/`NDataTable`**: cada `NTableAction` admite `requiredPermission`/`permissionMode`. Las acciones sin la capacidad no aparecen en la barra de acciones (`ActionBar`).
 - **`NForm`**: cada `NFormField` admite `requiredPermission`/`permissionMode`. Los campos sin la capacidad se ocultan y se excluyen de la validación.
 - **`NModuleRegistry`**: oculta módulos no autorizados y, opcionalmente, presenta los no contratados como deshabilitados.

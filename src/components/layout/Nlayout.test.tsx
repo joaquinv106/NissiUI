@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest"
 
 import { Nlayout } from "./Nlayout"
 import type { NlayoutRoute } from "./types"
+import { NOutlet } from "../routes"
 
 type DemoData = { section: "home" | "documents" }
 
@@ -65,5 +66,38 @@ describe("Nlayout", () => {
     expect(screen.getByText("Listado de comprobantes")).toBeInTheDocument()
     expect(screen.getByRole("navigation", { name: "Ruta de navegación" })).toBeInTheDocument()
     expect(document.querySelector('a[data-n-sidebar-item="documents"]')).toHaveAttribute("aria-current", "page")
+  })
+
+  it("deriva breadcrumbs desde la branch y activa navegación anidada", () => {
+    const nestedRoutes: NlayoutRoute[] = [{
+      id: "billing",
+      path: "/facturas",
+      title: "Facturación",
+      element: <NOutlet />,
+      children: [{
+        id: "invoice",
+        path: ":folio",
+        title: ({ params }) => `Factura ${params.folio}`,
+        navigationId: "invoice",
+        element: <Text>Detalle del documento</Text>,
+      }],
+    }]
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <Nlayout
+          provideTheme={false}
+          routeStrategy="memory"
+          defaultPath="/facturas/A-40"
+          routes={nestedRoutes}
+          navigation={[{ id: "invoice", label: "Detalle", href: "/facturas/A-40" }]}
+          sidebarProps={{ responsive: "push" }}
+        />
+      </ChakraProvider>,
+    )
+    expect(screen.getByRole("heading", { name: "Factura A-40" })).toBeInTheDocument()
+    const breadcrumbs = screen.getByRole("navigation", { name: "Ruta de navegación" })
+    expect(breadcrumbs).toHaveTextContent("Facturación")
+    expect(breadcrumbs).toHaveTextContent("Factura A-40")
+    expect(document.querySelector('a[data-n-sidebar-item="invoice"]')).toHaveAttribute("aria-current", "page")
   })
 })

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NRouteOutlet, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NauthLayout, NauthLogin, Nlayout, NloginPage, NissiInvoicingProvider, Nroutes, createNFactureHeaderNavigation, createNFactureNavigation, formatTableValue, nissiSystem, useNTheme, useNroutes } from "./index"
+import { NActivityTimeline, NAdjustmentEditor, NAmountAllocator, NAmountInput, NAppShell, NApprovalFlow, NAsyncState, NAuditLog, NBalanceSession, NBreadcrumbs, NCart, NChartFrame, NCheckout, NCodeCapture, NConfirmDialog, NCtrl, NCtrlProvider, NDashboardGrid, NDataTable, NDateRangePicker, NDescriptionList, NDetailPanel, NDocumentView, NEmptyState, NFacture, NFileUpload, NFilterBar, NImpersonationBanner, NItemPicker, NKanban, NLineItemEditor, NLink, NMapView, NModuleRegistry, NNotificationCenter, NOfflineBoundary, NOutlet, NPageHeader, NPanel, NPermissionsProvider, NPlanComparison, NReceipt, NRouteOutlet, NScheduler, NStatCard, NStepFlow, NSubscriptionGate, NSyncStatus, NTable, NTheme, NThemeProvider, NThermalPrint, NWorkspaceSwitcher, NauthLayout, NauthLogin, Nlayout, NloginPage, NissiInvoicingProvider, Nroutes, createNFactureHeaderNavigation, createNFactureNavigation, defineNlayoutConfig, defineNroutes, formatTableValue, nissiSystem, redirect, useNLocation, useNNavigate, useNTheme, useNroutes } from "./index"
 
 describe("API pública de tablas", () => {
   it("exporta NTable y NDataTable", () => {
@@ -75,7 +75,14 @@ describe("API pública de tablas", () => {
     expect(Nlayout).toBeTypeOf("function")
     expect(Nroutes).toBeTypeOf("function")
     expect(NRouteOutlet).toBeTypeOf("function")
+    expect(NOutlet).toBeTypeOf("function")
+    expect(NLink).toBeTypeOf("object")
     expect(useNroutes).toBeTypeOf("function")
+    expect(useNNavigate).toBeTypeOf("function")
+    expect(useNLocation).toBeTypeOf("function")
+    expect(redirect).toBeTypeOf("function")
+    expect(defineNroutes).toBeTypeOf("function")
+    expect(defineNlayoutConfig).toBeTypeOf("function")
   })
 
   it("exporta la pantalla de acceso y el namespace Nauth", () => {

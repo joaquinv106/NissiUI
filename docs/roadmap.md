@@ -20,12 +20,11 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 | 2026-09-07 | Personalización, empaquetado y SSR | Completada | Contrato de slots en cuatro componentes prioritarios, sistema Chakra sustituible, módulos preservados, subrutas, directivas cliente y portal estático. |
 | 2026-09-06 | Estados y navegación · Plus | Completada | `NPanel` lateral, modal, responsive, reactivo y dinámico, integrado con la posición de `NSidebar` mediante `NAppShell`. |
 | 2026-09-06 | Fases 2–7 · Entrega final consolidada | Completada | Estados de página, datos server-side, actividad, dashboards, administración SaaS y patrones verticales; 22 componentes/patrones públicos y evolución de `NDataTable`. |
+| 2026-09-09 | Nissi Router SPA profesional · Fases 1–5 | Completada | Location completa, routing jerárquico, ranking, outlets, permisos, guards, loaders cancelables, boundaries, NLink, hooks, prefetch, breadcrumbs, progreso, scroll y adaptadores externos. |
 
 ## Fases pendientes
 
-No quedan fases de componentes pendientes en el alcance original. Se agregó como próximo proyecto la evolución de `Nroutes` y `Nlayout` hacia un [router SPA profesional](./future-professional-spa-router.md). El proyecto está documentado, pero todavía no se considera iniciado ni implementado.
-
-Su secuencia propuesta es: core router; ciclo de navegación; experiencia de desarrollo; integración con `Nlayout`; y hardening. Cada fase debe preservar las APIs planas actuales y cerrarse con pruebas, documentación y validación de paquete.
+No quedan fases pendientes en el alcance original ni en la evolución del [router SPA profesional](./future-professional-spa-router.md). El siguiente trabajo debe concentrarse en estabilización y retroalimentación de consumidores reales, sin ampliar el núcleo con caché de queries, file-based routing o responsabilidades de framework SSR.
 
 ## Prioridad inmediata: estabilización
 

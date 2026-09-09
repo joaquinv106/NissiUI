@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { NHeader } from "./NHeader"
 import { NThemeProvider } from "../theme"
+import { NPermissionsProvider } from "../permissions"
 
 function renderHeader(header: React.ReactNode) {
   return render(<ChakraProvider value={defaultSystem}>{header}</ChakraProvider>)
@@ -116,5 +117,18 @@ describe("NHeader", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: "Inicio" }))
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
     expect(trigger).toHaveFocus()
+  })
+
+  it("aplica permisos a la navegación de escritorio y móvil", () => {
+    renderHeader(
+      <NPermissionsProvider permissions={["core:ver"]}>
+        <NHeader items={[
+          { id: "home", label: "Inicio", requiredPermission: "core:ver" },
+          { id: "billing", label: "Facturación", requiredPermission: "facturacion:ver" },
+        ]} />
+      </NPermissionsProvider>,
+    )
+    expect(screen.getByRole("button", { name: "Inicio", hidden: true })).toBeInTheDocument()
+    expect(screen.queryByText("Facturación")).not.toBeInTheDocument()
   })
 })

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 
+import type { NPermissionCapability, NPermissionMode } from "../permissions/types"
 import type { NThemePresentation } from "../theme/types"
 import type { NComponentStyleProps } from "../styling"
 export type NHeaderSlot = "root" | "content" | "brand" | "navigation" | "search" | "actions"
@@ -17,6 +18,9 @@ export interface NHeaderNavItem<TData = unknown> {
   disabled?: boolean
   data?: TData
   onClick?: (item: NHeaderNavItem<TData>) => void
+  /** Oculta el elemento cuando falta la capacidad, en coherencia con NSidebar y Nroutes. */
+  requiredPermission?: NPermissionCapability | NPermissionCapability[]
+  permissionMode?: NPermissionMode
 }
 
 export interface NHeaderAction {

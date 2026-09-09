@@ -80,7 +80,7 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 
 ## Familias disponibles
 
-- Plataforma: `NAppShell`, `Nlayout`, `Nroutes`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`. `Nlayout` integra el shell completo y `Nroutes` mantiene History API, hash o memoria sin recargas.
+- Plataforma: `NAppShell`, `Nlayout`, `Nroutes`, `NHeader`, `NSidebar`, `NModuleRegistry`, `NWorkspaceSwitcher`, `NThemeProvider`. `Nlayout` integra el shell completo y `Nroutes` ofrece rutas planas o anidadas, guards, loaders, permisos, History API, hash, memoria y adaptadores para routers externos.
 - Acceso: `NPermissionsProvider`, `NPermissionGate`, `useCanAccess`, `NSubscriptionGate`.
 - Autenticación visual: `NloginPage` como pantalla autónoma con tema oscuro inicial y selector, además de `NauthLogin`, `NauthRegister`, recuperación, OTP y primitivas. La aplicación conserva sesión, OAuth y validación definitiva.
 - Formularios y selección: `NForm`, `NItemPicker`, `NAmountInput`, `NCodeCapture`, `NDateRangePicker`, `NFileUpload`.
@@ -97,9 +97,9 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 
 La documentación detallada vive en `docs/README.md` dentro del paquete y del repositorio.
 
-## Próximo objetivo de arquitectura
+## Router SPA profesional
 
-`docs/future-professional-spa-router.md` contiene el proyecto futuro para evolucionar `Nroutes` y `Nlayout` hacia navegación SPA jerárquica con guards, loaders y permisos de ruta. Ese archivo es una especificación de trabajo y no debe interpretarse como API disponible en la versión estable. Antes de implementarlo, el equipo debe auditar el código actual y conservar compatibilidad con rutas planas, `useNroutes()` y `createLinkProps()`.
+`Nroutes` y `Nlayout` ofrecen navegación SPA jerárquica con location completa, rutas anidadas, ranking, guards, loaders cancelables, permisos, error boundaries, `NLink`, hooks y prefetch. Las rutas planas, `useNroutes()` y `createLinkProps()` permanecen compatibles. `NRouterAdapter` permite que Next.js u otro framework conserve el control de la URL; no deben operar dos routers sobre History API al mismo tiempo. La referencia completa está en `docs/layout-routes.md`.
 
 ## Reglas para generar código con IA
 

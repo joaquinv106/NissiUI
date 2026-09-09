@@ -2,6 +2,8 @@
 
 `NHeader` es la barra superior responsive de Nissi UI. Un mismo componente cubre sitios públicos con navegación y CTA (`variant="site"`) y aplicaciones con búsqueda, acciones, notificaciones, tema y usuario (`variant="app"`).
 
+Cada `NHeaderNavItem` admite `requiredPermission` y `permissionMode`. Los elementos no autorizados y los grupos que queden vacíos se ocultan con el mismo motor de capacidades usado por `NSidebar` y `Nroutes`.
+
 ## Variante site
 
 ```tsx

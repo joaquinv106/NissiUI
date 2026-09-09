@@ -1,6 +1,22 @@
-# Proyecto futuro: Nissi Router SPA profesional
+# Nissi Router SPA profesional
 
-> Estado: **próximamente / no implementado**. Este documento define un objetivo de evolución; no describe capacidades disponibles en `nissi-ui@0.2.0`.
+> Estado: **implementado en el repositorio para la siguiente publicación**. Este documento conserva la especificación, auditoría y decisiones de la entrega.
+
+## Auditoría ejecutada
+
+| Hallazgo inicial | Estado anterior | Solución aplicada |
+| --- | --- | --- |
+| Location incompleta | `path` eliminaba query y hash | `NRouteLocation` conserva pathname, search, `URLSearchParams`, hash, state y key. |
+| Matching por orden | La primera ruta coincidente ganaba | Compilación y ranking: exacta, estática, param y wildcard. |
+| Sin jerarquía | Sólo rutas planas absolutas | `children`, branch completa y `NOutlet` multinivel. |
+| Deep links sin protección | El sidebar ocultaba, el router renderizaba | Permisos por ruta reutilizando `usePermissions()`, más fallback forbidden. |
+| Sin ciclo asíncrono | Suspense era el único pending | Navegación `idle/loading`, guards, redirects, loaders, `AbortSignal` y control stale. |
+| Errores derribaban contenido | Sin boundary de ruta | `errorElement` más cercano y fallback global conservando el shell. |
+| Enlaces y hooks mínimos | Sólo `createLinkProps()` y `useNroutes()` | `NLink`, hooks especializados, prefetch por intención y helpers TypeScript. |
+| Breadcrumbs manuales | Sólo `pageHeader.breadcrumbs` | Derivación desde branch con override explícito. |
+| Permisos divergentes | Sidebar sí; header y rutas no | Contrato común en `NSidebar`, `NHeader` y `Nroutes`. |
+| Router acoplado al navegador | History/hash/memory internos | `NRouterAdapter` permite que Next.js u otro framework sea dueño de la navegación. |
+| Inset móvil rígido | `"4.25rem"` dentro del layout | `mobileSidebarTriggerInset` ofrece una fuente configurable con default compatible. |
 
 ## Misión
 
@@ -234,27 +250,27 @@ Preservar teclado, foco posterior a navegación, `aria-live`, etiquetado de regi
 
 ## Plan de implementación
 
-### Fase 1 — Core router
+### Fase 1 — Core router · completada
 
 - Location completa y search params.
 - Compilación del árbol y ranking.
 - Matching anidado y branch.
 - `NOutlet` multinivel.
 
-### Fase 2 — Ciclo de navegación
+### Fase 2 — Ciclo de navegación · completada
 
 - Estado de navegación y cancelación.
 - Permisos de ruta y `beforeEnter`.
 - Loaders, redirects, loader data y errores.
 
-### Fase 3 — Experiencia de desarrollo
+### Fase 3 — Experiencia de desarrollo · completada
 
 - `NLink`.
 - Hooks especializados.
 - Prefetch.
 - Helpers TypeScript.
 
-### Fase 4 — Nlayout
+### Fase 4 — Nlayout · completada
 
 - Breadcrumbs derivados.
 - Coherencia de permisos en header/sidebar/rutas.
@@ -262,7 +278,7 @@ Preservar teclado, foco posterior a navegación, `aria-live`, etiquetado de regi
 - Scroll restoration.
 - Fuente semántica para el inset del trigger móvil.
 
-### Fase 5 — Hardening
+### Fase 5 — Hardening · completada
 
 - Tests de regresión y nuevas capacidades.
 - SSR, tree shaking y packaging.
@@ -356,3 +372,12 @@ El informe final debe incluir:
 8. Riesgos o decisiones pendientes reales.
 
 El objetivo no es acumular código, sino producir un Nissi Router coherente, pequeño, potente y extensible que se sienta parte de Nissi UI.
+
+## Validación de la entrega
+
+- `npm run typecheck`: aprobado.
+- `npm test`: 45 archivos y 293 pruebas aprobadas.
+- `npm run build`: aprobado para ESM, CommonJS y declaraciones.
+- `npm run check:package`: aprobado para consumo NodeNext/Bundler, SSR, directivas cliente y tree shaking.
+- `npm run pack:check`: aprobado; la subruta `nissi-ui/routes` incluye las nuevas APIs.
+- Catálogo Vite y muestra `nfacture.html`: respuestas HTTP 200; `LayoutRoutesView.test.tsx` monta las variantes de layout, router aislado y rutas anidadas.

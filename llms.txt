@@ -17,7 +17,7 @@
 - Impresión térmica y adaptadores locales: ./docs/thermal-print.md
 - Pantalla de acceso y componentes Nauth: ./docs/auth.md
 - Layout de aplicación y navegación SPA: ./docs/layout-routes.md
-- Próximo proyecto (no implementado), Nissi Router SPA profesional: ./docs/future-professional-spa-router.md
+- Auditoría y fases entregadas de Nissi Router SPA profesional: ./docs/future-professional-spa-router.md
 - Personalización, slots y modo unstyled: ./docs/customization.md
 - Empaquetado, tree shaking, subrutas y SSR: ./docs/package-compatibility.md
 

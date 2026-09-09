@@ -1,7 +1,7 @@
 import { Box, Button, Card, HStack, Stack, Text } from "@chakra-ui/react"
 import { FileText, LayoutDashboard, MoveUpRight } from "lucide-react"
 
-import { NRouteOutlet, Nlayout, Nroutes, useNroutes, type NlayoutRoute } from "../index"
+import { NLink, NOutlet, NRouteOutlet, Nlayout, Nroutes, type NlayoutRoute } from "../index"
 import { ComponentDocs } from "./ComponentDocs"
 
 const previewRoutes: NlayoutRoute[] = [
@@ -29,16 +29,19 @@ const previewNavigation = [
 ]
 
 function RoutesOnlyControls() {
-  const { createLinkProps } = useNroutes()
   return (
     <Stack gap="4">
       <HStack>
-        <Button asChild size="sm" variant="outline"><a {...createLinkProps("/resumen")}>Resumen</a></Button>
-        <Button asChild size="sm" variant="outline"><a {...createLinkProps("/actividad")}>Actividad</a></Button>
+        <Button asChild size="sm" variant="outline"><NLink to="/resumen">Resumen</NLink></Button>
+        <Button asChild size="sm" variant="outline"><NLink to="/actividad" prefetch="intent">Actividad</NLink></Button>
       </HStack>
       <NRouteOutlet />
     </Stack>
   )
+}
+
+function NestedReports() {
+  return <Stack gap="3"><Text fontWeight="semibold">Centro de reportes</Text><NOutlet /></Stack>
 }
 
 export function LayoutRoutesView() {
@@ -61,16 +64,17 @@ export function LayoutRoutesView() {
       </Card.Root>
 
       <ComponentDocs
-        purpose="Nlayout integra NAppShell, NSidebar, NHeader, NPageHeader, NBreadcrumbs y NThemeProvider. Nroutes administra History API, hash o memoria, intercepta enlaces internos y conserva la experiencia SPA."
+        purpose="Nlayout integra shell, navegación, encabezados, breadcrumbs y tema. Nroutes aporta location completa, rutas anidadas, permisos, guards, loaders cancelables y adaptadores para routers externos sin abandonar la API plana."
         steps={[
-          "Declara rutas estables con path, title, navigationId y element.",
-          "Entrega a Nlayout el árbol de NSidebar y configura sus superficies mediante props.",
-          "Usa history en producción con fallback del servidor, hash en hosting estático o memory para previews.",
-          "Deja que NRouteOutlet anuncie, enfoque y anime el contenido; reduced motion elimina la transición.",
+          "Declara rutas estables; agrega children y NOutlet cuando la interfaz tenga niveles.",
+          "Usa loaders y guards con AbortSignal, permisos declarativos y boundaries por ruta.",
+          "NLink conserva el enlace nativo y puede precargar por intención; los hooks exponen location, params, search y loader data.",
+          "Usa history, hash o memory, o entrega routeRouter para que Next.js u otro framework controle la URL.",
         ]}
         variants={[
           { name: "Nlayout", description: "Composición completa con navegación, encabezados, tema y outlet." },
           { name: "Nroutes", description: "Administrador desacoplado para aplicaciones con un layout propio." },
+          { name: "Nested", description: "Branches jerárquicas con ranking y outlets multinivel." },
           { name: "history | hash | memory", description: "Estrategias para servidor, hosting estático y entornos contenidos." },
         ]}
         variantExamples={[
@@ -111,9 +115,39 @@ export function LayoutRoutesView() {
             ),
             code: `<Nroutes routes={routes}>\n  <Navigation />\n  <NRouteOutlet />\n</Nroutes>`,
           },
+          {
+            id: "nested",
+            label: "Rutas anidadas",
+            summary: "NOutlet multinivel",
+            preview: (
+              <Nroutes
+                strategy="memory"
+                defaultPath="/reportes/ventas"
+                routes={[{
+                  id: "reports",
+                  path: "/reportes",
+                  title: "Reportes",
+                  element: <NestedReports />,
+                  children: [{ id: "sales", path: "ventas", title: "Ventas", element: <Text color="fg.muted">Reporte de ventas activo</Text> }],
+                }]}
+              />
+            ),
+            code: `{
+  path: "/reportes",
+  element: <ReportsLayout />,
+  children: [{ path: "ventas", element: <SalesReport /> }],
+}
+
+function ReportsLayout() {
+  return <NOutlet />
+}`,
+          },
         ]}
         propExamples={[
           { label: "Ruta con parámetros", code: `{ id: "invoice", path: "/facturas/:folio", title: "Factura", element: ({ params }) => <Invoice folio={params.folio} /> }` },
+          { label: "Loader cancelable", code: `loader: ({ params, context, signal }) => context.api.getInvoice(params.folio, { signal })` },
+          { label: "Permiso y guard", code: `{ requiredPermission: "facturacion:ver", beforeEnter: ({ context }) => context.session ? true : redirect("/login") }` },
+          { label: "Router de Next.js", code: `<Nlayout routeRouter={{ location: pathname, navigate: (to) => router.push(to) }} />` },
           { label: "Provider existente", code: `<NThemeProvider>\n  <Nlayout provideTheme={false} routes={routes} navigation={items} />\n</NThemeProvider>` },
         ]}
         code={`import { Nlayout, type NlayoutRoute } from "nissi-ui/layout"\n\nconst routes: NlayoutRoute[] = [\n  { id: "home", path: "/", title: "Resumen", navigationId: "home", element: <Dashboard /> },\n]\n\n<Nlayout routes={routes} navigation={items} />`}

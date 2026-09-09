@@ -33,6 +33,8 @@ La verificación de paquete importa la salida ESM en Node sin DOM, ejecuta `rend
 
 En Next.js App Router, monta `NThemeProvider` dentro de un componente cliente y conserva `suppressHydrationWarning` en `<html>` por la integración con `next-themes`.
 
+`Nroutes` y `Nlayout` son componentes cliente. En una aplicación con Next.js App Router, entrega `router`/`routeRouter` mediante `NRouterAdapter` para que Next continúe siendo el único dueño de URL, navegación y prefetch. Los React Server Components pueden cargar datos y pasar props serializables a componentes cliente de Nissi UI; no montes el modo `history` de `Nroutes` en paralelo con el router de Next.
+
 ## Portal estático
 
 El catálogo Vite tiene un build separado del paquete:

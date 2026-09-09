@@ -6,6 +6,11 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 
 ### Añadido
 
+- Evolución profesional de `Nroutes`: location completa, search params, árbol jerárquico, ranking, branches, `NOutlet`, permisos, guards, redirects, loaders cancelables, error boundaries y protección frente a respuestas obsoletas.
+- `NLink`, prefetch por intención, hooks especializados (`useNLocation`, `useNNavigate`, `useNRouteParams`, `useNSearchParams`, `useNNavigation`, `useNLoaderData`, `useNRouteMatches`) y helpers `defineNroutes`/`defineNlayoutConfig`.
+- Adaptador `NRouterAdapter` para delegar URL, navegación y prefetch a Next.js u otro router externo.
+- Breadcrumbs derivados, progreso de navegación, restauración configurable de scroll y permisos coherentes entre `Nlayout`, `NHeader`, `NSidebar` y rutas.
+
 - `Nlayout`, composición responsive de `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider` sobre `NAppShell`.
 - `Nroutes`, administrador SPA con estrategias `history`, `hash` y `memory`, parámetros, History API, foco accesible y transición respetuosa de reduced motion.
 - Muestra independiente `nfacture.html` con la navegación completa del proyecto NFacture y documentación interactiva dentro del catálogo.

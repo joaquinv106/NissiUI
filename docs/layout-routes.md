@@ -1,6 +1,6 @@
 # Nlayout y Nroutes
 
-`Nlayout` es la composición de aplicación de Nissi UI. Integra `NAppShell`, `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider`, y delega el cambio de contenido a `Nroutes` para conservar una experiencia single-page.
+`Nroutes` es el router SPA progresivo de Nissi UI. Una aplicación pequeña puede conservar rutas planas; una aplicación empresarial puede agregar branches anidadas, permisos, guards, loaders cancelables, error boundaries y prefetch sin cambiar de router. `Nlayout` compone ese estado con `NAppShell`, `NSidebar`, `NHeader`, `NPageHeader`, breadcrumbs y tema.
 
 ## Inicio rápido
 
@@ -13,10 +13,6 @@ const routes: NlayoutRoute[] = [
     path: "/",
     title: "Resumen",
     navigationId: "dashboard",
-    pageHeader: {
-      subtitle: "Estado general de la operación.",
-      breadcrumbs: [{ id: "home", label: "Inicio", current: true }],
-    },
     element: <Dashboard />,
   },
   {
@@ -36,56 +32,193 @@ const navigation = [
 <Nlayout routes={routes} navigation={navigation} />
 ```
 
-Cada `navigationId` conecta la ruta con el elemento activo de `NSidebar` y `NHeader`. Los enlaces cuyo destino coincide con una ruta se interceptan en captura: cambian History API o el hash sin recargar el documento. Los enlaces externos, descargas, nuevas pestañas y clics con modificadores conservan el comportamiento nativo.
+Las rutas planas, `path`, `match`, `navigate` y `createLinkProps` permanecen compatibles con la primera versión.
 
-## Nroutes independiente
+## Rutas anidadas y ranking
+
+Los hijos usan paths relativos. `NOutlet` renderiza el siguiente nivel de la branch y funciona con cualquier profundidad.
 
 ```tsx
-import { NRouteOutlet, Nroutes, useNroutes } from "nissi-ui/routes"
+import { NOutlet, Nlayout, type NlayoutRoute } from "nissi-ui"
 
-function Navigation() {
-  const { createLinkProps } = useNroutes()
-  return <a {...createLinkProps("/reportes")}>Reportes</a>
+function BillingLayout() {
+  return (
+    <section>
+      <BillingTabs />
+      <NOutlet />
+    </section>
+  )
 }
 
-<Nroutes routes={routes} strategy="history">
-  <Navigation />
-  <NRouteOutlet />
-</Nroutes>
+const routes: NlayoutRoute[] = [
+  {
+    id: "billing",
+    path: "/facturas",
+    title: "Facturación",
+    element: <BillingLayout />,
+    children: [
+      { id: "invoice-list", path: "", title: "Facturas", element: <Invoices /> },
+      { id: "invoice-new", path: "nueva", title: "Nueva factura", element: <NewInvoice /> },
+      { id: "invoice-detail", path: ":folio", title: "Detalle", element: <InvoiceDetail /> },
+      { id: "invoice-help", path: "*", title: "Ayuda", element: <BillingHelp /> },
+    ],
+  },
+]
 ```
 
-Las rutas admiten parámetros (`/facturas/:folio`) y un comodín final (`/ayuda/*`). El `element` puede ser un nodo o una función que recibe `params`, ruta y datos tipados.
+El árbol se compila y ordena independientemente del arreglo. La precedencia es ruta exacta sobre wildcard y, por segmento, estático sobre `:param` sobre `*`. En desarrollo se advierten ids duplicados y patrones hermanos indistinguibles.
 
-## Estrategias
+## Location y search params
 
-- `history` es el valor predeterminado. Requiere que el servidor entregue la aplicación para las rutas profundas; `basePath` permite alojarla bajo un prefijo.
-- `hash` funciona en hosting estático sin configurar rewrites.
-- `memory` no modifica la URL y sirve para previews, tests y componentes embebidos.
+`useNLocation()` expone `pathname`, `search`, `searchParams`, `hash`, `state` y `key`. La URL completa se conserva en carga inicial, enlaces, navegación programática, back/forward y las estrategias `history`, `hash` y `memory`.
 
-`path` controla el estado desde un router externo. Sin esa prop, `defaultPath` inicializa el estado y `onPathChange` notifica cada navegación. Atrás/adelante se sincronizan mediante `popstate` y `hashchange`.
+```tsx
+import { useNLocation, useNSearchParams } from "nissi-ui/routes"
 
-## Tema y composición
+function InvoiceFilters() {
+  const location = useNLocation()
+  const [searchParams, setSearchParams] = useNSearchParams()
 
-`Nlayout` monta `NThemeProvider` por defecto y activa `NTheme` dentro de `NHeader`. Si la aplicación ya tiene el provider en su raíz, usa `provideTheme={false}`. `themeProviderProps`, `headerProps`, `sidebarProps` y `shellProps` mantienen configurables las piezas integradas sin duplicar su API.
+  return (
+    <button
+      onClick={() => setSearchParams(
+        { estado: "pendiente", pagina: null },
+        { mode: "merge", replace: true },
+      )}
+    >
+      Filtrar {location.pathname}: {searchParams.get("estado")}
+    </button>
+  )
+}
+```
 
-En móvil, el header reserva automáticamente el espacio del disparador overlay de `NSidebar` en el borde configurado. Así la marca y las acciones no quedan debajo del menú flotante; al desactivar el disparador o usar otro modo responsive, el espacio adicional desaparece.
+`mode="replace"` sustituye el query completo; `mode="merge"` conserva los demás parámetros. Un valor `null` o `undefined` elimina la clave.
 
-El encabezado de cada ruta usa `NPageHeader`; `pageHeader={false}` permite omitirlo. Las migas se declaran en `pageHeader.breadcrumbs` y sus enlaces participan en la misma navegación SPA.
+## Permisos, guards y loaders
 
-## Transición y accesibilidad
+Las rutas reutilizan las capacidades de `NPermissionsProvider`. Esto protege enlaces directos además de ocultar navegación en `NSidebar` y `NHeader`; la autorización definitiva sigue perteneciendo al backend.
 
-`NRouteOutlet` aplica una entrada de 180 ms con opacidad y desplazamiento de 4 px. La animación desaparece con `prefers-reduced-motion`. Después de navegar, el outlet recibe foco programático sin mover el scroll y anuncia el título mediante `aria-live`.
+```tsx
+import { redirect, type NRouteDefinition } from "nissi-ui/routes"
 
-Carga, ruta inexistente y nombre de región pertenecen a `NroutesLabels`. `pendingFallback` y `notFoundFallback` sustituyen los estados completos.
+type AppContext = {
+  session?: { userId: string }
+  api: {
+    getInvoice: (folio: string, options: { signal: AbortSignal }) => Promise<Invoice>
+  }
+}
+
+const routes: NRouteDefinition<unknown, AppContext>[] = [{
+  id: "invoice",
+  path: "/facturas/:folio",
+  title: ({ params }) => `Factura ${params.folio}`,
+  requiredPermission: "facturacion:ver",
+  beforeEnter: ({ context }) => context.session ? true : redirect("/login"),
+  loader: ({ params, context, signal }) =>
+    context.api.getInvoice(params.folio, { signal }),
+  errorElement: (error) => <InvoiceError error={error} />,
+  element: <InvoicePage />,
+}]
+
+<Nroutes routes={routes} context={appContext} />
+```
+
+Los guards se ejecutan de padre a hijo y pueden permitir, denegar o redirigir. Los loaders reciben `AbortSignal`; al comenzar una navegación nueva se cancela la anterior y una respuesta obsoleta nunca reemplaza la pantalla vigente. `route.data` continúa siendo metadata estática y `useNLoaderData()` entrega el resultado remoto.
+
+Los errores de loader o render usan el `errorElement` más cercano de la branch. Si no existe, `errorFallback` resuelve el estado global sin desmontar el shell.
+
+## NLink, hooks y prefetch
+
+`NLink` es un `<a>` real: conserva clic medio, modificadores, `target`, `download`, enlaces externos y atributos accesibles. `prefetch="intent"` prepara `preload` y loaders al recibir foco o pointer, deduplicando la operación sin navegar.
+
+```tsx
+import { NLink } from "nissi-ui/routes"
+
+<NLink to="/facturas/A-100?tab=pagos" prefetch="intent">
+  Abrir factura
+</NLink>
+```
+
+Hooks públicos:
+
+- `useNroutes()` conserva el contexto completo compatible.
+- `useNNavigate()` devuelve la función de navegación.
+- `useNLocation()` devuelve la location completa.
+- `useNRouteParams()` devuelve los params combinados de la branch.
+- `useNSearchParams()` permite reemplazar, mezclar y eliminar query params.
+- `useNNavigation()` devuelve `idle` o `loading`, con locations de origen y destino.
+- `useNLoaderData(routeId?)` devuelve datos del loader activo.
+- `useNRouteMatches()` devuelve toda la branch, incluidos datos por nivel.
+
+`defineNroutes()` y `defineNlayoutConfig()` conservan literales al compartir configuraciones TypeScript.
+
+## Estrategias y routers externos
+
+- `history` es el valor predeterminado. El servidor debe entregar la aplicación para rutas profundas; `basePath` permite un prefijo.
+- `hash` sirve en hosting estático sin rewrites.
+- `memory` no modifica la URL y sirve en previews, tests o componentes embebidos.
+- `router`/`routeRouter` permite que Next.js u otro framework controle URL, navegación y prefetch.
+
+Ejemplo de adaptador para Next.js App Router dentro de un Client Component:
+
+```tsx
+"use client"
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Nlayout } from "nissi-ui/layout"
+
+export function AppFrame() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const location = `${pathname}?${searchParams.toString()}`
+
+  return (
+    <Nlayout
+      routes={routes}
+      navigation={navigation}
+      routeRouter={{
+        location,
+        navigate: (to, options) => options?.replace ? router.replace(to) : router.push(to),
+        createHref: (to) => to,
+        prefetch: (to) => router.prefetch(to),
+      }}
+    />
+  )
+}
+```
+
+En Next.js, Next continúa siendo el único dueño del routing y React Server Components puede obtener datos en el servidor y pasar props serializables a componentes cliente de Nissi UI. No deben montarse dos routers que escriban History API simultáneamente.
+
+## Integración con Nlayout
+
+`navigationId` sincroniza la hoja activa con sidebar y header, incluso en rutas anidadas. Cuando `pageHeader.breadcrumbs` no se declara, `Nlayout` deriva las migas desde `breadcrumb` o `title`; el valor explícito siempre tiene prioridad y `pageHeader={false}` elimina el encabezado.
+
+`routeProgress` muestra progreso global con delay anti-parpadeo. `scrollRestoration="top" | "restore"` controla scroll y `mobileSidebarTriggerInset` sustituye la reserva móvil predeterminada. Todas las animaciones respetan `prefers-reduced-motion`.
+
+```tsx
+<Nlayout
+  routes={routes}
+  navigation={navigation}
+  routeProgress
+  routeProgressDelay={160}
+  scrollRestoration="restore"
+  mobileSidebarTriggerInset="4.25rem"
+/>
+```
+
+## Estados, accesibilidad y personalización
+
+`NRouteOutlet` mueve el foco cuando el contenido final está listo, anuncia el título mediante `aria-live` y ofrece fallbacks de pending, not found, forbidden y error. Los textos pertenecen a `NroutesLabels` y tienen español predeterminado.
+
+`Nroutes` y `NRouteOutlet` conservan `unstyled`, `classNames`, `styles` y partes `data-scope`/`data-part`. El progreso usa `role="progressbar"`; los errores y estados completos reciben foco programático.
 
 ## Muestra NFacture
 
-El archivo `nfacture.html` carga una demostración independiente a pantalla completa. Usa `strategy="hash"`, Nissi Dark como tema inicial, la navegación generada por `createNFactureNavigation`, encabezados por ruta y el proyecto `NFacture` sin un segundo sidebar.
-
-En desarrollo:
+`nfacture.html` carga una demostración independiente a pantalla completa con `strategy="hash"`, Nissi Dark, navegación fiscal, encabezados por ruta y `NFacture` sin un segundo sidebar:
 
 ```text
 http://localhost:5173/nfacture.html#/facturacion/dashboard
 ```
 
-Los datos, credenciales e integraciones de la muestra son ficticios; `Nroutes` no obtiene datos ni implementa autenticación, permisos o reglas de negocio.
+Los datos e integraciones de la muestra son ficticios. Nissi UI coordina presentación y navegación cliente; autenticación, permisos definitivos, persistencia y reglas de negocio permanecen en la aplicación y su backend.

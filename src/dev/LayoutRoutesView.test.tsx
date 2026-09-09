@@ -12,5 +12,6 @@ describe("LayoutRoutesView", () => {
     expect(screen.getByRole("link", { name: /Abrir demostración completa/ })).toHaveAttribute("href", "/nfacture.html")
     expect(screen.getByRole("tab", { name: "Layout completo" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Router aislado" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Rutas anidadas" })).toBeInTheDocument()
   })
 })
