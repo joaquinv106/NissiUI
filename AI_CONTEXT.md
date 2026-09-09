@@ -97,6 +97,10 @@ export function PaymentPanel({ total, methods }: { total: number; methods: Payme
 
 La documentación detallada vive en `docs/README.md` dentro del paquete y del repositorio.
 
+## Próximo objetivo de arquitectura
+
+`docs/future-professional-spa-router.md` contiene el proyecto futuro para evolucionar `Nroutes` y `Nlayout` hacia navegación SPA jerárquica con guards, loaders y permisos de ruta. Ese archivo es una especificación de trabajo y no debe interpretarse como API disponible en la versión estable. Antes de implementarlo, el equipo debe auditar el código actual y conservar compatibilidad con rutas planas, `useNroutes()` y `createLinkProps()`.
+
 ## Reglas para generar código con IA
 
 1. Usa exclusivamente exportaciones públicas desde `nissi-ui`.

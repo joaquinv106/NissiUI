@@ -21,6 +21,12 @@ La prioridad del proyecto es desarrollar componentes genéricos capaces de compo
 - `NPanel` está completado como plus adelantado de esa siguiente fase: superficie lateral modal, dinámica y opuesta al sidebar.
 - No construir componentes POS monolíticos: cualquier preset futuro debe permanecer sobre primitivas y patrones estabilizados.
 
+## Próximo proyecto: Nissi Router SPA profesional
+
+La siguiente evolución propuesta para la plataforma es convertir `Nroutes` y `Nlayout` en un router SPA jerárquico con location completa, rutas anidadas, ranking, permisos de ruta, guards y loaders cancelables, boundaries, `NLink`, prefetch, breadcrumbs derivados, progreso y restauración de scroll. Es un objetivo **futuro y aún no implementado**; el contrato actual continúa descrito en este archivo y en `docs/layout-routes.md`.
+
+La especificación de traspaso, fases, compatibilidad, pruebas y Definition of Done vive en [docs/future-professional-spa-router.md](./docs/future-professional-spa-router.md). Todo equipo que inicie ese trabajo debe auditar primero la implementación vigente y reutilizar el sistema existente de permisos, en especial el filtrado que `NSidebar` ya realiza mediante `usePermissions()`.
+
 ## Principios de diseño
 
 - API declarativa y tipada: la configuración principal usa JSON con `headers` y `data`.
@@ -139,6 +145,7 @@ Antes de entregar cambios de comportamiento deben pasar al menos `typecheck`, pr
 - `docs/facture.md`: alcance, contratos, seguridad, navegación y referencias oficiales de `NFacture`.
 - `docs/auth.md`: arquitectura, importación, componentes, tema, estados, accesibilidad, seguridad, personalización y empaquetado de Nauth y `NloginPage`.
 - `docs/layout-routes.md`: contrato, estrategias, accesibilidad, personalización e integración de `Nlayout` y `Nroutes`.
+- `docs/future-professional-spa-router.md`: especificación futura para evolucionar `Nroutes`/`Nlayout`; no representa funcionalidad disponible actualmente.
 - `docs/final-components.md`: contrato consolidado de estados, datos remotos, actividad, dashboards, SaaS y verticales.
 - `docs/generalized-workflows-roadmap.md`: fases canónicas del objetivo prioritario y orden obligatorio de desarrollo.
 - `docs/roadmap.md`: historial de componentes terminados y fases pendientes.

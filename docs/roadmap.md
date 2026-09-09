@@ -23,7 +23,9 @@ Este documento registra qué se construyó y qué queda pendiente. Las fases exp
 
 ## Fases pendientes
 
-No quedan fases de componentes pendientes en el alcance definido. La siguiente etapa es estabilización para publicación: pruebas visuales multi-tema, compatibilidad de consumidores React 18/19, versionado semántico y metadata npm.
+No quedan fases de componentes pendientes en el alcance original. Se agregó como próximo proyecto la evolución de `Nroutes` y `Nlayout` hacia un [router SPA profesional](./future-professional-spa-router.md). El proyecto está documentado, pero todavía no se considera iniciado ni implementado.
+
+Su secuencia propuesta es: core router; ciclo de navegación; experiencia de desarrollo; integración con `Nlayout`; y hardening. Cada fase debe preservar las APIs planas actuales y cerrarse con pruebas, documentación y validación de paquete.
 
 ## Prioridad inmediata: estabilización
 

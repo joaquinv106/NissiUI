@@ -57,6 +57,8 @@ Consulta también [Accesibilidad y personalización desde cero](./accessibility.
 
 Consulta también el [historial y roadmap por fases](./roadmap.md).
 
+El siguiente proyecto propuesto está documentado en [Nissi Router SPA profesional](./future-professional-spa-router.md). Su estado es **próximamente** y sus APIs objetivo todavía no forman parte del paquete estable.
+
 El objetivo prioritario actual y su secuencia están definidos en [Flujos operativos generalizables](./generalized-workflows-roadmap.md).
 
 La marca, el slogan y los recursos gráficos se documentan en [Identidad visual](./brand.md).
