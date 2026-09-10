@@ -122,6 +122,7 @@
   "devDependencies": {
     "@chakra-ui/react": "^3.37.0",
     "@emotion/react": "^11.14.0",
+    "@nissi/engineering-department": "file:.nissi/vendor/nissi-engineering-department-0.1.0.tgz",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^26.4.1",

@@ -1,0 +1,11 @@
+{
+  "managedBy": "nissi",
+  "schemaVersion": "1",
+  "classes": [
+    "economy",
+    "standard",
+    "advanced",
+    "critical"
+  ],
+  "mode": "bootstrap"
+}

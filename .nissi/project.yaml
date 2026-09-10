@@ -1,0 +1,17 @@
+schemaVersion: "1"
+name: "NissiUI"
+profile: react-library
+packageManager: npm
+technologies:
+  - git
+  - node
+  - react
+  - testing
+  - typescript
+  - vite
+cost:
+  mode: bootstrap
+  maxRecommendedAgents: 4
+  advancedRequiresJustification: true
+risk:
+  defaultTechnical: low
