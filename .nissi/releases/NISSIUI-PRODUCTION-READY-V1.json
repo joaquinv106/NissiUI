@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "release": "NISSIUI-PRODUCTION-READY-V1",
+  "assessed_at": "2026-09-10",
+  "decision": "READY",
+  "gate": {
+    "total": 12,
+    "pass": 12,
+    "fail": 0,
+    "insufficient": 0
+  },
+  "external_consumer_evidence": {
+    "consumer": "Nissi-Consumer-Lab",
+    "package": "nissi-ui-0.3.0.tgz",
+    "install_mode": "file tarball",
+    "source_link_or_import": false,
+    "compatibility": {
+      "public_apis_and_components": 17,
+      "breaking_changes": 0,
+      "migrations": 0,
+      "regressions": 0,
+      "consumer_defects": 0,
+      "unknown": 0,
+      "custom_patches_or_workarounds": 0,
+      "blockers": 0
+    },
+    "critical_flow": [
+      "login",
+      "protected main layout",
+      "SPA navigation",
+      "protected route",
+      "nested route",
+      "table",
+      "filter",
+      "form/dialog",
+      "direct deep link",
+      "authenticated unknown-route fallback",
+      "responsive rendering at 390px"
+    ],
+    "backend_mode": "local synthetic/intercepted responses",
+    "report": "C:/xampp/htdocs/proyecto/Nissi-Consumer-Lab/.nissi/reports/nissiui-real-consumer-validation.md"
+  },
+  "validation": {
+    "typecheck": "PASS",
+    "tests": {
+      "result": "PASS",
+      "files": 53,
+      "tests": 333
+    },
+    "build": "PASS",
+    "esm": "PASS",
+    "commonjs": "PASS",
+    "typescript_nodenext_bundler": "PASS",
+    "ssr": "PASS",
+    "tree_shaking": "PASS",
+    "npm_pack_dry_run": "PASS"
+  },
+  "versioning": {
+    "declared_version": "0.3.0",
+    "evaluated_base_commit": "5b3bda8b63b8c2cd8d470190cb6e3da257b0e750",
+    "evaluated_base_commit_note": "Commit whose working tree was assessed for this READY decision. It still declares package.json version 0.2.0 and does not contain the 0.3.0 bump or this release record; those baseline artifacts are preserved in a separate baseline-freeze commit made on top of it on the same branch.",
+    "recommended_next_release_version": null,
+    "recommendation": "Retain 0.3.0 as the frozen baseline; use 0.3.1 only if metadata must be republished."
+  },
+  "router": {
+    "pre_release_blocker": false,
+    "high_value_nonblocking": [
+      14,
+      15,
+      18
+    ],
+    "post_launch": [
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "16",
+      "20",
+      "21",
+      "22"
+    ],
+    "experimental": [
+      17,
+      19
+    ]
+  },
+  "freeze": {
+    "nissiui_platform_development": "FROZEN",
+    "purpose": "BOOTSTRAP",
+    "exceptions": [
+      "confirmed production blocker",
+      "regression",
+      "critical security issue",
+      "requirement demonstrated by the first commercial Shevaj product"
+    ]
+  },
+  "revenue_roadmap": {
+    "horizon_1": "COMPLETED",
+    "horizon_2": "FIRST COMMERCIAL SHEVAJ PRODUCT",
+    "product_selected": false
+  },
+  "next_action": "Begin Shevaj commercial product discovery and Top-5 market analysis."
+}

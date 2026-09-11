@@ -433,3 +433,12 @@ Todo artefacto, API pública, ruta, subruta de paquete, componente, hook, utilid
 Un cambio está terminado cuando funciona en claro, oscuro, azul marino y Nissi Dark, es responsive, accesible por teclado cuando aplica, no introduce textos fuera de `labels`, conserva tipado público, incluye pruebas de interacción y deja actualizado `docs/`.
 
 Para toda entrega que modifique una vista del catálogo o añada una nueva, no basta con `typecheck` o `build`: se debe iniciar el catálogo, comprobar que la URL responde y ejecutar una prueba de renderizado que monte la vista y recorra sus estados o variantes principales. No se debe declarar terminada una entrega visual si la vista no carga correctamente en ejecución.
+
+## Production Ready V1 baseline freeze (2026-09-10)
+
+- The objective gate in `.nissi/PRODUCTION-READY-GATE.md` is READY: 12 PASS, 0 FAIL, 0 INSUFFICIENT.
+- External `Nissi-Consumer-Lab` tarball validation closed the packaged-consumer criterion with no regressions or blockers.
+- `nissi-ui@0.3.0` is the Production Ready V1 baseline.
+- NissiUI platform feature development is frozen for bootstrap. Pending Router phases are deferred and must not resume automatically.
+- Horizon 1 is complete. Horizon 2 is FIRST COMMERCIAL SHEVAJ PRODUCT; discovery and Top-5 market analysis must occur before a product is selected.
+- Formal artifacts: `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.md` and `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.json`.
