@@ -442,3 +442,4 @@ Para toda entrega que modifique una vista del catálogo o añada una nueva, no b
 - NissiUI platform feature development is frozen for bootstrap. Pending Router phases are deferred and must not resume automatically.
 - Horizon 1 is complete. Horizon 2 is FIRST COMMERCIAL SHEVAJ PRODUCT; discovery and Top-5 market analysis must occur before a product is selected.
 - Formal artifacts: `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.md` and `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.json`.
+- Real consumer usage from the first Horizon 2 product (Shevaj Food, built on NissiPlatform) has surfaced concrete navigation/UX gaps and one silent correctness bug (`NStepFlow.renderActions`). They are tracked, ranked by urgency, in `.nissi/TECH-DEBT.md` under "Consumer feedback backlog — Shevaj Food (Horizon 2)" — queued for after the freeze lifts, not yet fixed.
