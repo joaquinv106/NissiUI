@@ -31,6 +31,8 @@ La siguiente evolución es Nroutes v3. Su auditoría comprobada, decisiones, 21 
 
 ## Principios de diseño
 
+La revisión local de UX sigue `.nissi/UX-REVIEW-PROTOCOL.md` y `.nissi/templates/UX-REVIEW.md`: incluye borradores numéricos borrables, validación al confirmar, teclado/tacto, acceso de sesión en cabecera cuando corresponda, CTA sin duplicados y operabilidad real de tema/menú mediante hit testing. También exige inventario de usos compartidos, retorno seguro en acceso/registro, logo como enlace accesible a inicio y conservación del destino de continuación aceptado. Estas copias de gobernanza no modifican contratos de componentes ni levantan el freeze de desarrollo.
+
 - API declarativa y tipada: la configuración principal usa JSON con `headers` y `data`.
 - Chakra UI v3: usar sus primitivas y patrones compound; no introducir patrones de Chakra v2.
 - Tema automático: preferir tokens semánticos (`bg`, `bg.panel`, `fg.muted`, `border`) para soportar claro, oscuro, azul marino y Nissi Dark mediante `NThemeProvider`.
