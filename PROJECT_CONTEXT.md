@@ -423,6 +423,8 @@ Todo artefacto, API pública, ruta, subruta de paquete, componente, hook, utilid
 
 ## Flujo recomendado para agentes
 
+El servidor del catálogo (`vite.docs.config.ts`) conserva las denegaciones de archivos privados de Vite y bloquea `.nissi/`, `database/`, volcados y copias locales. Esta protección se aplica también si el catálogo se publica bajo `/nissiui/` mediante un proxy. `.gitignore` no controla el acceso HTTP. La configuración no cambia componentes, API pública ni el freeze de funcionalidades.
+
 1. Leer este archivo, `package.json` y el documento del componente afectado.
 2. Inspeccionar sólo los archivos indicados en la estructura antes de hacer búsquedas amplias.
 3. Consultar primero tipos y código instalados en `node_modules` para APIs de la versión fijada.

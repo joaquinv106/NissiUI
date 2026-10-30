@@ -8,6 +8,14 @@ const projectRoot = import.meta.dirname
 export default defineConfig({
   plugins: [react()],
   base: process.env.NISSI_DOCS_BASE || "/",
+  server: {
+    fs: {
+      deny: [
+        ".env", ".env.*", "*.{crt,pem,key,p12,pfx,cer,der}", ".npmrc", ".yarnrc.yml", "**/.git/**",
+        "**/.nissi/**", "**/database/**", "**/*.dump", "**/*.backup", "**/Nissi/Backups/**",
+      ],
+    },
+  },
   build: {
     outDir: "site-dist",
     emptyOutDir: true,
