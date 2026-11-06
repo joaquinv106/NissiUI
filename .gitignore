@@ -3,7 +3,9 @@ dist/
 site-dist/
 coverage/
 .npm-cache/
+.nissi/tmp/
 *.tgz
+!.nissi/vendor/nissi-engineering-department-0.2.0.tgz
 *.log
 .DS_Store
 .env

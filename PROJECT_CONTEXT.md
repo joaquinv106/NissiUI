@@ -31,6 +31,8 @@ La siguiente evolución es Nroutes v3. Su auditoría comprobada, decisiones, 21 
 
 ## Principios de diseño
 
+La revisión local de UX sigue `.nissi/UX-REVIEW-PROTOCOL.md` y `.nissi/templates/UX-REVIEW.md`: incluye borradores numéricos borrables, validación al confirmar, teclado/tacto, acceso de sesión en cabecera cuando corresponda, CTA sin duplicados y operabilidad real de tema/menú mediante hit testing. También exige inventario de usos compartidos, retorno seguro en acceso/registro, logo como enlace accesible a inicio y conservación del destino de continuación aceptado. Estas copias de gobernanza no modifican contratos de componentes ni levantan el freeze de desarrollo.
+
 - API declarativa y tipada: la configuración principal usa JSON con `headers` y `data`.
 - Chakra UI v3: usar sus primitivas y patrones compound; no introducir patrones de Chakra v2.
 - Tema automático: preferir tokens semánticos (`bg`, `bg.panel`, `fg.muted`, `border`) para soportar claro, oscuro, azul marino y Nissi Dark mediante `NThemeProvider`.
@@ -421,6 +423,8 @@ Todo artefacto, API pública, ruta, subruta de paquete, componente, hook, utilid
 
 ## Flujo recomendado para agentes
 
+El servidor del catálogo (`vite.docs.config.ts`) conserva las denegaciones de archivos privados de Vite y bloquea `.nissi/`, `database/`, volcados y copias locales. Esta protección se aplica también si el catálogo se publica bajo `/nissiui/` mediante un proxy. `.gitignore` no controla el acceso HTTP. La configuración no cambia componentes, API pública ni el freeze de funcionalidades.
+
 1. Leer este archivo, `package.json` y el documento del componente afectado.
 2. Inspeccionar sólo los archivos indicados en la estructura antes de hacer búsquedas amplias.
 3. Consultar primero tipos y código instalados en `node_modules` para APIs de la versión fijada.
@@ -433,3 +437,13 @@ Todo artefacto, API pública, ruta, subruta de paquete, componente, hook, utilid
 Un cambio está terminado cuando funciona en claro, oscuro, azul marino y Nissi Dark, es responsive, accesible por teclado cuando aplica, no introduce textos fuera de `labels`, conserva tipado público, incluye pruebas de interacción y deja actualizado `docs/`.
 
 Para toda entrega que modifique una vista del catálogo o añada una nueva, no basta con `typecheck` o `build`: se debe iniciar el catálogo, comprobar que la URL responde y ejecutar una prueba de renderizado que monte la vista y recorra sus estados o variantes principales. No se debe declarar terminada una entrega visual si la vista no carga correctamente en ejecución.
+
+## Production Ready V1 baseline freeze (2026-09-10)
+
+- The objective gate in `.nissi/PRODUCTION-READY-GATE.md` is READY: 12 PASS, 0 FAIL, 0 INSUFFICIENT.
+- External `Nissi-Consumer-Lab` tarball validation closed the packaged-consumer criterion with no regressions or blockers.
+- `nissi-ui@0.3.0` is the Production Ready V1 baseline.
+- NissiUI platform feature development is frozen for bootstrap. Pending Router phases are deferred and must not resume automatically.
+- Horizon 1 is complete. Horizon 2 is FIRST COMMERCIAL SHEVAJ PRODUCT; discovery and Top-5 market analysis must occur before a product is selected.
+- Formal artifacts: `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.md` and `.nissi/releases/NISSIUI-PRODUCTION-READY-V1.json`.
+- Real consumer usage from the first Horizon 2 product (Shevaj Food, built on NissiPlatform) has surfaced concrete navigation/UX gaps and one silent correctness bug (`NStepFlow.renderActions`). They are tracked, ranked by urgency, in `.nissi/TECH-DEBT.md` under "Consumer feedback backlog — Shevaj Food (Horizon 2)" — queued for after the freeze lifts, not yet fixed.

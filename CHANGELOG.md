@@ -2,7 +2,7 @@
 
 Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguiendo versionado semántico.
 
-## 0.2.0 — 2026-09-09
+## 0.3.0 — 2026-09-10
 
 ### Añadido
 
@@ -19,16 +19,20 @@ Todos los cambios relevantes de Nissi UI se documentarán en este archivo siguie
 - Adaptador `NRouterAdapter` para delegar URL, navegación y prefetch a Next.js u otro router externo.
 - Breadcrumbs derivados, progreso de navegación, restauración configurable de scroll y permisos coherentes entre `Nlayout`, `NHeader`, `NSidebar` y rutas.
 
+### Corregido
+
+- El ActionBar de `NDataTable` queda fijado al borde inferior del viewport con soporte de safe area; el explorador embebido de Sistema visual ya no lo desplaza hasta el final de una página alta.
+
+## 0.2.0 — 2026-09-09
+
+### Añadido
+
 - `Nlayout`, composición responsive de `NSidebar`, `NHeader`, `NPageHeader`, `NBreadcrumbs`, `NTheme` y `NThemeProvider` sobre `NAppShell`.
 - `Nroutes`, administrador SPA con estrategias `history`, `hash` y `memory`, parámetros, History API, foco accesible y transición respetuosa de reduced motion.
 - Muestra independiente `nfacture.html` con la navegación completa del proyecto NFacture y documentación interactiva dentro del catálogo.
 - `NloginPage`, pantalla de acceso responsive con el isotipo oficial de Nissi, `NauthLogin`, tema oscuro inicial y selector `NTheme` integrado.
 - Namespace público `Nauth*` para layouts, formularios y primitivas de autenticación, manteniendo los nombres anteriores como aliases compatibles.
 - `embedded` y `minHeight` en `NauthLayout` para composiciones documentales sin regiones `main` anidadas.
-
-### Corregido
-
-- El ActionBar de `NDataTable` queda fijado al borde inferior del viewport con soporte de safe area; el explorador embebido de Sistema visual ya no lo desplaza hasta el final de una página alta.
 
 ## 0.1.2 — 2026-09-07
 

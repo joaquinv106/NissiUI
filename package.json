@@ -1,6 +1,6 @@
 {
   "name": "nissi-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Accessible, reusable React components for modular products, operational workflows and SaaS applications",
   "author": "Lic. Informática Joaquin Villegas Chavez",
   "repository": {
@@ -122,6 +122,7 @@
   "devDependencies": {
     "@chakra-ui/react": "^3.37.0",
     "@emotion/react": "^11.14.0",
+    "@nissi/engineering-department": "file:.nissi/vendor/nissi-engineering-department-0.3.0.tgz",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^26.4.1",

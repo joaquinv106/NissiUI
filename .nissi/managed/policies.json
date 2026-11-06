@@ -1,0 +1,15 @@
+{
+  "managedBy": "nissi",
+  "schemaVersion": "1",
+  "policies": [
+    "engineering.strict-typescript",
+    "engineering.testing",
+    "engineering.backwards-compatibility",
+    "engineering.no-self-approval",
+    "security.secure-defaults",
+    "privacy.data-minimization",
+    "legal.human-escalation",
+    "finance.payment-review",
+    "cost.bootstrap"
+  ]
+}
